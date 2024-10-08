@@ -14,4 +14,8 @@ object Dimensions {
 //  Heights
     val heightOfUpperFragment = 0.2f
     val heightOfLowerFragment = 0.2f
+
+//  Rounded corners
+    val roundedCornersOfBigElements = 20.dp
+    val roundedCornersOfSmallElements = 5.dp
 }

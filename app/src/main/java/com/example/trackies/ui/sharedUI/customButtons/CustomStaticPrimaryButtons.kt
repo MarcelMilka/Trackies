@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
+import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
 
 @Composable
@@ -22,7 +23,7 @@ fun BigPrimaryButton(textToDisplay: String, onClick: () -> Unit) {
             .width(250.dp)
             .height(50.dp),
 
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
 
         colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
 

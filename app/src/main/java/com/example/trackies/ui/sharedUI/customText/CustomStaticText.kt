@@ -10,7 +10,8 @@ import com.example.trackies.ui.theme.fonts
 
     Text(
         text = content,
-        style = fonts.headlineLarge
+        style = fonts.headlineLarge,
+        textAlign = TextAlign.Center,
     )
 }
 

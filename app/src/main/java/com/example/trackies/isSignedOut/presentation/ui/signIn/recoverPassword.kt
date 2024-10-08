@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedOut.authenticate
+package com.example.trackies.isSignedOut.presentation.ui.signIn
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,19 +9,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.trackies.ui.sharedUI.customButtons.BigPrimaryButton
+import androidx.compose.ui.focus.FocusRequester
+import com.example.trackies.ui.sharedUI.customButtons.BigDynamicButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
+import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
+import com.example.trackies.ui.sharedUI.customTextFields.EmailInputTextField
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
 @Composable
-fun Authenticate(onNavigate: () -> Unit) {
+fun recoverPassword(onClick: () -> Unit) {
 
-//  Holds everything
+    var email by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -47,7 +55,7 @@ fun Authenticate(onNavigate: () -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom,
 
-                        content = { textHeadlineLarge(content = "Verification") }
+                        content = { textHeadlineLarge(content = "Recover the password") }
                     )
 
                     Column(
@@ -55,17 +63,31 @@ fun Authenticate(onNavigate: () -> Unit) {
                             .fillMaxSize(),
 
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceAround,
+                        verticalArrangement = Arrangement.Top,
 
                         content = {
 
-                            textHeadlineSmall(
-                                content = "We have sent you an email with a verification link. Click the link to confirm your e-mail address and return to the app."
-                            )
-
                             verticalSpacerM()
 
-                            BigPrimaryButton(textToDisplay = "Okay!") { onNavigate() }
+                            textHeadlineSmall(content = "Type the email address you used to sign in to the app.")
+
+                            verticalSpacerM()
+                            verticalSpacerM()
+
+                            EmailInputTextField(
+                                insertedValue = {email = it},
+                                focusRequester = FocusRequester(),
+                                onFocusChanged = {},
+                                onDone = {}
+                            )
+
+                            verticalSpacerS()
+
+                            BigDynamicButton(
+                                textToDisplay = "Recover the password",
+                                isEnabled = email.isNotEmpty(),
+                                onClick = {onClick()}
+                            )
                         }
                     )
                 }

@@ -1,6 +1,7 @@
 package com.example.trackies
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,12 +11,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.trackies.isSignedOut.authenticate.Authenticate
-import com.example.trackies.isSignedOut.signIn.SignIn
-import com.example.trackies.isSignedOut.signUp.SignUp
-import com.example.trackies.isSignedOut.welcomeScreen.WelcomeScreen
+import com.example.trackies.isSignedOut.data.AuthenticationService
+import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
+import com.example.trackies.isSignedOut.presentation.ui.signIn.information
+import com.example.trackies.isSignedOut.presentation.ui.signIn.recoverPassword
+import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn
+import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp
+import com.example.trackies.isSignedOut.presentation.ui.welcomeScreen
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         enterTransition = {EnterTransition.None },
                         exitTransition = { ExitTransition.None }
                     ) {
-                        WelcomeScreen { navigationController.navigate(it) }
+                        welcomeScreen { navigationController.navigate(it) }
                     }
 
                     navigation(route = "SignUpRoute", startDestination = "SignUp") {
@@ -44,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
-                            SignUp { navigationController.navigate("Authenticate") {popUpTo("WelcomeScreen") {inclusive = false}}}
+                            signUp { navigationController.navigate("Authenticate") {popUpTo("WelcomeScreen") {inclusive = false}}}
                         }
 
                         composable(
@@ -52,7 +60,7 @@ class MainActivity : ComponentActivity() {
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
-                            Authenticate { navigationController.navigate("SignInRoute") {popUpTo(route = "WelcomeScreen") {inclusive = false}}}
+                            authenticate { navigationController.navigate("SignInRoute") {popUpTo(route = "WelcomeScreen") {inclusive = false}}}
                         }
                     }
 
@@ -62,7 +70,28 @@ class MainActivity : ComponentActivity() {
                             route = "SignIn",
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
-                        ) { SignIn {  } }
+                        ) {
+
+                            signIn(
+                                onSignIn = {},
+                                onRecoverPassword = { navigationController.navigate("RecoverPassword") }
+                            )
+                        }
+
+                        composable(
+                            route = "RecoverPassword",
+                            enterTransition = {EnterTransition.None },
+                            exitTransition = { ExitTransition.None }
+                        ) { recoverPassword {
+                            navigationController.navigate("Information"){popUpTo(route = "SignIn") {inclusive = false}}
+                            }
+                        }
+
+                        composable(
+                            route = "Information",
+                            enterTransition = {EnterTransition.None },
+                            exitTransition = { ExitTransition.None }
+                        ) {information{navigationController.navigate("SignIn") {popUpTo(route = "SignIn") {inclusive = false}}}}
                     }
                 }
             }
