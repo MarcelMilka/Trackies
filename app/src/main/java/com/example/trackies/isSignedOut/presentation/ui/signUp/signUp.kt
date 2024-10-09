@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
-import com.example.trackies.ui.sharedUI.customButtons.BigDynamicButton
+import com.example.trackies.ui.sharedUI.customButtons.buttonChangingColor
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
@@ -160,7 +160,7 @@ fun signUp(onNavigate: () -> Unit) {
 
                             verticalSpacerM()
 
-                            BigDynamicButton(
+                            buttonChangingColor(
                                 textToDisplay = "Continue",
                                 isEnabled = buttonContinueIsEnabled,
                                 onClick = {onNavigate()}

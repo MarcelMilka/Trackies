@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import com.example.trackies.isSignedOut.buisness.Credentials
-import com.example.trackies.ui.sharedUI.customButtons.BigDynamicButton
 import com.example.trackies.ui.sharedUI.customButtons.SmallStaticSeondaryButton
+import com.example.trackies.ui.sharedUI.customButtons.buttonChangingColor
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
@@ -109,7 +109,7 @@ fun signIn(
 
                             verticalSpacerM()
 
-                            BigDynamicButton(
+                            buttonChangingColor(
                                 textToDisplay = "Sign in",
                                 isEnabled = email.isNotEmpty() && password.isNotEmpty(),
                                 onClick = {

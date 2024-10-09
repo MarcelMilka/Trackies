@@ -10,6 +10,7 @@ object Dimensions {
 //  Vertical spaces
     val smallestSpaceBetweenComponents = 5.dp
     val mediumSpaceBetweenComponents = 25.dp
+    val largeSpaceBetweenComponents = 40.dp
 
 //  Heights
     val heightOfUpperFragment = 0.2f

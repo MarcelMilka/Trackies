@@ -20,7 +20,7 @@ import com.example.trackies.ui.theme.White50
 import com.example.trackies.ui.theme.fonts
 
 @Composable
-fun BigDynamicButton(textToDisplay: String, isEnabled: Boolean, onClick: () -> Unit ) {
+fun buttonChangingColor(textToDisplay: String, isEnabled: Boolean, onClick: () -> Unit ) {
 
     val animateEnabling by animateColorAsState(
 

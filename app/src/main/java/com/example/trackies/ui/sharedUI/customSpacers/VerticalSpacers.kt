@@ -17,3 +17,9 @@ fun verticalSpacerM() {
 
     Spacer(modifier = Modifier.height(Dimensions.mediumSpaceBetweenComponents))
 }
+
+@Composable
+fun verticalSpacerL() {
+
+    Spacer(modifier = Modifier.height(Dimensions.largeSpaceBetweenComponents))
+}
