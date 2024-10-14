@@ -1,5 +1,8 @@
 package com.example.trackies.isSignedOut.data
 
+import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
+import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
+
 interface AuthenticationService {
 
     var initialDestination: String
@@ -9,15 +12,15 @@ interface AuthenticationService {
     fun signUpWithEmailAndPassword(
         email: String,
         password: String,
-        signUpError: (String) -> Unit,
-        authenticationResult: (Boolean) -> Unit
+        signUpError: (SignUpErrors) -> Unit,
+        verificationEmailGotSent: (Boolean) -> Unit
     )
 
     fun signInWithEmailAndPassword(
         email: String,
         password: String,
-        signInError: (String) -> Unit,
-        authenticatedSuccessfully: (String) -> Unit
+        onFailedToSignIn: (SignInErrorsToReturn) -> Unit,
+        onSucceededToSignIn: (String) -> Unit
     )
 
     fun getEmailAddress(): String?
@@ -28,6 +31,7 @@ interface AuthenticationService {
     )
 
     fun deleteAccount(
+        password: String,
         onComplete: () -> Unit,
         onFailure: (String) -> Unit,
     )
@@ -36,5 +40,17 @@ interface AuthenticationService {
         email: String,
         successfullySentEmail: () -> Unit,
         failedToSendEmail: (String) -> Unit
+    )
+
+    fun authenticateViaPassword(
+        password: String,
+        onComplete: () -> Unit,
+        onFailure: (String) -> Unit
+    )
+
+    fun changeThePassword(
+        newPassword: String,
+        onComplete: () -> Unit,
+        onFailure: (String) -> Unit
     )
 }

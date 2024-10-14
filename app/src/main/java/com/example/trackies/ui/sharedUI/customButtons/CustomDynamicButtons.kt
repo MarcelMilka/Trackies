@@ -56,3 +56,35 @@ fun buttonChangingColor(textToDisplay: String, isEnabled: Boolean, onClick: () -
         Text(text = textToDisplay, style = fonts.titleMedium)
     }
 }
+
+@Composable
+fun mediumButtonChangingColor(textToDisplay: String, isEnabled: Boolean, onClick: () -> Unit ) {
+
+    val animateEnabling by animateColorAsState(
+
+        targetValue = if (isEnabled) {
+            PrimaryColor
+        }
+        else {
+            SecondaryColor
+        },
+        animationSpec = tween(250, 0, easing = EaseIn), label = ""
+    )
+
+    Button(
+
+        onClick = { onClick() },
+
+        colors = ButtonDefaults.buttonColors(
+            containerColor = animateEnabling,
+            contentColor = Color.White,
+
+            disabledContentColor = White50
+        ),
+
+        enabled = isEnabled
+
+    ) {
+        Text(text = textToDisplay, style = fonts.titleMedium)
+    }
+}

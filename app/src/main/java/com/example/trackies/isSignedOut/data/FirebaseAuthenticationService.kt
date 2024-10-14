@@ -1,7 +1,13 @@
 package com.example.trackies.isSignedOut.data
 
 import android.util.Patterns
+import com.example.trackies.isSignedIn.deleteAccount.DeleteAccountHints
 import com.example.trackies.isSignedOut.buisness.Destinations
+import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
+import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrors
+import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.ktx.auth
@@ -27,12 +33,12 @@ object FirebaseAuthenticationService: AuthenticationService {
     override fun signUpWithEmailAndPassword(
         email: String,
         password: String,
-        signUpError: (String) -> Unit,
-        authenticationResult: (Boolean) -> Unit
+        signUpError: (SignUpErrors) -> Unit,
+        verificationEmailGotSent: (Boolean) -> Unit
     ) {
 
         if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            signUpError("Invalid email format")
+            signUpError(SignUpErrors.InvalidEmailFormat)
         }
 
         authentication.createUserWithEmailAndPassword(email, password)
@@ -43,25 +49,27 @@ object FirebaseAuthenticationService: AuthenticationService {
                     sendEmailToVerifySigningUp { gotSent ->
 
                         if (gotSent) {
-                            authenticationResult(true)
+                            verificationEmailGotSent(true)
                         } else {
-                            authenticationResult(false)
+                            verificationEmailGotSent(false)
                         }
                     }
-                } else {
+                }
 
-                    when (val exception = process.exception) {
+                else {
+
+                    when (process.exception) {
 
                         is FirebaseAuthInvalidCredentialsException -> {
-                            signUpError("${exception.message}")
+                            signUpError(SignUpErrors.InvalidEmailFormat)
                         }
 
                         is FirebaseAuthUserCollisionException -> {
-                            signUpError("$email is already used by another account.")
+                            signUpError(SignUpErrors.EmailIsAlreadyUsed)
                         }
 
                         else -> {
-                            signUpError("${exception?.message}")
+                            signUpError(SignUpErrors.ExternalError)
                         }
                     }
                 }
@@ -71,44 +79,65 @@ object FirebaseAuthenticationService: AuthenticationService {
     override fun signInWithEmailAndPassword(
         email: String,
         password: String,
-        signInError: (String) -> Unit,
-        authenticatedSuccessfully: (String) -> Unit
+        onFailedToSignIn: (SignInErrorsToReturn) -> Unit,
+        onSucceededToSignIn: (String) -> Unit
     ) {
 
-        try {
+        authentication.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { process ->
 
-            authentication.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener { process ->
+                if (process.isSuccessful) {
 
-                    if (process.isSuccessful) {
+                    val user = authentication.currentUser
 
-                        val user = authentication.currentUser
+                    user?.isEmailVerified?.let { isVerified ->
 
-                        user?.isEmailVerified?.let { isVerified ->
-
-                            if (isVerified) {
-                                authenticatedSuccessfully(user.uid)
-                            }
+                        if (isVerified) {
+                            onSucceededToSignIn(user.uid)
                         }
-                    } else {
-                        signInError("${process.exception}")
                     }
                 }
-        } catch (e: Exception) {
 
-            when (e) {
+                else {
 
-                is java.lang.IllegalArgumentException -> {
-                    signInError("the email and/or password is empty")
+                    val exceptionMessage = process.exception?.message
+
+                    val emailError: SignInErrors? = when {
+                        exceptionMessage?.contains("The email address is badly formatted", true) == true -> {
+                            SignInErrors.EmailRelatedError
+                        }
+
+                        else -> null
+                    }
+
+                    val passwordError: SignInErrors? = when {
+                        exceptionMessage?.contains("The supplied auth credential is incorrect, malformed or has expired", true) == true -> {
+                            SignInErrors.PasswordRelatedError
+                        }
+
+                        else -> null
+                    }
+
+                    if (emailError == null && passwordError == null) {
+                        onFailedToSignIn(
+
+                            SignInErrorsToReturn(
+                                email = SignInErrors.ExternalError,
+                                password = SignInErrors.ExternalError
+                            )
+                        )
+                    }
+
+                    else {
+                        onFailedToSignIn(
+                            SignInErrorsToReturn(
+                                email = emailError,
+                                password = passwordError
+                            )
+                        )
+                    }
                 }
-
-                is FirebaseAuthInvalidCredentialsException -> {
-                    signInError("the email address is badly formatted")
-                }
-
-                else -> {}
             }
-        }
     }
 
     override fun getEmailAddress(): String? = authentication.currentUser?.email
@@ -123,19 +152,65 @@ object FirebaseAuthenticationService: AuthenticationService {
     }
 
     override fun deleteAccount(
+        password: String,
         onComplete: () -> Unit,
         onFailure: (String) -> Unit,
     ) {
-        authentication.currentUser?.delete()
-            ?.addOnCompleteListener { process ->
 
-                if (process.isSuccessful) {
-                    onComplete()
+        val user = authentication.currentUser
+
+        // If the user is logged in
+        if (user != null) {
+
+            val credential = EmailAuthProvider.getCredential(user.email!!, password)
+
+            user.reauthenticate(credential)
+
+                .addOnCompleteListener { reauthentication ->
+
+                    if (reauthentication.isSuccessful) {
+                        onComplete()
+                        user.delete()
+                            .addOnCompleteListener { deleteTask ->
+                                if (deleteTask.isSuccessful) {
+                                    onComplete()
+                                }
+                                else {
+                                    onFailure("Account deletion failed: ${deleteTask.exception?.message}")
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                onFailure("Account deletion error: $exception")
+                            }
+                    }
+
+                    else {
+                        onFailure("Reauthentication failed: ${reauthentication.exception?.message}")
+                    }
                 }
-            }
-            ?.addOnFailureListener { exception ->
-                onFailure("$exception")
-            }
+
+                .addOnFailureListener { exception ->
+
+                    when (exception) {
+
+                        is FirebaseAuthInvalidCredentialsException -> {
+                            onFailure(DeleteAccountHints.invalidCredentialsException)
+                        }
+
+                        is FirebaseTooManyRequestsException -> {
+                            onFailure(DeleteAccountHints.tooManyRequestsException)
+                        }
+
+                        else -> {
+                            onFailure("An external error occurred, try again later.")
+                        }
+                    }
+                }
+        }
+
+        else {
+            onFailure("No authenticated user found")
+        }
     }
 
     override fun recoverThePassword(
@@ -152,6 +227,65 @@ object FirebaseAuthenticationService: AuthenticationService {
                     failedToSendEmail("${process.exception}")
                 }
             }
+    }
+
+    override fun authenticateViaPassword(
+        password: String,
+        onComplete: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+
+        val user = authentication.currentUser
+
+        if (user != null) {
+
+            val credential = EmailAuthProvider.getCredential(user.email!!, password)
+
+            user.reauthenticate(credential)
+
+                .addOnCompleteListener { reauthentication ->
+
+                    if (reauthentication.isSuccessful) {
+                        onComplete()
+                    }
+
+                    else {
+                        onFailure("Reauthentication failed: ${reauthentication.exception?.message}")
+                    }
+                }
+
+                .addOnFailureListener { exception ->
+                    onFailure("Reauthentication error: $exception")
+                }
+        }
+
+        else {
+            onFailure("No authenticated user found")
+        }
+    }
+
+    override fun changeThePassword(
+        newPassword: String,
+        onComplete: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+
+        val user = authentication.currentUser
+
+        if (user != null) {
+
+            user.updatePassword(newPassword)
+                .addOnSuccessListener {
+                    onComplete()
+                }
+                .addOnFailureListener {
+                    onFailure("Failed to update password, because ${it.cause}")
+                }
+        }
+
+        else {
+            onFailure("No authenticated user found")
+        }
     }
 
     private fun sendEmailToVerifySigningUp(verificationEmailGotSent: (Boolean) -> Unit) {

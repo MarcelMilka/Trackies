@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.Password
@@ -37,11 +39,14 @@ import com.example.trackies.ui.theme.BackgroundColor
 
 @Composable
 fun settings(
+    usersEmail: String,
     onReturnHomeScreen: () -> Unit,
     onChangeEmail: () -> Unit,
     onChangePassword: () -> Unit,
     onDeleteAccount: () -> Unit,
     onChangeLanguage: () -> Unit,
+    onReportInAppBug: () -> Unit,
+    onDisplayInfoAboutThisApp: () -> Unit,
     onLogout: () -> Unit,
 ) {
 
@@ -83,21 +88,23 @@ fun settings(
 
                             textHeadlineMedium(content = "Account")
 
-                            ElementOfSettings(icon = Icons.Rounded.Email, header = "Change e-mail", detail = "marcel.milka.2006@gmail.com") { onChangeEmail() }
+                            elementOfSettings(enabled = false, icon = Icons.Rounded.Email, header = "E-mail", detail = usersEmail) { onChangeEmail() }
 
-                            ElementOfSettings(icon = Icons.Rounded.Password, header = "Change password", detail = null) { onChangePassword() }
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.Password, header = "Change password", detail = null) { onChangePassword() }
 
-                            ElementOfSettings(icon = Icons.Rounded.Delete, header = "Delete account", detail = null) { onDeleteAccount() }
-
-
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.Delete, header = "Delete account", detail = null) { onDeleteAccount() }
 
                             verticalSpacerL()
 
                             textHeadlineMedium(content = "Application")
 
-                            ElementOfSettings(icon = Icons.Rounded.Language, header = "Language", detail = "English") { onChangeLanguage() }
+                            elementOfSettings(enabled = false, icon = Icons.Rounded.Language, header = "Language", detail = "English") { onChangeLanguage() }
 
-                            ElementOfSettings(icon = Icons.Rounded.Logout, header = "Logout", detail = null) { onLogout() }
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.BugReport, header = "Report in-app bug", detail = null) { onReportInAppBug() }
+
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.Info, header = "About this app", detail = null) { onDisplayInfoAboutThisApp() }
+
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.Logout, header = "Logout", detail = null) { onLogout() }
                         }
                     )
                 }
@@ -107,7 +114,7 @@ fun settings(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun ElementOfSettings(icon: ImageVector, header: String, detail: String?, onClick: () -> Unit) {
+@Composable fun elementOfSettings(enabled: Boolean, icon: ImageVector, header: String, detail: String?, onClick: () -> Unit) {
 
     Surface(
 
@@ -116,6 +123,8 @@ fun settings(
             .height(50.dp),
 
         color = BackgroundColor,
+
+        enabled = enabled,
 
         onClick = { onClick() },
 
@@ -150,7 +159,7 @@ fun settings(
                             .height(35.dp),
 
                         horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.Center ,//if (detail != null) {Arrangement.SpaceBetween} else {Arrangement.Center},
+                        verticalArrangement = Arrangement.Center,
 
                         content = {
 

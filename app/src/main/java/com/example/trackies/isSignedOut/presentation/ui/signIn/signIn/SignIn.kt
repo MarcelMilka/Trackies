@@ -1,5 +1,6 @@
-package com.example.trackies.isSignedOut.presentation.ui.signIn
+package com.example.trackies.isSignedOut.presentation.ui.signIn.signIn
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
+import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.sharedUI.customTextFields.EmailInputTextField
 import com.example.trackies.ui.sharedUI.customTextFields.PasswordInputTextField
 import com.example.trackies.ui.theme.BackgroundColor
@@ -30,13 +32,21 @@ import com.example.trackies.ui.theme.Dimensions
 
 @Composable
 fun signIn(
+    emailRelatedError: Boolean,
+    emailRelatedErrorDescription: String,
+
+    passwordRelatedError: Boolean,
+    passwordRelatedErrorDescription: String,
+
+    onHideError: (SignInErrors) -> Unit,
+
     onSignIn: (Credentials) -> Unit,
     onRecoverPassword: () -> Unit
 ) {
 
 //  focus requesters responsible for switching between text fields
-    var emailTextFieldIsActive by remember { mutableStateOf(false) }
     var emailFocusRequester = FocusRequester()
+    var emailTextFieldIsActive by remember { mutableStateOf(false) }
 
     var passwordFocusRequester = FocusRequester()
     var passwordTextFieldIsActive by remember { mutableStateOf(false) }
@@ -85,25 +95,64 @@ fun signIn(
 
                             verticalSpacerM()
 
-                            EmailInputTextField(
-                                insertedValue = {email = it},
-                                focusRequester = emailFocusRequester,
-                                onFocusChanged = {emailTextFieldIsActive = it},
-                                onDone = {
-                                    passwordFocusRequester.requestFocus()
-                                    passwordTextFieldIsActive = true
+                            Column(
+                                modifier = Modifier,
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center,
+                                content = {
+
+                                    EmailInputTextField(
+                                        insertedValue = {
+                                            email = it
+
+                                            if (emailRelatedError) {
+                                                onHideError(SignInErrors.EmailRelatedError)
+                                            }
+                                        },
+                                        focusRequester = emailFocusRequester,
+                                        onFocusChanged = {emailTextFieldIsActive = it},
+                                        onDone = {
+                                            passwordFocusRequester.requestFocus()
+                                            passwordTextFieldIsActive = true
+                                        }
+                                    )
+
+                                    AnimatedVisibility(
+                                        visible = emailRelatedError
+                                    ) {
+                                        textTitleSmall(content = emailRelatedErrorDescription)
+                                    }
                                 }
                             )
 
                             verticalSpacerS()
 
-                            PasswordInputTextField(
-                                insertedValue = {password = it},
-                                assignedFocusRequester = passwordFocusRequester,
-                                onFocusChanged = {},
-                                onDone = {
-                                    passwordFocusRequester.freeFocus()
-                                    passwordTextFieldIsActive = false
+                            Column(
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center,
+                                content = {
+
+                                    PasswordInputTextField(
+                                        insertedValue = {
+                                            password = it
+
+                                            if (passwordRelatedError) {
+                                                onHideError(SignInErrors.PasswordRelatedError)
+                                            }
+                                        },
+                                        assignedFocusRequester = passwordFocusRequester,
+                                        onFocusChanged = {},
+                                        onDone = {
+                                            passwordFocusRequester.freeFocus()
+                                            passwordTextFieldIsActive = false
+                                        }
+                                    )
+
+                                    AnimatedVisibility(
+                                        visible = passwordRelatedError
+                                    ) {
+                                        textTitleSmall(content = passwordRelatedErrorDescription)
+                                    }
                                 }
                             )
 

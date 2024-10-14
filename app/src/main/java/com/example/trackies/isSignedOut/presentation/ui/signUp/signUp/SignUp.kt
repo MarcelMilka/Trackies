@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedOut.presentation.ui.signUp
+package com.example.trackies.isSignedOut.presentation.ui.signUp.signUp
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -21,9 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedOut.buisness.Credentials
 import com.example.trackies.ui.sharedUI.customButtons.buttonChangingColor
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
+import com.example.trackies.ui.sharedUI.customText.dynamicTextTitleSmallWhiteToGreen
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
@@ -33,7 +35,13 @@ import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
 @Composable
-fun signUp(onNavigate: () -> Unit) {
+fun signUp(
+    anErrorOccurred: Boolean,
+    errorDescription: String,
+    onHideError: () -> Unit,
+
+    onSignUp: (Credentials) -> Unit
+) {
 
 //  focus requesters responsible for switching between text fields
     var emailTextFieldIsActive by remember { mutableStateOf(false) }
@@ -46,26 +54,39 @@ fun signUp(onNavigate: () -> Unit) {
 
 //  counters of letters, characters, digits and big letters
     var amountOfLetters by remember { mutableIntStateOf(0) }
-    var amountOfSpecialCharacters by remember { mutableIntStateOf(0) }
-    var amountOfBigLetters by remember { mutableIntStateOf(0) }
-    var amountOfDigits by remember { mutableIntStateOf(0) }
+    var sufficientAmountOfLetters by remember { mutableStateOf(false) }
 
-//  enable/disable the button responsible for signing in
+    var amountOfSpecialCharacters by remember { mutableIntStateOf(0) }
+    var sufficientAmountOfSpecialCharacters by remember { mutableStateOf(false) }
+
+    var amountOfBigLetters by remember { mutableIntStateOf(0) }
+    var sufficientAmountOfBigLetters by remember { mutableStateOf(false) }
+
+    var amountOfDigits by remember { mutableIntStateOf(0) }
+    var sufficientAmountOfDigits by remember { mutableStateOf(false) }
+
     var buttonContinueIsEnabled by remember { mutableStateOf(false) }
-    LaunchedEffect(email, password) {
+    LaunchedEffect(password) {
 
         val specialCharacters = listOf("!", "@", "#", "$", "%", "^", "&", "*", "(", ")")
 
-        amountOfBigLetters = password.count { it.isUpperCase() }
-        amountOfSpecialCharacters = password.count { specialCharacters.contains(it.toString()) }
         amountOfLetters = password.length
-        amountOfDigits = password.count {it.isDigit()}
+        sufficientAmountOfLetters = password.length >= 12
 
-        buttonContinueIsEnabled = email.isNotEmpty() &&
-                amountOfLetters >= 12 &&
-                amountOfSpecialCharacters >= 1 &&
-                amountOfBigLetters >= 1 &&
-                amountOfDigits >= 1
+        amountOfSpecialCharacters = password.count {specialCharacters.contains(it.toString())}
+        sufficientAmountOfSpecialCharacters = password.count {specialCharacters.contains(it.toString())} >= 1
+
+        amountOfBigLetters = password.count { it.isUpperCase() }
+        sufficientAmountOfBigLetters = password.count { it.isUpperCase() } >= 1
+
+        amountOfDigits = password.count {it.isDigit()}
+        sufficientAmountOfDigits = password.count {it.isDigit()} >= 1
+
+        buttonContinueIsEnabled =
+            amountOfLetters >= 12 &&
+                    amountOfSpecialCharacters >= 1 &&
+                    amountOfBigLetters >= 1 &&
+                    amountOfDigits >= 1
     }
 
     val emailFocusRequester = remember { FocusRequester() }
@@ -111,13 +132,33 @@ fun signUp(onNavigate: () -> Unit) {
 
                             verticalSpacerM()
 
-                            EmailInputTextField(
-                                insertedValue = {email = it},
-                                focusRequester = emailFocusRequester,
-                                onFocusChanged = {emailTextFieldIsActive = it},
-                                onDone = {
-                                    passwordFocusRequester.requestFocus()
-                                    passwordTextFieldIsActive = true
+                            Column(
+                                modifier = Modifier,
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center,
+                                content = {
+
+                                    EmailInputTextField(
+                                        insertedValue = {
+                                            email = it
+
+                                            if (anErrorOccurred) {
+                                                onHideError()
+                                            }
+                                        },
+                                        focusRequester = emailFocusRequester,
+                                        onFocusChanged = {emailTextFieldIsActive = it},
+                                        onDone = {
+                                            passwordFocusRequester.requestFocus()
+                                            passwordTextFieldIsActive = true
+                                        }
+                                    )
+
+                                    AnimatedVisibility(
+                                        visible = anErrorOccurred
+                                    ) {
+                                        textTitleSmall(content = errorDescription)
+                                    }
                                 }
                             )
 
@@ -150,10 +191,10 @@ fun signUp(onNavigate: () -> Unit) {
                                     content = {
 
                                         textTitleMedium( content = "Password requirements:")
-                                        textTitleSmall( content = "$amountOfLetters/12 characters")
-                                        textTitleSmall( content = "$amountOfSpecialCharacters/1 special character (! @ # $ % ^ & * ( ) )")
-                                        textTitleSmall( content = "$amountOfBigLetters/1 big letter")
-                                        textTitleSmall( content = "$amountOfDigits/1 digit")
+                                        dynamicTextTitleSmallWhiteToGreen(isGreen = sufficientAmountOfLetters, content = "$amountOfLetters/12 characters")
+                                        dynamicTextTitleSmallWhiteToGreen(isGreen = sufficientAmountOfSpecialCharacters, content = "$amountOfSpecialCharacters/1 special character (! @ # $ % ^ & * ( ) )")
+                                        dynamicTextTitleSmallWhiteToGreen(isGreen = sufficientAmountOfBigLetters, content = "$amountOfBigLetters/1 big letter")
+                                        dynamicTextTitleSmallWhiteToGreen(isGreen = sufficientAmountOfDigits, content = "$amountOfDigits/1 digit")
                                     }
                                 )
                             }
@@ -163,7 +204,14 @@ fun signUp(onNavigate: () -> Unit) {
                             buttonChangingColor(
                                 textToDisplay = "Continue",
                                 isEnabled = buttonContinueIsEnabled,
-                                onClick = {onNavigate()}
+                                onClick = {
+                                    onSignUp(
+                                        Credentials(
+                                            email = email,
+                                            password = password
+                                        )
+                                    )
+                                }
                             )
                         }
                     )
