@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.trackies.navigation.Destinations
 import com.example.trackies.ui.sharedUI.customButtons.BigPrimaryButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
@@ -19,7 +20,10 @@ import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.Dimensions.heightOfUpperFragment
 
 @Composable
-fun welcomeScreen(onNavigate: (String) -> Unit) {
+fun welcomeScreen(
+    onNavigateSignUp:() -> Unit,
+    onNavigateSignIn:() -> Unit,
+) {
 
 //  Holds everything
     Box(
@@ -59,11 +63,11 @@ fun welcomeScreen(onNavigate: (String) -> Unit) {
 
                         content = {
 
-                            BigPrimaryButton(textToDisplay = "Sign up") { onNavigate("SignUpRoute") }
+                            BigPrimaryButton(textToDisplay = "Sign up") { onNavigateSignUp() }
 
                             verticalSpacerS()
 
-                            BigPrimaryButton(textToDisplay = "Sign in") { onNavigate("SignInRoute") }
+                            BigPrimaryButton(textToDisplay = "Sign in") { onNavigateSignIn() }
                         }
                     )
                 }

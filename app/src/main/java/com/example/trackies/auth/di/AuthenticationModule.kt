@@ -1,7 +1,7 @@
-package com.example.trackies.isSignedOut.di
+package com.example.trackies.auth.di
 
-import com.example.trackies.isSignedOut.data.AuthenticationService
-import com.example.trackies.isSignedOut.data.FirebaseAuthenticationService
+import com.example.trackies.auth.data.AuthenticationService
+import com.example.trackies.auth.data.FirebaseAuthenticationService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

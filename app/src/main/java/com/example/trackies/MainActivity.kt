@@ -24,8 +24,8 @@ import com.example.trackies.isSignedIn.deleteAccount.verifyYourIdentityToDeleteA
 import com.example.trackies.isSignedIn.deleteAccount.yourAccountGotDeleted
 import com.example.trackies.isSignedIn.changePassword.verifyYourIdentityToChangePassword
 import com.example.trackies.isSignedIn.changePassword.yourPasswordGotChanged
-import com.example.trackies.isSignedOut.buisness.Destinations
-import com.example.trackies.isSignedOut.data.AuthenticationService
+import com.example.trackies.navigation.Destinations
+import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
 import com.example.trackies.isSignedOut.presentation.ui.signIn.information
@@ -57,20 +57,27 @@ class MainActivity : ComponentActivity() {
 
             NavHost(navController = navigationController, startDestination = authenticationService.initialDestination) {
 
-                navigation(route = "SignedOut", startDestination = "WelcomeScreen") {
+                navigation(route = Destinations.IsSignedOut, startDestination = Destinations.WelcomeScreen) {
 
                     composable(
-                        route = "WelcomeScreen",
+                        route = Destinations.WelcomeScreen,
                         enterTransition = {EnterTransition.None },
                         exitTransition = { ExitTransition.None }
                     ) {
-                        welcomeScreen { navigationController.navigate(it) }
+                        welcomeScreen (
+                            onNavigateSignUp = {
+                                navigationController.navigate(route = Destinations.SignUpRoute)
+                            },
+                            onNavigateSignIn = {
+                                navigationController.navigate(route = Destinations.SignUpRoute)
+                            }
+                        )
                     }
 
-                    navigation(route = "SignUpRoute", startDestination = "SignUp") {
+                    navigation(route = Destinations.SignUpRoute, startDestination = Destinations.SignUp) {
 
                         composable(
-                            route = "SignUp",
+                            route = Destinations.SignUp,
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
@@ -110,14 +117,14 @@ class MainActivity : ComponentActivity() {
                                         },
                                         verificationEmailGotSent = { waitingForAuthentication ->
 
-                                            if (!waitingForAuthentication) {
-                                                navigationController.navigate("Authenticate") {
-                                                    popUpTo("WelcomeScreen") {inclusive = false}
+                                            if (waitingForAuthentication) {
+                                                navigationController.navigate(route = Destinations.Authenticate) {
+                                                    popUpTo(route = Destinations.WelcomeScreen) {inclusive = false}
                                                 }
                                             }
                                             else {
-                                                navigationController.navigate("Authenticate") {
-                                                    popUpTo("WelcomeScreen") {inclusive = false}
+                                                navigationController.navigate(route = Destinations.Authenticate) {
+                                                    popUpTo(route = Destinations.WelcomeScreen) {inclusive = false}
                                                 }
                                             }
                                         }
@@ -127,34 +134,34 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            route = "Authenticate",
+                            route = Destinations.Authenticate,
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
                             authenticate {
-                                navigationController.navigate("SignInRoute") {
-                                    popUpTo(route = "WelcomeScreen") {inclusive = false}
+                                navigationController.navigate(route = Destinations.SignInRoute) {
+                                    popUpTo(route = Destinations.WelcomeScreen) {inclusive = false}
                                 }
                             }
                         }
 
                         composable(
-                            route = "AuthenticationEmailWasNotSent",
+                            route = Destinations.AuthenticationEmailWasNotSent,
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
                             authenticationEmailWasNotSent {
-                                navigationController.navigate("SignInRoute") {
-                                    popUpTo(route = "WelcomeScreen") {inclusive = false}
+                                navigationController.navigate(route = Destinations.WelcomeScreen) {
+                                    popUpTo(route = Destinations.WelcomeScreen) {inclusive = false}
                                 }
                             }
                         }
                     }
 
-                    navigation(route = "SignInRoute", startDestination = "SignIn") {
+                    navigation(route = Destinations.SignInRoute, startDestination = Destinations.SignIn) {
 
                         composable(
-                            route = "SignIn",
+                            route = Destinations.SignIn,
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
@@ -221,21 +228,22 @@ class MainActivity : ComponentActivity() {
                                                 passwordRelatedErrorDescription = SignInHints.externalError
                                             }
                                         },
-
                                         onSucceededToSignIn = { uid ->
 
-                                            navigationController.navigate("SignedIn") {
-                                                popUpTo(Destinations.isSignedOut) { inclusive = true }
+                                            navigationController.navigate(Destinations.IsSignedIn) {
+                                                popUpTo(Destinations.IsSignedOut) { inclusive = true }
                                             }
                                         }
                                     )
                                 },
-                                onRecoverPassword = { navigationController.navigate("RecoverPassword") }
+                                onRecoverPassword = {
+                                    navigationController.navigate(route = Destinations.RecoverPassword)
+                                }
                             )
                         }
 
                         composable(
-                            route = "RecoverPassword",
+                            route = Destinations.RecoverPassword,
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
@@ -243,8 +251,8 @@ class MainActivity : ComponentActivity() {
                                 authenticationService.recoverThePassword(
                                     email = email,
                                     successfullySentEmail = {
-                                        navigationController.navigate("Information") {
-                                            popUpTo(route = "SignIn") {inclusive = false}}
+                                        navigationController.navigate(route = Destinations.Information) {
+                                            popUpTo(route = Destinations.SignIn) {inclusive = false}}
                                     },
                                     failedToSendEmail = {
                                         Log.d("Halla!", it)
@@ -254,33 +262,34 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            route = "Information",
+                            route = Destinations.Information,
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
-                            information{ navigationController.navigate("SignIn") {
-                                popUpTo(route = "SignIn") {inclusive = true}
+                            information{
+                                navigationController.navigate(route = Destinations.SignIn) {
+                                    popUpTo(route = Destinations.SignIn) {inclusive = true}
                                 }
                             }
                         }
                     }
                 }
 
-                navigation(route = Destinations.isSignedIn, startDestination = "HomeScreen") {
+                navigation(route = Destinations.IsSignedIn, startDestination = Destinations.HomeScreen) {
 
                     composable(
-                        route = "HomeScreen",
+                        route = Destinations.HomeScreen,
                         enterTransition = {EnterTransition.None},
                         exitTransition = {ExitTransition.None}
                     ) {
 
                         homeScreen(
-                            onOpenSettings = {navigationController.navigate(route = Destinations.settings)}
+                            onOpenSettings = {navigationController.navigate(route = Destinations.Settings)}
                         )
                     }
 
                     composable(
-                        route = Destinations.settings,
+                        route = Destinations.Settings,
                         enterTransition = {EnterTransition.None},
                         exitTransition = {ExitTransition.None}
                     ) {
@@ -292,22 +301,19 @@ class MainActivity : ComponentActivity() {
                             },
                             onChangeEmail = {},
                             onChangePassword = {
-                                navigationController.navigate(route = Destinations.changePassword)
+                                navigationController.navigate(route = Destinations.ChangePassword)
                             },
                             onDeleteAccount = {
-                                navigationController.navigate(route = Destinations.deleteAccount)
+                                navigationController.navigate(route = Destinations.DeleteAccount)
                             },
                             onChangeLanguage = {},
-
                             onReportInAppBug = {},
-
                             onDisplayInfoAboutThisApp = {},
-
                             onLogout = {
                                 authenticationService.signOut(
                                     onComplete = {
-                                        navigationController.navigate(route = Destinations.isSignedOut) {
-                                            popUpTo(route = Destinations.isSignedIn) {inclusive = false}
+                                        navigationController.navigate(route = Destinations.IsSignedOut) {
+                                            popUpTo(route = Destinations.IsSignedIn) {inclusive = false}
                                         }
                                     },
 
@@ -317,14 +323,14 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    navigation(route = Destinations.deleteAccount, startDestination = Destinations.confirmDeletionOfTheAccount) {
+                    navigation(route = Destinations.DeleteAccount, startDestination = Destinations.ConfirmDeletionOfTheAccount) {
 
-                        dialog(route = Destinations.confirmDeletionOfTheAccount) {
+                        dialog(route = Destinations.ConfirmDeletionOfTheAccount) {
 
                             confirmDeletionOfTheAccount(
                                 onConfirm = {
                                     navigationController.navigateUp()
-                                    navigationController.navigate("VerifyYourIdentity")
+                                    navigationController.navigate(route = Destinations.VerifyYourIdentity)
                                 },
                                 onDecline = {
                                     navigationController.navigateUp()
@@ -332,7 +338,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        dialog(route = Destinations.verifyYourIdentity) {
+                        dialog(route = Destinations.VerifyYourIdentity) {
 
                             var anErrorOccurred by remember { mutableStateOf(false) }
                             var errorMessage by remember { mutableStateOf("") }
@@ -347,12 +353,11 @@ class MainActivity : ComponentActivity() {
                                     authenticationService.deleteAccount(
                                         password = it,
                                         onComplete = {
-                                            navigationController.navigate(route = "YourAccountGotDeleted") {
-                                                popUpTo(route = "YourAccountGotDeleted") {inclusive = true}
+                                            navigationController.navigate(route = Destinations.YourAccountGotDeleted) {
+                                                popUpTo(route = Destinations.YourAccountGotDeleted) {inclusive = true}
                                             }
                                         },
                                         onFailure = {
-                                            Log.d("Halla!", it)
                                             errorMessage = it
                                             anErrorOccurred = true
                                         }
@@ -360,8 +365,8 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onDecline = {
-                                    navigationController.navigate(Destinations.settings) {
-                                        popUpTo(Destinations.settings) {inclusive = true}
+                                    navigationController.navigate(Destinations.Settings) {
+                                        popUpTo(Destinations.Settings) {inclusive = true}
                                     }
                                 },
 
@@ -371,19 +376,19 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable(route = "YourAccountGotDeleted") {
+                        composable(route = Destinations.YourAccountGotDeleted) {
 
                             yourAccountGotDeleted {
-                                navigationController.navigate(route = Destinations.isSignedOut) {
+                                navigationController.navigate(route = Destinations.IsSignedOut) {
                                     popUpTo(0) { inclusive = true }
                                 }
                             }
                         }
                     }
 
-                    navigation(route = Destinations.changePassword, startDestination = Destinations.verifyYourIdentityToChangePassword) {
+                    navigation(route = Destinations.ChangePassword, startDestination = Destinations.VerifyYourIdentityToChangePassword) {
 
-                        dialog(route = Destinations.verifyYourIdentityToChangePassword) {
+                        dialog(route = Destinations.VerifyYourIdentityToChangePassword) {
 
                             var passwordIsIncorrect by remember { mutableStateOf(false) }
 
@@ -395,7 +400,7 @@ class MainActivity : ComponentActivity() {
                                     authenticationService.authenticateViaPassword(
                                         password = it,
                                         onComplete = {
-                                            navigationController.navigate(route = Destinations.insertNewPassword)
+                                            navigationController.navigate(route = Destinations.InsertNewPassword)
                                         },
                                         onFailure = {
                                             passwordIsIncorrect = true
@@ -404,8 +409,8 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onDecline = {
-                                    navigationController.navigate(route = Destinations.settings) {
-                                        popUpTo(route = Destinations.settings) {inclusive = true}
+                                    navigationController.navigate(route = Destinations.Settings) {
+                                        popUpTo(route = Destinations.Settings) {inclusive = true}
                                     }
                                 },
 
@@ -415,7 +420,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        dialog(route = Destinations.insertNewPassword) {
+                        dialog(route = Destinations.InsertNewPassword) {
 
                             var passwordIsIncorrect by remember { mutableStateOf(false) }
 
@@ -425,14 +430,14 @@ class MainActivity : ComponentActivity() {
                                     authenticationService.changeThePassword(
                                         newPassword = it,
                                         onComplete = {
-                                            navigationController.navigate(route = Destinations.yourPasswordGotChanged)
+                                            navigationController.navigate(route = Destinations.YourPasswordGotChanged)
                                         },
                                         onFailure = {}
                                     )
                                 },
                                 onDecline = {
-                                    navigationController.navigate(route = Destinations.settings) {
-                                        popUpTo(route = Destinations.settings) {inclusive = true}
+                                    navigationController.navigate(route = Destinations.Settings) {
+                                        popUpTo(route = Destinations.Settings) {inclusive = true}
                                     }
                                 },
                                 onHideNotification = {
@@ -442,14 +447,14 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            route = Destinations.yourPasswordGotChanged,
+                            route = Destinations.YourPasswordGotChanged,
                             enterTransition = {EnterTransition.None},
                             exitTransition = {ExitTransition.None}
                         ) {
 
                             yourPasswordGotChanged {
-                                navigationController.navigate(route = Destinations.settings) {
-                                    popUpTo(route = Destinations.settings) {inclusive = true}
+                                navigationController.navigate(route = Destinations.Settings) {
+                                    popUpTo(route = Destinations.Settings) {inclusive = true}
                                 }
                             }
                         }

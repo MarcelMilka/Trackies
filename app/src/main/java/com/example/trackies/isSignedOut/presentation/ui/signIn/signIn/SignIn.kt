@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import com.example.trackies.isSignedOut.buisness.Credentials
+import com.example.trackies.auth.buisness.Credentials
 import com.example.trackies.ui.sharedUI.customButtons.SmallStaticSeondaryButton
 import com.example.trackies.ui.sharedUI.customButtons.buttonChangingColor
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
