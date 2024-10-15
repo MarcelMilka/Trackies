@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedOut.data
+package com.example.trackies.auth.data
 
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors

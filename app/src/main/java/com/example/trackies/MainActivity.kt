@@ -24,8 +24,8 @@ import com.example.trackies.isSignedIn.deleteAccount.verifyYourIdentityToDeleteA
 import com.example.trackies.isSignedIn.deleteAccount.yourAccountGotDeleted
 import com.example.trackies.isSignedIn.changePassword.verifyYourIdentityToChangePassword
 import com.example.trackies.isSignedIn.changePassword.yourPasswordGotChanged
-import com.example.trackies.isSignedOut.buisness.Destinations
-import com.example.trackies.isSignedOut.data.AuthenticationService
+import com.example.trackies.navigation.Destinations
+import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
 import com.example.trackies.isSignedOut.presentation.ui.signIn.information

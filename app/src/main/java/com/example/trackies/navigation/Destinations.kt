@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedOut.buisness
+package com.example.trackies.navigation
 
 object Destinations {
 

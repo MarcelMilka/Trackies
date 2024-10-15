@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedOut.buisness
+package com.example.trackies.auth.buisness
 
 data class Credentials(
     val email: String,
