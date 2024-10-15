@@ -21,7 +21,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.trackies.di.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -95,6 +95,17 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 
+    // For Robolectric tests.
+
+//  Testing dependency injection with hilt
+
+//      For Robolectric tests.
+        testImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+        kaptTest("com.google.dagger:hilt-android-compiler:2.51.1")
+
+//      For instrumented tests.
+        androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+        kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
 }
 
 kapt {

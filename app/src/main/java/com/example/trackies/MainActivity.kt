@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
                                 navigationController.navigate(route = Destinations.SignUpRoute)
                             },
                             onNavigateSignIn = {
-                                navigationController.navigate(route = Destinations.SignUpRoute)
+                                navigationController.navigate(route = Destinations.SignInRoute)
                             }
                         )
                     }
