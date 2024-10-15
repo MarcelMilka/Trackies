@@ -2,14 +2,26 @@ package com.example.trackies.navigation
 
 object Destinations {
 
-    val isSignedOut = "SignedOut"
-    val isSignedIn = "SignedIn"
+    val IsSignedOut = "SignedOut"
 
-    val settings = "Settings"
+        val WelcomeScren = "WelcomeScreen"
 
-    val deleteAccount = "DeleteAccount"
-        val confirmDeletionOfTheAccount = "ConfirmDeletionOfTheAccount"
-        val verifyYourIdentity = "VerifyYourIdentity"
+//      Sub-navigation to sign up
+        val SignUpRoute = "SignUpRoute"
+            val SignUp = "SignUp"
+
+
+
+//      Sub-navigation to sign up
+
+
+    val IsSignedIn = "SignedIn"
+
+        val Settings = "Settings"
+
+        val deleteAccount = "DeleteAccount"
+            val confirmDeletionOfTheAccount = "ConfirmDeletionOfTheAccount"
+            val verifyYourIdentity = "VerifyYourIdentity"
 
     val changePassword = "ChangePassword"
         val verifyYourIdentityToChangePassword = "VerifyYourIdentityToChangePassword"

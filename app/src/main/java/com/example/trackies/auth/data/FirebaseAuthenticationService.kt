@@ -17,13 +17,13 @@ object FirebaseAuthenticationService: AuthenticationService {
 
     private val authentication = Firebase.auth
 
-    override var initialDestination: String = Destinations.isSignedOut
+    override var initialDestination: String = Destinations.IsSignedOut
         get() {
 
             return if (getSignedInUser() == null) {
-                Destinations.isSignedOut
+                Destinations.IsSignedOut
             } else {
-                Destinations.isSignedIn
+                Destinations.IsSignedIn
             }
         }
 

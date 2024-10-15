@@ -57,20 +57,20 @@ class MainActivity : ComponentActivity() {
 
             NavHost(navController = navigationController, startDestination = authenticationService.initialDestination) {
 
-                navigation(route = "SignedOut", startDestination = "WelcomeScreen") {
+                navigation(route = Destinations.IsSignedOut, startDestination = Destinations.WelcomeScren) {
 
                     composable(
-                        route = "WelcomeScreen",
+                        route = Destinations.WelcomeScren,
                         enterTransition = {EnterTransition.None },
                         exitTransition = { ExitTransition.None }
                     ) {
                         welcomeScreen { navigationController.navigate(it) }
                     }
 
-                    navigation(route = "SignUpRoute", startDestination = "SignUp") {
+                    navigation(route = Destinations.SignUpRoute, startDestination = Destinations.SignUp) {
 
                         composable(
-                            route = "SignUp",
+                            route = Destinations.SignUp,
                             enterTransition = {EnterTransition.None },
                             exitTransition = { ExitTransition.None }
                         ) {
@@ -112,12 +112,12 @@ class MainActivity : ComponentActivity() {
 
                                             if (!waitingForAuthentication) {
                                                 navigationController.navigate("Authenticate") {
-                                                    popUpTo("WelcomeScreen") {inclusive = false}
+                                                    popUpTo(route = Destinations.WelcomeScren) {inclusive = false}
                                                 }
                                             }
                                             else {
                                                 navigationController.navigate("Authenticate") {
-                                                    popUpTo("WelcomeScreen") {inclusive = false}
+                                                    popUpTo(route = Destinations.WelcomeScren) {inclusive = false}
                                                 }
                                             }
                                         }
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             authenticate {
                                 navigationController.navigate("SignInRoute") {
-                                    popUpTo(route = "WelcomeScreen") {inclusive = false}
+                                    popUpTo(route = Destinations.WelcomeScren) {inclusive = false}
                                 }
                             }
                         }
@@ -145,7 +145,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             authenticationEmailWasNotSent {
                                 navigationController.navigate("SignInRoute") {
-                                    popUpTo(route = "WelcomeScreen") {inclusive = false}
+                                    popUpTo(route = Destinations.WelcomeScren) {inclusive = false}
                                 }
                             }
                         }
@@ -225,7 +225,7 @@ class MainActivity : ComponentActivity() {
                                         onSucceededToSignIn = { uid ->
 
                                             navigationController.navigate("SignedIn") {
-                                                popUpTo(Destinations.isSignedOut) { inclusive = true }
+                                                popUpTo(Destinations.IsSignedOut) { inclusive = true }
                                             }
                                         }
                                     )
@@ -266,7 +266,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                navigation(route = Destinations.isSignedIn, startDestination = "HomeScreen") {
+                navigation(route = Destinations.IsSignedIn, startDestination = "HomeScreen") {
 
                     composable(
                         route = "HomeScreen",
@@ -275,12 +275,12 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         homeScreen(
-                            onOpenSettings = {navigationController.navigate(route = Destinations.settings)}
+                            onOpenSettings = {navigationController.navigate(route = Destinations.Settings)}
                         )
                     }
 
                     composable(
-                        route = Destinations.settings,
+                        route = Destinations.Settings,
                         enterTransition = {EnterTransition.None},
                         exitTransition = {ExitTransition.None}
                     ) {
@@ -306,8 +306,8 @@ class MainActivity : ComponentActivity() {
                             onLogout = {
                                 authenticationService.signOut(
                                     onComplete = {
-                                        navigationController.navigate(route = Destinations.isSignedOut) {
-                                            popUpTo(route = Destinations.isSignedIn) {inclusive = false}
+                                        navigationController.navigate(route = Destinations.IsSignedOut) {
+                                            popUpTo(route = Destinations.IsSignedIn) {inclusive = false}
                                         }
                                     },
 
@@ -360,8 +360,8 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onDecline = {
-                                    navigationController.navigate(Destinations.settings) {
-                                        popUpTo(Destinations.settings) {inclusive = true}
+                                    navigationController.navigate(Destinations.Settings) {
+                                        popUpTo(Destinations.Settings) {inclusive = true}
                                     }
                                 },
 
@@ -374,7 +374,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = "YourAccountGotDeleted") {
 
                             yourAccountGotDeleted {
-                                navigationController.navigate(route = Destinations.isSignedOut) {
+                                navigationController.navigate(route = Destinations.IsSignedOut) {
                                     popUpTo(0) { inclusive = true }
                                 }
                             }
@@ -404,8 +404,8 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onDecline = {
-                                    navigationController.navigate(route = Destinations.settings) {
-                                        popUpTo(route = Destinations.settings) {inclusive = true}
+                                    navigationController.navigate(route = Destinations.Settings) {
+                                        popUpTo(route = Destinations.Settings) {inclusive = true}
                                     }
                                 },
 
@@ -431,8 +431,8 @@ class MainActivity : ComponentActivity() {
                                     )
                                 },
                                 onDecline = {
-                                    navigationController.navigate(route = Destinations.settings) {
-                                        popUpTo(route = Destinations.settings) {inclusive = true}
+                                    navigationController.navigate(route = Destinations.Settings) {
+                                        popUpTo(route = Destinations.Settings) {inclusive = true}
                                     }
                                 },
                                 onHideNotification = {
@@ -448,8 +448,8 @@ class MainActivity : ComponentActivity() {
                         ) {
 
                             yourPasswordGotChanged {
-                                navigationController.navigate(route = Destinations.settings) {
-                                    popUpTo(route = Destinations.settings) {inclusive = true}
+                                navigationController.navigate(route = Destinations.Settings) {
+                                    popUpTo(route = Destinations.Settings) {inclusive = true}
                                 }
                             }
                         }
