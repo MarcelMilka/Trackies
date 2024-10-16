@@ -18,5 +18,6 @@ object Dimensions {
 
 //  Rounded corners
     val roundedCornersOfBigElements = 20.dp
+    val roundedCornersOfMediumElements = 10.dp
     val roundedCornersOfSmallElements = 5.dp
 }

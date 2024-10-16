@@ -13,8 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingText
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.regularityChartLoading
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.rowWithRadioButtonsLoading
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonAddAnotherTrackie
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonShowAllTrackies
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
 import com.example.trackies.ui.sharedUI.customButtons.IconButtonToNavigateBetweenActivities
-import com.example.trackies.ui.sharedUI.customText.textTitleMedium
+import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
+import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.theme.BackgroundColor
 
 @Composable
@@ -49,6 +56,7 @@ fun homeScreen(
 
                 content = {
 
+//                  Upper part
                     Column(
 
                         modifier = Modifier
@@ -60,68 +68,28 @@ fun homeScreen(
                         content = {
 
                             IconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Person) { onOpenSettings() }
-//
-//                            Spacer40()
-//
-//                            when (uiState) {
-//
-//                                HomeScreenViewState.Loading -> {
-//
-//                                    Box(
-//
-//                                        modifier = Modifier
-//                                            .fillMaxWidth(0.80f)
-//                                            .height(30.dp)
-//                                            .background(
-//
-//                                                color = SecondaryColor,
-//                                                shape = RoundedCornerShape(20.dp)
-//                                            )
-//                                    )
-//
-//                                    Spacer5()
-//
-//                                    PreviewOfListOfTrackiesLoading()
-//
-//                                    Spacer5()
-//
-//                                    LoadingButtonShowAllTrackies()
-//
-//                                    Spacer5()
-//
-//                                    LoadingButtonAddAnotherTrackie()
-//                                }
-//
-//                                is HomeScreenViewState.LoadedSuccessfully -> {
-//
-//                                    MediumHeader(content = "Your today's trackies")
-//
-//                                    Spacer5()
-//
-//                                    PreviewOfListOfTrackiesLoadedSuccessfully(
-//                                        heightOfHomeScreenLazyColumn = heightOfHomeScreenLazyColumn,
-//                                        uiState = uiState,
-//
-//                                        onCheck = { onMarkTrackieAsIngestedForToday(it) },
-//                                        onDisplayDetails = { onDisplayDetailedTrackie(it) }
-//                                    )
-//
-//                                    Spacer5()
-//
-//                                    ButtonShowAllTrackies { onShowAllTrackies() }
-//
-//                                    Spacer5()
-//
-//                                    ButtonAddAnotherTrackie { onAddNewTrackie() }
-//                                }
-//
-//                                HomeScreenViewState.FailedToLoadData -> {}
-//                            }
-//
-//                            Spacer40()
+
+                            verticalSpacerL()
+
+                            loadingText()
+
+                            verticalSpacerS()
+
+                            previewOfListOfTrackiesLoading()
+
+                            verticalSpacerS()
+
+                            loadingButtonShowAllTrackies()
+
+                            verticalSpacerS()
+
+                            loadingButtonAddAnotherTrackie()
+
+                            verticalSpacerL()
                         }
                     )
 
+//                  Lower part
                     Column(
 
                         modifier = Modifier
@@ -132,48 +100,15 @@ fun homeScreen(
 
                         content = {
 
-                            textTitleMedium("Hello!")
+                            loadingText()
 
-//                            when (uiState) {
-//
-//                                HomeScreenViewState.Loading -> {
-//
-//                                    Box(
-//
-//                                        modifier = Modifier
-//                                            .fillMaxWidth(0.80f)
-//                                            .height(30.dp)
-//                                            .background(
-//
-//                                                color = SecondaryColor,
-//                                                shape = RoundedCornerShape(20.dp)
-//                                            )
-//                                    )
-//
-//                                    Spacer5()
-//
-//                                    RowWithRadioButtonsLoading()
-//
-//                                    Spacer5()
-//
-//                                    RegularityChartLoading()
-//                                }
-//
-//                                is HomeScreenViewState.LoadedSuccessfully -> {
-//
-//                                    MediumHeader(content = "Regularity")
-//
-//                                    Spacer5()
-//
-//                                    RowWithRadioButtonsLoadedSuccessfully(graphToDisplay = typeOfHomeScreenGraphToDisplay) { onChangeGraph(it) }
-//
-//                                    Spacer5()
-//
-//                                    RegularityChartLoadedSuccessFully(uiState = uiState)
-//                                }
-//
-//                                HomeScreenViewState.FailedToLoadData -> {}
-//                            }
+                            verticalSpacerS()
+
+                            rowWithRadioButtonsLoading()
+
+                            verticalSpacerS()
+
+                            regularityChartLoading()
                         }
                     )
                 }
