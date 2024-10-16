@@ -287,8 +287,6 @@ class MainActivity : ComponentActivity() {
 
                         val homeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
 
-                        homeScreenViewModel
-
                         homeScreen(
                             onOpenSettings = {navigationController.navigate(route = Destinations.Settings)}
                         )

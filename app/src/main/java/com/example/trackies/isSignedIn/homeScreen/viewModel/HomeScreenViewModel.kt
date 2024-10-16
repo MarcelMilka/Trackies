@@ -12,6 +12,6 @@ class HomeScreenViewModel @Inject constructor(
 ): ViewModel() {
 
     init {
-        Log.d("Halla!", "HomeScreenViewModel, ${this.repository.uid()}")
+        repository.firstTimeInTheApp {}
     }
 }
