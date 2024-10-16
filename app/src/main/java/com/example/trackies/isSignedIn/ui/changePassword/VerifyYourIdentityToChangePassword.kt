@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.deleteAccount
+package com.example.trackies.isSignedIn.ui.changePassword
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -32,16 +32,14 @@ import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
 
 @Composable
-fun verifyYourIdentityToDeleteAccount(
-    anErrorOccurred: Boolean,
-    errorMessage: String,
-
+fun verifyYourIdentityToChangePassword(
+    passwordIsIncorrect: Boolean,
     onConfirm: (String) -> Unit,
     onDecline: () -> Unit,
     onHideNotification: () -> Unit
 ) {
 
-    var password by remember { mutableStateOf("") }
+    var currentPassword by remember { mutableStateOf("") }
     var focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(true) {
@@ -92,7 +90,7 @@ fun verifyYourIdentityToDeleteAccount(
                                 content = {
 
                                     Column {
-                                        textTitleMedium(content = "Verify your identity to delete the account.")
+                                        textTitleMedium(content = "Verify your identity to change the password.")
                                     }
 
                                     Column {
@@ -107,9 +105,9 @@ fun verifyYourIdentityToDeleteAccount(
 
                                                 PasswordInputTextField(
                                                     insertedValue = {
-                                                        password = it
+                                                        currentPassword = it
 
-                                                        if (anErrorOccurred) {
+                                                        if (passwordIsIncorrect) {
                                                             onHideNotification()
                                                         }
                                                     },
@@ -123,10 +121,10 @@ fun verifyYourIdentityToDeleteAccount(
                                         verticalSpacerS()
 
                                         AnimatedVisibility(
-                                            visible = anErrorOccurred
-                                            ) {
-                                                textTitleSmall(content = errorMessage)
-                                            }
+                                            visible = passwordIsIncorrect
+                                        ) {
+                                            textTitleSmall(content = "You inserted wrong password.")
+                                        }
                                     }
 
                                     Row (
@@ -136,9 +134,9 @@ fun verifyYourIdentityToDeleteAccount(
 
                                         mediumButtonChangingColor(
                                             textToDisplay = "Verify",
-                                            isEnabled = password != "",
+                                            isEnabled = currentPassword != "",
                                             onClick = {
-                                                onConfirm(password)
+                                                onConfirm(currentPassword)
                                             }
                                         )
 

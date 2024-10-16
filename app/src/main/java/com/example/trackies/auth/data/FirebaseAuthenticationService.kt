@@ -1,7 +1,7 @@
 package com.example.trackies.auth.data
 
 import android.util.Patterns
-import com.example.trackies.isSignedIn.deleteAccount.DeleteAccountHints
+import com.example.trackies.isSignedIn.ui.deleteAccount.DeleteAccountHints
 import com.example.trackies.navigation.Destinations
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrors
@@ -15,7 +15,7 @@ import com.google.firebase.ktx.Firebase
 
 object FirebaseAuthenticationService: AuthenticationService {
 
-    private val authentication = Firebase.auth
+    private var authentication = Firebase.auth
 
     override var initialDestination: String = Destinations.IsSignedOut
         get() {

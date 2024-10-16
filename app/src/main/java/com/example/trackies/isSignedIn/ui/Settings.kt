@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn
+package com.example.trackies.isSignedIn.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn
+package com.example.trackies.isSignedIn.homeScreen.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
@@ -18,8 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.sharedUI.customButtons.IconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.SecondaryColor
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun homeScreen(

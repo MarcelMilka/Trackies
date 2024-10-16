@@ -11,21 +11,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.trackies.isSignedIn.changePassword.insertNewPassword
-import com.example.trackies.isSignedIn.deleteAccount.confirmDeletionOfTheAccount
-import com.example.trackies.isSignedIn.homeScreen
-import com.example.trackies.isSignedIn.settings
-import com.example.trackies.isSignedIn.deleteAccount.verifyYourIdentityToDeleteAccount
-import com.example.trackies.isSignedIn.deleteAccount.yourAccountGotDeleted
-import com.example.trackies.isSignedIn.changePassword.verifyYourIdentityToChangePassword
-import com.example.trackies.isSignedIn.changePassword.yourPasswordGotChanged
+import com.example.trackies.isSignedIn.ui.changePassword.insertNewPassword
+import com.example.trackies.isSignedIn.ui.deleteAccount.confirmDeletionOfTheAccount
+import com.example.trackies.isSignedIn.homeScreen.ui.homeScreen
+import com.example.trackies.isSignedIn.ui.settings
+import com.example.trackies.isSignedIn.ui.deleteAccount.verifyYourIdentityToDeleteAccount
+import com.example.trackies.isSignedIn.ui.deleteAccount.yourAccountGotDeleted
+import com.example.trackies.isSignedIn.ui.changePassword.verifyYourIdentityToChangePassword
+import com.example.trackies.isSignedIn.ui.changePassword.yourPasswordGotChanged
 import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
+import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
 import com.example.trackies.isSignedOut.presentation.ui.signIn.information
@@ -282,6 +284,10 @@ class MainActivity : ComponentActivity() {
                         enterTransition = {EnterTransition.None},
                         exitTransition = {ExitTransition.None}
                     ) {
+
+                        val homeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
+
+                        homeScreenViewModel
 
                         homeScreen(
                             onOpenSettings = {navigationController.navigate(route = Destinations.Settings)}

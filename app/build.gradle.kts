@@ -106,6 +106,9 @@ dependencies {
 //      For instrumented tests.
         androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
         kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
+
+//  MVVM
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }
 
 kapt {

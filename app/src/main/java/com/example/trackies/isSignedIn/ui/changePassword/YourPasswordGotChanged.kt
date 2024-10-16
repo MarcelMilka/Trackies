@@ -1,5 +1,6 @@
-package com.example.trackies.isSignedIn.deleteAccount
+package com.example.trackies.isSignedIn.ui.changePassword
 
+import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.trackies.ui.sharedUI.customButtons.BigPrimaryButton
@@ -19,7 +19,7 @@ import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
 @Composable
-fun yourAccountGotDeleted(onNavigate: () -> Unit) {
+fun yourPasswordGotChanged(onNavigate: () -> Unit) {
 
 //  Holds everything
     Box(
@@ -47,7 +47,7 @@ fun yourAccountGotDeleted(onNavigate: () -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom,
 
-                        content = { textHeadlineLarge(content = "Your account got deleted.") }
+                        content = { textHeadlineLarge(content = "Your password got changed.") }
                     )
 
                     Column(
@@ -65,7 +65,7 @@ fun yourAccountGotDeleted(onNavigate: () -> Unit) {
 
                             verticalSpacerM()
 
-                            BigPrimaryButton(textToDisplay = "Continue") { onNavigate() }
+                            BigPrimaryButton(textToDisplay = "Okay!") { onNavigate() }
                         }
                     )
                 }
