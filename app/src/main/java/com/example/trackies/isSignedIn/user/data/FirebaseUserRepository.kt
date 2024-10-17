@@ -34,15 +34,10 @@ class FirebaseUserRepository @Inject constructor(
 
                 if (!(user.exists())) {
                     addNewUser()
-                    Log.d("Halla!", "Add new user.")
-                }
-                else {
-                    Log.d("Halla!", "User already exists.")
                 }
             }
             .addOnFailureListener {
                 anErrorOccurred()
-                Log.d("Halla!", "An error occurred.")
             }
     }
 

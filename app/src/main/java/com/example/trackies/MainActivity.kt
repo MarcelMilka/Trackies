@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -287,7 +288,11 @@ class MainActivity : ComponentActivity() {
 
                         val homeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
 
+//                      as collect as state is composable, it knows about current composition and when it's active on the screen
+                        val uiState by homeScreenViewModel.uiState.collectAsState() // .collectAsState() does not have information about state of the activity
+
                         homeScreen(
+                            uiState = uiState,
                             onOpenSettings = {navigationController.navigate(route = Destinations.Settings)}
                         )
                     }
