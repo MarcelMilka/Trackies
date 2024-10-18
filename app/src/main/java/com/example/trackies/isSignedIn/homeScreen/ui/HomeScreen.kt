@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.buttonAddAnotherTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingText
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.regularityChartLoading
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.rowWithRadioButtonsLoading
@@ -21,7 +22,8 @@ import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingBu
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonShowAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
-import com.example.trackies.ui.sharedUI.customButtons.IconButtonToNavigateBetweenActivities
+import com.example.trackies.navigation.Destinations
+import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
@@ -35,7 +37,7 @@ fun homeScreen(
     uiState: HomeScreenViewState,
 //    typeOfHomeScreenGraphToDisplay: HomeScreenGraphToDisplay,
     onOpenSettings: () -> Unit,
-//    onAddNewTrackie: () -> Unit,
+    onAddNewTrackie: () -> Unit,
 //    onMarkTrackieAsIngestedForToday: (trackieViewState: TrackieViewState) -> Unit,
 //    onShowAllTrackies: () -> Unit,
 //    onChangeGraph: (HomeScreenGraphToDisplay) -> Unit,
@@ -72,7 +74,7 @@ fun homeScreen(
 
                         content = {
 
-                            IconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Person) { onOpenSettings() }
+                            iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Person) { onOpenSettings() }
 
                             verticalSpacerL()
 
@@ -98,7 +100,10 @@ fun homeScreen(
 
                                 }
 
-                                is HomeScreenViewState.LoadedSuccessfully -> {}
+                                is HomeScreenViewState.LoadedSuccessfully -> {
+
+                                    buttonAddAnotherTrackie { onAddNewTrackie() }
+                                }
 
                                 HomeScreenViewState.FailedToLoadData -> {
 

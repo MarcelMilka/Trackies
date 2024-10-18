@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.trackies.ui.sharedUI.customButtons.IconButtonToNavigateBetweenActivities
+import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
@@ -79,7 +79,7 @@ fun settings(
 
                         content = {
 
-                            IconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Home) { onReturnHomeScreen() }
+                            iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Home) { onReturnHomeScreen() }
 
                             verticalSpacerL()
                             textHeadlineMedium(content = "Settings")

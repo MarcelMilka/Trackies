@@ -28,6 +28,7 @@ import com.example.trackies.isSignedIn.ui.changePassword.verifyYourIdentityToCha
 import com.example.trackies.isSignedIn.ui.changePassword.yourPasswordGotChanged
 import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
 import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
@@ -293,8 +294,21 @@ class MainActivity : ComponentActivity() {
 
                         homeScreen(
                             uiState = uiState,
-                            onOpenSettings = {navigationController.navigate(route = Destinations.Settings)}
+                            onOpenSettings = {
+                                navigationController.navigate(route = Destinations.Settings)
+                            },
+                            onAddNewTrackie = {
+                                navigationController.navigate(route = Destinations.AddNewTrackie)
+                            }
                         )
+                    }
+
+                    composable(
+                        route = Destinations.AddNewTrackie,
+                        enterTransition = {EnterTransition.None},
+                        exitTransition = {ExitTransition.None}
+                    ) {
+                        addNewTrackie { navigationController.navigateUp() }
                     }
 
                     composable(

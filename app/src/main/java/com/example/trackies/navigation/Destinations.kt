@@ -22,6 +22,7 @@ object Destinations {
 
         val HomeScreen = "HomeScreen"
 
+        val AddNewTrackie = "AddNewTrackie"
 
         val Settings = "Settings"
 

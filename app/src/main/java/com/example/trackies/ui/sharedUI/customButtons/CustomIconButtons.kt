@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
-fun IconButtonToNavigateBetweenActivities (icon: ImageVector, onClick: () -> Unit) {
+fun iconButtonToNavigateBetweenActivities (icon: ImageVector, onClick: () -> Unit) {
 
     IconButton(
 
