@@ -2,18 +2,20 @@ package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
 import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
-import com.example.trackies.isSignedIn.user.buisness.LicenseViewState
+import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
+import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewStateEntity
+import com.example.trackies.isSignedIn.user.buisness.licenseViewState.convertEntityToLicenseViewState
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class FirebaseUserRepository @Inject constructor(
     var uniqueIdentifier: String
 ): UserRepository {
 
-    private val firebase: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-//    private val currentDateAndTime = DateTimeClass()
+    val firebase: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     private val users = firebase.collection("users")
     private val user = users.document(uniqueIdentifier)
@@ -25,8 +27,6 @@ class FirebaseUserRepository @Inject constructor(
     override fun firstTimeInTheApp(
         anErrorOccurred: () -> Unit
     ) {
-
-//        Log.d("Halla!", "In da club")
 
         users.document(uniqueIdentifier)
             .get()
@@ -78,5 +78,45 @@ class FirebaseUserRepository @Inject constructor(
             .continueWith {
                 usersWeeklyStatistics.update(hashMapOf<String, Any>("arity" to FieldValue.delete()))
             }
+    }
+
+    override suspend fun fetchUsersLicenseInformation(): LicenseViewState? {
+
+        return suspendCoroutine { continuation ->
+
+            usersInformation
+                .get()
+                .addOnSuccessListener { document ->
+
+                    val licenseViewState = document.toObject(LicenseViewStateEntity::class.java)
+
+                    if (licenseViewState != null) {
+
+                        LicenseViewStateEntity(
+                            active = licenseViewState.active,
+                            validUntil = licenseViewState.validUntil,
+                            totalAmountOfTrackies = licenseViewState.totalAmountOfTrackies
+                        ).let { licenseViewStateEntity ->
+
+                            if (licenseViewStateEntity.active != null && licenseViewStateEntity.totalAmountOfTrackies != null) {
+
+                                val licenseViewState = licenseViewStateEntity.convertEntityToLicenseViewState()
+                                continuation.resume(licenseViewState)
+                            }
+
+                            else {
+                                continuation.resume(null)
+                            }
+                        }
+                    }
+
+                    else {
+                        return@addOnSuccessListener
+                    }
+                }
+                .addOnFailureListener {
+                    continuation.resume(null)
+                }
+        }
     }
 }

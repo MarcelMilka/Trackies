@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,8 +24,23 @@ class HomeScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            delay(2500)
-            _uiState.value = HomeScreenViewState.FailedToLoadData
+            val licenseInformation = repository.fetchUsersLicenseInformation()
+
+            if (licenseInformation != null) {
+
+                _uiState.update {
+
+                    HomeScreenViewState.LoadedSuccessfully(
+                        license = licenseInformation,
+                    )
+                }
+            }
+
+            else {
+                _uiState.update {
+                    HomeScreenViewState.FailedToLoadData
+                }
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.user.buisness
+package com.example.trackies.isSignedIn.user.buisness.licenseViewState
 
 data class LicenseViewState(
     var active: Boolean,
