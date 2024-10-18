@@ -1,7 +1,9 @@
 package com.example.trackies.isSignedIn.homeScreen.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,7 @@ class HomeScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val licenseInformation = repository.fetchUsersLicenseInformation()
+            val licenseInformation = repository.fetchUsersLicense()
 
             if (licenseInformation != null) {
 

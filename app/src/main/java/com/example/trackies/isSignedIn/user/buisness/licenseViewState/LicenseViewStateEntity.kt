@@ -7,7 +7,6 @@ data class LicenseViewStateEntity(
 )
 
 fun LicenseViewStateEntity.convertEntityToLicenseViewState(): LicenseViewState =
-
     LicenseViewState(
         active = this.active!!,
         validUntil = this.validUntil,

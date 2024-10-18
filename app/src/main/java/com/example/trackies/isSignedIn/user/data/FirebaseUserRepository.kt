@@ -1,10 +1,15 @@
 package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
+import com.example.trackies.isSignedIn.constantValues.CurrentTime
 import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
+import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.trackie.TrackieViewStateEntity
+import com.example.trackies.isSignedIn.trackie.convertEntityToTrackieViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewStateEntity
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.convertEntityToLicenseViewState
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
@@ -19,11 +24,13 @@ class FirebaseUserRepository @Inject constructor(
 
     private val users = firebase.collection("users")
     private val user = users.document(uniqueIdentifier)
-    private val usersInformation = user.collection("user's information").document("license")
+    private val usersLicense = user.collection("user's information").document("license")
     private val usersTrackies = user.collection("user's trackies").document("trackies")
     private val namesOfTrackies = user.collection("names of trackies").document("names of trackies")
     private val usersWeeklyStatistics = user.collection("user's statistics").document("user's weekly statistics")
 
+//  This method is responsible for checking if the user's unique identifier exists in the database.
+//  If the unique identifier does not exist - a new document named after the user's unique identifier will be created.
     override fun firstTimeInTheApp(
         anErrorOccurred: () -> Unit
     ) {
@@ -41,7 +48,10 @@ class FirebaseUserRepository @Inject constructor(
             }
     }
 
-    private fun addNewUser() {
+
+//  This method gets called when the function 'firstTimeInTheApp' detects there's not any document named after the user's unique identifier.
+//  Creates a document named after the user's unique identifier which contains all the user's data to be used in this application.
+    override fun addNewUser() {
 
         Log.d("Halla!", "Adding new user.")
         users
@@ -55,7 +65,7 @@ class FirebaseUserRepository @Inject constructor(
             }
 
 //      "user's information" -> "license"
-        usersInformation.set(LicenseViewState(active = false, validUntil = null, totalAmountOfTrackies = 0))
+        usersLicense.set(LicenseViewState(active = false, validUntil = null, totalAmountOfTrackies = 0))
 
 //      "names of trackies" -> "names of trackies"
         namesOfTrackies.set(hashMapOf("whole week" to listOf<String>()))
@@ -80,11 +90,17 @@ class FirebaseUserRepository @Inject constructor(
             }
     }
 
-    override suspend fun fetchUsersLicenseInformation(): LicenseViewState? {
+
+//  This method retrieves information about the user's license which contains following information:
+//  - 'active' determines if the user has premium account
+//  - 'totalAmountOfTrackies' (when user does not have a premium account, there's a limited amount of trackies)
+//  - 'validUntil' determines how long the premium account is active
+//  license information gets returned as data class LicenseViewState
+    override suspend fun fetchUsersLicense(): LicenseViewState? {
 
         return suspendCoroutine { continuation ->
 
-            usersInformation
+            usersLicense
                 .get()
                 .addOnSuccessListener { document ->
 
@@ -117,6 +133,113 @@ class FirebaseUserRepository @Inject constructor(
                 .addOnFailureListener {
                     continuation.resume(null)
                 }
+        }
+    }
+
+
+//  This method fetches names of all Trackies which are assigned to a day of week passed as a parameter 'dayOfWeek'.
+//  E.g. when 'monday' gets passed, the method fetches names of all Trackies assigned to monday.
+//  This method helps the method 'fetchTodayTrackies' to fetch information about trackie.
+    override suspend fun fetchNamesOfTrackies(dayOfWeek: String): List<String>? {
+
+        return suspendCoroutine { continuation ->
+
+            namesOfTrackies
+                .get()
+                .addOnSuccessListener { document ->
+
+                    if (document.exists()) {
+
+                        val namesOfTrackies = document.get(dayOfWeek) as? List<String>
+
+                        if (namesOfTrackies != null) {
+                            continuation.resume(namesOfTrackies)
+                            Log.d("Halla!", "fetchNamesOfTrackiesForToday, that's the list of names of trackies for today: $namesOfTrackies")
+                        }
+
+                        else {
+                            continuation.resume(null)
+                            Log.d("Halla!", "fetchNamesOfTrackiesForToday, listOfTrackiesForToday is equal to null")
+                        }
+                    }
+
+                    else {
+                        continuation.resume(null)
+                        Log.d("Halla!", "fetchNamesOfTrackiesForToday, the document does not exist")
+                    }
+                }
+                .addOnFailureListener {
+                    continuation.resume(null)
+                    Log.d("Halla!", "fetchNamesOfTrackiesForToday, $it")
+                }
+        }
+    }
+
+
+//  This method is responsible for fetching all Trackies assigned to the current day of week.
+    override suspend fun fetchTodayTrackies(): List<TrackieViewState>? {
+
+        val namesOfTrackiesForToday: List<String>? =
+            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
+
+        val fetchedTrackies: MutableList<TrackieViewState> = mutableListOf()
+
+        return suspendCoroutine { continuation ->
+
+            if (namesOfTrackiesForToday != null) {
+
+                if (namesOfTrackiesForToday.isNotEmpty()) {
+
+                    val tasks = namesOfTrackiesForToday.map { nameOfTheTrackie ->
+
+                        usersTrackies.collection(nameOfTheTrackie).document(nameOfTheTrackie)
+                            .get()
+                            .addOnSuccessListener { document ->
+
+                                val trackieViewStateEntity = document.toObject(TrackieViewStateEntity::class.java)
+
+                                if (trackieViewStateEntity != null) {
+
+                                    try {
+                                        val trackieViewState = trackieViewStateEntity.convertEntityToTrackieViewState()
+                                        fetchedTrackies.add(element = trackieViewState)
+                                    }
+                                    catch (e: Exception) {
+                                        Log.d("Halla!", "FirebaseUserRepository, fetchTodayTrackies: $e")
+                                        continuation.resume(null)
+                                    }
+                                }
+                                else {
+                                    Log.d(
+                                        "Halla!",
+                                        "FirebaseUserRepository, fetchTodayTrackies: trackieViewStateEntity is null"
+                                    )
+                                    continuation.resume(null)
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.d("Halla!", "fetchTrackiesForToday, an error occurred while fetching data, $exception")
+                            }
+                    }
+
+                    Tasks.whenAllComplete(tasks)
+                        .addOnCompleteListener {
+                            continuation.resume(fetchedTrackies)
+                        }
+                }
+
+                else {
+                    Log.d(
+                        "Halla!",
+                        "FirebaseUserRepository, fetchTodayTrackies: there are no any names of trackies assigned for this day"
+                    )
+                    continuation.resume(listOf())
+                }
+            }
+
+            else {
+                continuation.resume(null)
+            }
         }
     }
 }
