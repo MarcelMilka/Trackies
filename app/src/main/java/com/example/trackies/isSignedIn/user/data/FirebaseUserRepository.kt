@@ -154,27 +154,26 @@ class FirebaseUserRepository @Inject constructor(
 
                         if (namesOfTrackies != null) {
                             continuation.resume(namesOfTrackies)
-                            Log.d("Halla!", "fetchNamesOfTrackiesForToday, that's the list of names of trackies for today: $namesOfTrackies")
                         }
 
                         else {
                             continuation.resume(null)
-                            Log.d("Halla!", "fetchNamesOfTrackiesForToday, listOfTrackiesForToday is equal to null")
                         }
                     }
 
                     else {
                         continuation.resume(null)
-                        Log.d("Halla!", "fetchNamesOfTrackiesForToday, the document does not exist")
                     }
                 }
                 .addOnFailureListener {
                     continuation.resume(null)
-                    Log.d("Halla!", "fetchNamesOfTrackiesForToday, $it")
                 }
         }
     }
 
+//  This method is responsible for fetching all existing names of trackies created by the user.
+    override suspend fun fetchNamesOfAllTrackies(): MutableList<String>? =
+        fetchNamesOfTrackies(dayOfWeek = "whole week")?.toMutableList()
 
 //  This method is responsible for fetching all Trackies assigned to the current day of week.
     override suspend fun fetchTodayTrackies(): List<TrackieViewState>? {
