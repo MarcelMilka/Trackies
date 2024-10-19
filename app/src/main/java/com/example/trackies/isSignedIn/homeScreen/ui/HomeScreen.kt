@@ -21,8 +21,7 @@ import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.rowWithRa
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonAddAnotherTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonShowAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
-import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
-import com.example.trackies.navigation.Destinations
+import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
@@ -34,7 +33,7 @@ import com.example.trackies.ui.theme.Dimensions
 @Composable
 fun homeScreen(
 //    heightOfHomeScreenLazyColumn: StateFlow<Int>,
-    uiState: HomeScreenViewState,
+    uiState: SharedViewModelViewState,
 //    typeOfHomeScreenGraphToDisplay: HomeScreenGraphToDisplay,
     onOpenSettings: () -> Unit,
     onAddNewTrackie: () -> Unit,
@@ -80,7 +79,7 @@ fun homeScreen(
 
                             when (uiState) {
 
-                                HomeScreenViewState.Loading -> {
+                                SharedViewModelViewState.Loading -> {
 
                                     loadingText()
 
@@ -100,12 +99,12 @@ fun homeScreen(
 
                                 }
 
-                                is HomeScreenViewState.LoadedSuccessfully -> {
+                                is SharedViewModelViewState.LoadedSuccessfully -> {
 
                                     buttonAddAnotherTrackie { onAddNewTrackie() }
                                 }
 
-                                HomeScreenViewState.FailedToLoadData -> {
+                                SharedViewModelViewState.FailedToLoadData -> {
 
                                     Column(
                                         modifier = Modifier
@@ -150,7 +149,7 @@ fun homeScreen(
 
                             when (uiState) {
 
-                                HomeScreenViewState.Loading -> {
+                                SharedViewModelViewState.Loading -> {
 
                                     loadingText()
 
@@ -164,9 +163,9 @@ fun homeScreen(
 
                                 }
 
-                                is HomeScreenViewState.LoadedSuccessfully -> {}
+                                is SharedViewModelViewState.LoadedSuccessfully -> {}
 
-                                HomeScreenViewState.FailedToLoadData -> {}
+                                SharedViewModelViewState.FailedToLoadData -> {}
 
                             }
                         }

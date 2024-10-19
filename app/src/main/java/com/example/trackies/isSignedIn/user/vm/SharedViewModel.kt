@@ -1,8 +1,7 @@
-package com.example.trackies.isSignedIn.homeScreen.viewModel
+package com.example.trackies.isSignedIn.user.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +11,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeScreenViewModel @Inject constructor(
+class SharedViewModel @Inject constructor(
     private var repository: UserRepository
 ): ViewModel() {
 
-    private var _uiState = MutableStateFlow<HomeScreenViewState>(value = HomeScreenViewState.Loading)
+    private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -30,7 +29,7 @@ class HomeScreenViewModel @Inject constructor(
 
                 _uiState.update {
 
-                    HomeScreenViewState.LoadedSuccessfully(
+                    SharedViewModelViewState.LoadedSuccessfully(
                         license = licenseInformation,
                         namesOfAllTrackies = null
                     )
@@ -39,7 +38,7 @@ class HomeScreenViewModel @Inject constructor(
 
             else {
                 _uiState.update {
-                    HomeScreenViewState.FailedToLoadData
+                    SharedViewModelViewState.FailedToLoadData
                 }
             }
         }

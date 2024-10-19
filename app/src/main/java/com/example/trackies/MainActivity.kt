@@ -30,7 +30,7 @@ import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
+import com.example.trackies.isSignedIn.user.vm.SharedViewModel
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
 import com.example.trackies.isSignedOut.presentation.ui.signIn.information
@@ -288,10 +288,10 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-                        val homeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
+                        val sharedViewModel = hiltViewModel<SharedViewModel>()
 
 //                      as collect as state is composable, it knows about current composition and when it's active on the screen
-                        val uiState by homeScreenViewModel.uiState.collectAsState() // .collectAsState() does not have information about state of the activity
+                        val uiState by sharedViewModel.uiState.collectAsState() // .collectAsState() does not have information about state of the activity
 
                         homeScreen(
                             uiState = uiState,
