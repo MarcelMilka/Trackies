@@ -19,6 +19,7 @@ class SharedViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+
         repository.firstTimeInTheApp {}
 
         viewModelScope.launch {

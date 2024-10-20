@@ -8,11 +8,7 @@ sealed class SharedViewModelViewState {
 
     data class LoadedSuccessfully(
         var license: LicenseViewState,
-//        var trackiesForToday: List<TrackieViewState>,
-        var namesOfAllTrackies: List<String>?,
-//        var allTrackies: List<TrackieViewState>?,
-//        var statesOfTrackiesForToday: Map<String,Boolean>,
-//        var weeklyRegularity: Map<String, Map<Int, Int>>
+        var namesOfAllTrackies: MutableList<String>?,
     ): SharedViewModelViewState()
 
     object FailedToLoadData: SharedViewModelViewState()

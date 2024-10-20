@@ -289,7 +289,6 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         val sharedViewModel = hiltViewModel<SharedViewModel>()
-
 //                      as collect as state is composable, it knows about current composition and when it's active on the screen
                         val uiState by sharedViewModel.uiState.collectAsState() // .collectAsState() does not have information about state of the activity
 
@@ -310,9 +309,25 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
+                        val sharedViewModel = hiltViewModel<SharedViewModel>()
+                        val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
+
                         val addNewTrackieViewModel = hiltViewModel<AddNewTrackieViewModel>()
 
-                        addNewTrackie { navigationController.navigateUp() }
+                        addNewTrackie(
+                            sharedViewModelUiState = sharedViewModelUiState,
+                            addNewTrackieViewModel = addNewTrackieViewModel,
+                            onReturn = {
+                                navigationController.navigateUp()
+                            },
+                            onClearAll = {
+                                addNewTrackieViewModel.clearAll()
+                            },
+                            onAdd = { trackieViewState ->
+                                Log.d("Halla!", "MainActivity, addNewTrackie, on add, TrackieViewState = $trackieViewState")
+                                addNewTrackieViewModel.clearAll()
+                            }
+                        )
                     }
 
                     composable(

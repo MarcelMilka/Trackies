@@ -18,18 +18,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.insertDailyDosage
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loading.insertDailyDosageLoading
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loadedSuccessfully.insertNameOfTrackie
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loading.insertNameOfTrackieLoading
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.scheduleDays
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loading.scheduleDaysLoading
+import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
+import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
+import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun addNewTrackie(
-    onReturn: () -> Unit
+    sharedViewModelUiState: SharedViewModelViewState,
+    addNewTrackieViewModel: AddNewTrackieViewModel,
+    onReturn: () -> Unit,
+    onClearAll: () -> Unit,
+    onAdd: (TrackieViewState) -> Unit
 ) {
 
     Scaffold(
@@ -47,39 +64,40 @@ fun addNewTrackie(
 
                 content = {
 
-//                    AddNewTrackieBottomBar(
-//
-//                        addNewTrackieViewModel = addNewTrackieViewModel,
-//                        onClearAll = { addNewTrackieViewModel.clearAll() },
-//                        onAdd = {
-//
-//                            CoroutineScope(Dispatchers.Main).launch {
-//
-//                                addNewTrackieViewModel.addNewTrackieViewState.collect {
-//
-//                                    if (it.name != "" &&
-//                                        it.totalDose != 0 &&
-//                                        it.measuringUnit != "" &&
-//                                        it.repeatOn.isNotEmpty()) {
-//
-//                                        onAdd(
-//
-//                                            TrackieViewState(
-//
-//                                                name = it.name,
-//                                                totalDose = it.totalDose,
-//                                                measuringUnit = it.measuringUnit,
-//                                                repeatOn = it.repeatOn,
-//                                                ingestionTime = it.ingestionTime
-//                                            )
-//                                        )
-//
-//                                        addNewTrackieViewModel.clearAll()
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    )
+                    addNewTrackieBottomBar(
+
+                        addNewTrackieViewModel = addNewTrackieViewModel,
+
+                        onClearAll = {
+                            onClearAll()
+                        },
+
+                        onAdd = {
+
+                            CoroutineScope(Dispatchers.Main).launch {
+
+                                addNewTrackieViewModel.addNewTrackieViewState.collect {
+
+                                    if (it.name != "" &&
+                                        it.totalDose != 0 &&
+                                        it.measuringUnit != "" &&
+                                        it.repeatOn.isNotEmpty()) {
+
+                                        onAdd(
+                                            TrackieViewState(
+
+                                                name = it.name,
+                                                totalDose = it.totalDose,
+                                                measuringUnit = it.measuringUnit,
+                                                repeatOn = it.repeatOn,
+                                                ingestionTime = it.ingestionTime
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    )
                 }
             )
         },
@@ -113,6 +131,48 @@ fun addNewTrackie(
                             textHeadlineMedium(content = "Add new trackie")
 
                             verticalSpacerS()
+
+                            when (sharedViewModelUiState) {
+
+                                SharedViewModelViewState.Loading -> {
+
+                                    insertNameOfTrackieLoading()
+
+                                    verticalSpacerS()
+
+                                    insertDailyDosageLoading()
+
+                                    verticalSpacerS()
+
+                                    scheduleDaysLoading()
+
+                                }
+
+                                is SharedViewModelViewState.LoadedSuccessfully -> {
+
+                                    insertNameOfTrackie(
+                                        viewModel = addNewTrackieViewModel
+                                    )
+
+                                    verticalSpacerS()
+
+                                    insertDailyDosage(
+                                        viewModel = addNewTrackieViewModel
+                                    )
+
+                                    verticalSpacerS()
+
+                                    scheduleDays(
+                                        viewModel = addNewTrackieViewModel
+                                    )
+
+                                }
+
+                                SharedViewModelViewState.FailedToLoadData -> {
+                                    textTitleMedium("Failed to load data")
+                                }
+
+                            }
                         }
                     )
                 }
