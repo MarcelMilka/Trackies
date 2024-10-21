@@ -241,4 +241,84 @@ class FirebaseUserRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun addNewTrackie(
+        trackieViewState: TrackieViewState,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+
+        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+        var passedCurrentDayOfWeek = false
+
+        val licenseViewState = fetchUsersLicense()
+
+        if (licenseViewState != null) {
+
+            licenseViewState.totalAmountOfTrackies
+
+//          add new trackie to { (user's trackies) -> (trackies) }
+            usersTrackies.collection(trackieViewState.name).document(trackieViewState.name).set(trackieViewState)
+
+//          update total amount of trackies owned by the user { (user's information) -> (license) -> (totalAmountOfTrackies) }
+            val updatedTotalAmountOfTrackies = (licenseViewState.totalAmountOfTrackies + 1)
+            usersLicense.update("totalAmountOfTrackies", updatedTotalAmountOfTrackies)
+
+//          add name of the trackie to { (names of trackies) -> (names of trackies) -> (whole week) }
+            namesOfTrackies.update("whole week", FieldValue.arrayUnion(trackieViewState.name))
+
+//          add name of the trackie to { (names of trackies) -> (names of trackies) -> (*particular day of week*) }
+            trackieViewState.repeatOn.forEach { dayOfWeek ->
+
+                namesOfTrackies.update(dayOfWeek, FieldValue.arrayUnion(trackieViewState.name))
+            }
+
+//              add name of the trackies to { (user's statistics) -> user's weekly statistics) -> (*particular day of week*)
+            listOf(
+                DaysOfWeek.monday,
+                DaysOfWeek.tuesday,
+                DaysOfWeek.wednesday,
+                DaysOfWeek.thursday,
+                DaysOfWeek.friday,
+                DaysOfWeek.saturday,
+                DaysOfWeek.sunday
+            ).forEach { dayOfWeek ->
+
+                if (!passedCurrentDayOfWeek) {
+
+                    passedCurrentDayOfWeek =
+                        if (currentDayOfWeek == dayOfWeek) {
+                            true
+                        }
+                        else {
+                            false
+                        }
+                }
+
+                if (trackieViewState.ingestionTime == null) {
+
+                    if (trackieViewState.repeatOn.contains(dayOfWeek)) {
+
+                        val fieldToSave = mutableMapOf<String, Boolean>()
+
+                        fieldToSave["ingested"] =
+                            if (!passedCurrentDayOfWeek) {true}
+                            else if (currentDayOfWeek == dayOfWeek) {false}
+                            else {false}
+
+                        usersWeeklyStatistics
+                            .collection(dayOfWeek)
+                            .document(trackieViewState.name)
+                            .set(fieldToSave)
+                    }
+                }
+            }
+
+            onSuccess()
+        }
+
+        else {
+            onFailure("License view state is null")
+        }
+    }
 }

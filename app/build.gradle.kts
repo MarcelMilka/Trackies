@@ -109,6 +109,9 @@ dependencies {
 
 //  MVVM
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+//  Lifecycle-aware components
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
 }
 
 kapt {

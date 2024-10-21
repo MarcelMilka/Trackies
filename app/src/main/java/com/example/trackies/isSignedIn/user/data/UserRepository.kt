@@ -2,7 +2,6 @@ package com.example.trackies.isSignedIn.user.data
 
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
-import kotlinx.coroutines.flow.MutableStateFlow
 
 interface UserRepository {
 
@@ -17,4 +16,10 @@ interface UserRepository {
     suspend fun fetchNamesOfAllTrackies(): MutableList<String>?
 
     suspend fun fetchTodayTrackies(): List<TrackieViewState>?
+
+    suspend fun addNewTrackie(
+        trackieViewState: TrackieViewState,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    )
 }

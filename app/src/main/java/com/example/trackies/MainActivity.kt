@@ -42,6 +42,7 @@ import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErro
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.signUp
 import com.example.trackies.isSignedOut.presentation.ui.welcomeScreen
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -50,6 +51,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var authenticationService: AuthenticationService
+
+    @Inject
+    lateinit var lazySharedViewModel: Lazy<SharedViewModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -288,12 +292,11 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-                        val sharedViewModel = hiltViewModel<SharedViewModel>()
-//                      as collect as state is composable, it knows about current composition and when it's active on the screen
-                        val uiState by sharedViewModel.uiState.collectAsState() // .collectAsState() does not have information about state of the activity
+                        val sharedViewModel = lazySharedViewModel.get()
+                        val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         homeScreen(
-                            uiState = uiState,
+                            uiState = sharedViewModelUiState,
                             onOpenSettings = {
                                 navigationController.navigate(route = Destinations.Settings)
                             },
@@ -309,22 +312,31 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-                        val sharedViewModel = hiltViewModel<SharedViewModel>()
+                        val sharedViewModel = lazySharedViewModel.get()
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         val addNewTrackieViewModel = hiltViewModel<AddNewTrackieViewModel>()
 
                         addNewTrackie(
+
                             sharedViewModelUiState = sharedViewModelUiState,
+
                             addNewTrackieViewModel = addNewTrackieViewModel,
+
                             onReturn = {
                                 navigationController.navigateUp()
                             },
+
                             onClearAll = {
                                 addNewTrackieViewModel.clearAll()
                             },
+
                             onAdd = { trackieViewState ->
-                                Log.d("Halla!", "MainActivity, addNewTrackie, on add, TrackieViewState = $trackieViewState")
+
+                                sharedViewModel.addNewTrackie(
+                                    trackieViewState = trackieViewState,
+                                    onFailure = {}
+                                )
                                 addNewTrackieViewModel.clearAll()
                             }
                         )
