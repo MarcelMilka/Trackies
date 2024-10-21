@@ -30,6 +30,8 @@ import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
+import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
+import com.example.trackies.isSignedIn.detailedTrackie.vm.DetailedTrackieViewModel
 import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
@@ -58,6 +60,10 @@ class MainActivity : ComponentActivity() {
 
     private val homeScreenViewModel by lazy {
         HomeScreenViewModel()
+    }
+
+    private val detailedTrackieViewModel by lazy {
+        DetailedTrackieViewModel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -308,18 +314,26 @@ class MainActivity : ComponentActivity() {
 
                             homeScreenUiState = homeScreenUiState,
 
-                            onUpdateHeightOfLazyColumn = {
-                                homeScreenViewModel.updateHeightOfLazyColumn(
-                                    totalAmountOfTrackiesForToday = it
-                                )
-                            },
-
                             onOpenSettings = {
                                 navigationController.navigate(route = Destinations.Settings)
                             },
 
                             onAddNewTrackie = {
                                 navigationController.navigate(route = Destinations.AddNewTrackie)
+                            },
+
+                            onDisplayDetailedTrackie = {
+
+                                detailedTrackieViewModel.setTrackieToDisplayDetailsOf(
+                                    trackieViewState = it)
+
+                                navigationController.navigate(route = Destinations.DisplayDetailedTrackieRoute)
+                            },
+
+                            onUpdateHeightOfLazyColumn = {
+                                homeScreenViewModel.updateHeightOfLazyColumn(
+                                    totalAmountOfTrackiesForToday = it
+                                )
                             }
                         )
                     }
@@ -393,6 +407,28 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         )
+                    }
+
+                    navigation(route = Destinations.DisplayDetailedTrackieRoute, startDestination = Destinations.DetailedTrackie) {
+
+                        composable(
+                            route = Destinations.DetailedTrackie,
+                            enterTransition = {EnterTransition.None},
+                            exitTransition = {ExitTransition.None}
+                        ) {
+
+                            val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
+
+                            detailedTrackie(
+                                uiState = detailedTrackieUiState,
+                                onReturn = {
+                                    navigationController.navigateUp()
+                                },
+                                onDelete = {
+
+                                }
+                            )
+                        }
                     }
 
                     navigation(route = Destinations.DeleteAccount, startDestination = Destinations.ConfirmDeletionOfTheAccount) {

@@ -24,6 +24,11 @@ object Destinations {
 
         val AddNewTrackie = "AddNewTrackie"
 
+        val DisplayDetailedTrackieRoute = "DisplayDetailedTrackieRoute"
+
+            val DetailedTrackie = "DetailedTrackie"
+
+
         val Settings = "Settings"
 
 //          Sub-route "DeleteAccount"

@@ -24,6 +24,7 @@ import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingBu
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonShowAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
+import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
@@ -40,6 +41,7 @@ fun homeScreen(
     homeScreenUiState: HomeScreenViewState,
     onOpenSettings: () -> Unit,
     onAddNewTrackie: () -> Unit,
+    onDisplayDetailedTrackie: (TrackieViewState) -> Unit,
     onUpdateHeightOfLazyColumn: (Int) -> Unit
 ) {
 
@@ -109,7 +111,9 @@ fun homeScreen(
                                         homeScreenUiState = homeScreenUiState,
                                         sharedViewModelUiState = sharedViewModelUiState,
                                         onMarkAsIngested = {},
-                                        onDisplayDetails = {}
+                                        onDisplayDetails = {
+                                            onDisplayDetailedTrackie(it)
+                                        }
                                     )
 
                                     verticalSpacerS()
