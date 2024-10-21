@@ -90,7 +90,7 @@ fun previewOfListOfTrackies(
                             }
 
                             else {
-                                textTitleMedium(content = "+ $amountOfTrackiesLeft more trackie")
+                                textTitleMedium(content = "+ $amountOfTrackiesLeft more trackies")
                             }
                         }
                     )

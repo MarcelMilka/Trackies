@@ -55,6 +55,50 @@ class HomeScreenViewModel @Inject constructor(): ViewModel(){
         }
     }
 
+    fun onDeleteTrackie() {
+
+        val updatedHeightOfLazyColumn = when (_uiState.value.heightOfLazyColumn) {
+
+            HeightOfLazyColumn.noTrackies -> {
+                HeightOfLazyColumn.noTrackies
+            }
+
+            HeightOfLazyColumn.oneTrackie -> {
+                HeightOfLazyColumn.noTrackies
+            }
+
+            HeightOfLazyColumn.twoTrackies -> {
+                HeightOfLazyColumn.oneTrackie
+            }
+
+
+            HeightOfLazyColumn.threeTrackies -> {
+                HeightOfLazyColumn.twoTrackies
+            }
+
+            HeightOfLazyColumn.moreThanThreeTrackies -> {
+                HeightOfLazyColumn.threeTrackies
+            }
+
+            else -> {
+                HeightOfLazyColumn.moreThanThreeTrackies
+            }
+        }
+
+        viewModelScope.launch {
+
+            delay(250)
+
+            _uiState.update {
+
+                HomeScreenViewState(
+                    heightOfLazyColumn = updatedHeightOfLazyColumn,
+                    typeOfHomeScreenChart = _uiState.value.typeOfHomeScreenChart
+                )
+            }
+        }
+    }
+
     fun updateTypeOfHomeScreenChart(homeScreenChartToDisplay: HomeScreenChartToDisplay) {
 
         val copyOfUiState = _uiState

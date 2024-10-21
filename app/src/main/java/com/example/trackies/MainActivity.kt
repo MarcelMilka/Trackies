@@ -420,6 +420,8 @@ class MainActivity : ComponentActivity() {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
+                            val sharedViewModel = lazySharedViewModel.get()
+
                             detailedTrackie(
                                 uiState = detailedTrackieUiState,
                                 onReturn = {
@@ -433,10 +435,26 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.ConfirmDeletionOfTheTrackie) {
 
+                            val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
+                            val sharedViewModel = lazySharedViewModel.get()
+
                             confirmDeletionOfTheTrackie(
                                 onConfirm = {
-                                    navigationController.navigate(route = Destinations.HomeScreen) {
-                                        popUpTo(route = Destinations.HomeScreen) {inclusive = true}
+
+                                    if (detailedTrackieUiState != null) {
+
+                                        sharedViewModel.deleteTrackie(detailedTrackieUiState!!) {}
+
+                                        homeScreenViewModel.onDeleteTrackie()
+
+                                        navigationController.navigate(route = Destinations.HomeScreen) {
+                                            popUpTo(route = Destinations.HomeScreen) {inclusive = true}
+                                        }
+
+                                    }
+
+                                    else {
+                                        navigationController.navigateUp()
                                     }
                                 },
                                 onDecline = {

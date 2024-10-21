@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
 
 // To check any errors which occur while fetching/saving/deleting data type "SharedViewModel-firebase"
 
@@ -135,6 +136,88 @@ class SharedViewModel @Inject constructor(
 
                 else {
                     mutableListOf(trackieViewState.name)
+                }
+            }
+
+            val updatedLicense = updateLicenseViewState()
+            val trackiesForToday = updateTrackiesForToday()
+            val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
+            val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
+
+            _uiState.update {
+
+                SharedViewModelViewState.LoadedSuccessfully(
+                    license = updatedLicense,
+                    trackiesForToday = trackiesForToday,
+                    statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
+                    namesOfAllTrackies = updatedNamesOfAllTrackies,
+                )
+            }
+        }
+
+        else {
+            onFailure("Wrong UI state")
+        }
+    }
+
+    fun deleteTrackie(
+        trackieViewState: TrackieViewState,
+        onFailure: (String) -> Unit
+    ) {
+
+        if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
+
+//          UI
+            val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
+
+//          This method is responsible for updating information contained by LicenseViewState and decreasing the amount of trackies by one.
+            fun updateLicenseViewState(): LicenseViewState {
+
+                val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
+                val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies - 1
+
+                return LicenseViewState(
+                    active = copyOfLicenseViewState.active,
+                    validUntil = copyOfLicenseViewState.validUntil,
+                    totalAmountOfTrackies = newAmountOfTrackies
+                )
+            }
+
+            fun updateTrackiesForToday(): MutableList<TrackieViewState> {
+
+                var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
+                copyOfTrackiesForToday.remove(element = trackieViewState)
+
+                return copyOfTrackiesForToday
+            }
+
+            fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
+
+                val newStatesOfTrackiesForToday: MutableMap<String, Boolean> = mutableMapOf()
+
+                copyOfViewState.statesOfTrackiesForToday.forEach {
+
+                    if (it.key != trackieViewState.name) {
+                        newStatesOfTrackiesForToday[it.key] = it.value
+                    }
+                }
+
+                return newStatesOfTrackiesForToday
+            }
+
+//          This method is responsible for adding name of the new Trackie to the mutableList which contains names of all trackies owned by a User.
+            fun updateNamesOfAllTrackies(): MutableList<String>? {
+
+                var namesOfAllTrackies: MutableList<String>? = copyOfViewState.namesOfAllTrackies
+
+                return if (namesOfAllTrackies != null) {
+
+                    namesOfAllTrackies.remove(element = trackieViewState.name)
+                    namesOfAllTrackies
+                }
+
+                else {
+                    null
                 }
             }
 
