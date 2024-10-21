@@ -242,6 +242,7 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
+//  This method is responsible for adding new trackie to the user's database.
     override suspend fun addNewTrackie(
         trackieViewState: TrackieViewState,
         onSuccess: () -> Unit,
@@ -273,7 +274,7 @@ class FirebaseUserRepository @Inject constructor(
                 namesOfTrackies.update(dayOfWeek, FieldValue.arrayUnion(trackieViewState.name))
             }
 
-//              add name of the trackies to { (user's statistics) -> user's weekly statistics) -> (*particular day of week*)
+//          add name of the trackies to { (user's statistics) -> user's weekly statistics} -> (*particular day of week*)
             listOf(
                 DaysOfWeek.monday,
                 DaysOfWeek.tuesday,
@@ -319,6 +320,66 @@ class FirebaseUserRepository @Inject constructor(
 
         else {
             onFailure("License view state is null")
+        }
+    }
+
+//  This method is responsible for fetching all the user's trackies assigned to the current day of week.
+    override suspend fun fetchTrackiesForToday(
+        onFailure: (String) -> Unit
+    ): List<TrackieViewState>? {
+
+        val namesOfTrackiesForToday: List<String>? =
+            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
+
+        val trackiesForToday: MutableList<TrackieViewState> = mutableListOf()
+
+        return suspendCoroutine { continuation ->
+
+            if (namesOfTrackiesForToday != null) {
+
+                if (namesOfTrackiesForToday.isNotEmpty()) {
+
+                    val tasks = namesOfTrackiesForToday.map { nameOfTheTrackie ->
+
+                        usersTrackies.collection(nameOfTheTrackie).document(nameOfTheTrackie)
+                            .get()
+                            .addOnSuccessListener { document ->
+
+                                val trackieViewStateEntity = document.toObject(TrackieViewStateEntity::class.java)
+
+                                if (trackieViewStateEntity != null) {
+
+                                    val trackieViewState = trackieViewStateEntity.convertEntityToTrackieViewState()
+
+                                    try {
+                                        trackiesForToday.add(trackieViewState)
+                                    }
+
+                                    catch (e: Exception) {
+                                        continuation.resume(value = null)
+                                        onFailure(e.toString())
+                                    }
+                                }
+                            }
+
+                            .addOnFailureListener { exception ->
+                                onFailure(exception.toString())
+                            }
+                    }
+
+                    Tasks.whenAllComplete(tasks).addOnCompleteListener {
+                        continuation.resume(value = trackiesForToday)
+                    }
+                }
+
+                else {
+                    continuation.resume(value = listOf())
+                }
+            }
+
+            else {
+                continuation.resume(value = null)
+            }
         }
     }
 }

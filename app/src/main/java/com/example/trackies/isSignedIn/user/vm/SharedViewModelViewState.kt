@@ -1,5 +1,6 @@
 package com.example.trackies.isSignedIn.user.vm
 
+import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 
 sealed class SharedViewModelViewState {
@@ -8,6 +9,7 @@ sealed class SharedViewModelViewState {
 
     data class LoadedSuccessfully(
         var license: LicenseViewState,
+        var trackiesForToday: List<TrackieViewState>,
         var namesOfAllTrackies: MutableList<String>?,
     ): SharedViewModelViewState()
 

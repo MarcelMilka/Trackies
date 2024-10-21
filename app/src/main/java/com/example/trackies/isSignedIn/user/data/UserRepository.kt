@@ -22,4 +22,8 @@ interface UserRepository {
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )
+
+    suspend fun fetchTrackiesForToday(
+        onFailure: (String) -> Unit
+    ): List<TrackieViewState>?
 }

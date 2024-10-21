@@ -1,5 +1,6 @@
 package com.example.trackies.isSignedIn.user.vm
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+// To check any errors which occur while fetching/saving/deleting data type "SharedViewModel-firebase"
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(
@@ -27,13 +30,22 @@ class SharedViewModel @Inject constructor(
         viewModelScope.launch {
 
             val licenseInformation = repository.fetchUsersLicense()
+            val trackiesForToday = repository.fetchTrackiesForToday(
+                onFailure = {
+                    Log.d("SharedViewModel-firebase", "init, fetchTrackiesForToday - $it")
+                }
+            )
 
-            if (licenseInformation != null) {
+            if (
+                licenseInformation != null &&
+                trackiesForToday != null
+            ) {
 
                 _uiState.update {
 
                     SharedViewModelViewState.LoadedSuccessfully(
                         license = licenseInformation,
+                        trackiesForToday = trackiesForToday,
                         namesOfAllTrackies = null
                     )
                 }
@@ -54,6 +66,18 @@ class SharedViewModel @Inject constructor(
 
         if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
 
+//          Firebase
+            viewModelScope.launch {
+
+                repository.addNewTrackie(
+                    trackieViewState = trackieViewState,
+                    onSuccess = {},
+                    onFailure = {
+                        Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - $it")
+                    }
+                )
+            }
+
 //          UI
             val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
 
@@ -61,7 +85,6 @@ class SharedViewModel @Inject constructor(
             fun updateLicenseViewState(): LicenseViewState {
 
                 val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
-
                 val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies + 1
 
                 return LicenseViewState(
@@ -69,6 +92,14 @@ class SharedViewModel @Inject constructor(
                     validUntil = copyOfLicenseViewState.validUntil,
                     totalAmountOfTrackies = newAmountOfTrackies
                 )
+            }
+
+            fun updateTrackiesForToday(): MutableList<TrackieViewState> {
+
+                var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
+                copyOfTrackiesForToday.add(element = trackieViewState)
+
+                return copyOfTrackiesForToday
             }
 
 //          This method is responsible for adding name of the new Trackie to the mutableList which contains names of all trackies owned by a User.
@@ -88,13 +119,15 @@ class SharedViewModel @Inject constructor(
             }
 
             val updatedLicense = updateLicenseViewState()
+            val trackiesForToday = updateTrackiesForToday()
             val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
 
             _uiState.update {
 
                 SharedViewModelViewState.LoadedSuccessfully(
                     license = updatedLicense,
-                    namesOfAllTrackies = updatedNamesOfAllTrackies
+                    trackiesForToday = trackiesForToday,
+                    namesOfAllTrackies = updatedNamesOfAllTrackies,
                 )
             }
         }

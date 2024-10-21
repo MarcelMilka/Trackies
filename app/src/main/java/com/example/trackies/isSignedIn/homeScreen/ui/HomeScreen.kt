@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.buttonAddAnotherTrackie
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddAnotherTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingText
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.regularityChartLoading
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.rowWithRadioButtonsLoading
