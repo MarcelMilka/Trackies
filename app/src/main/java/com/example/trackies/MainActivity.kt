@@ -30,6 +30,7 @@ import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
+import com.example.trackies.isSignedIn.detailedTrackie.ui.confirmDeletionOfTheTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.vm.DetailedTrackieViewModel
 import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
@@ -425,7 +426,21 @@ class MainActivity : ComponentActivity() {
                                     navigationController.navigateUp()
                                 },
                                 onDelete = {
+                                    navigationController.navigate(route = Destinations.ConfirmDeletionOfTheTrackie)
+                                }
+                            )
+                        }
 
+                        dialog(route = Destinations.ConfirmDeletionOfTheTrackie) {
+
+                            confirmDeletionOfTheTrackie(
+                                onConfirm = {
+                                    navigationController.navigate(route = Destinations.HomeScreen) {
+                                        popUpTo(route = Destinations.HomeScreen) {inclusive = true}
+                                    }
+                                },
+                                onDecline = {
+                                    navigationController.navigateUp()
                                 }
                             )
                         }

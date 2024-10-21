@@ -24,7 +24,7 @@ import com.example.trackies.ui.theme.Dimensions
 fun detailedTrackie(
     uiState: TrackieViewState?,
     onReturn: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: (TrackieViewState) -> Unit
 ) {
 
     Box(
@@ -73,8 +73,13 @@ fun detailedTrackie(
                                 else -> {
 
                                     upperPartLoadedSuccessfully(
+
                                         trackieViewState = uiState,
-                                        onDelete = { onDelete() }
+
+                                        onDelete = {
+                                            onDelete(uiState)
+                                        }
+
                                     )
                                 }
                             }

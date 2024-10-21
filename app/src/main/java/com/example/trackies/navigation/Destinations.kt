@@ -27,6 +27,7 @@ object Destinations {
         val DisplayDetailedTrackieRoute = "DisplayDetailedTrackieRoute"
 
             val DetailedTrackie = "DetailedTrackie"
+            val ConfirmDeletionOfTheTrackie = "ConfirmDeletionOfTheTrackie"
 
 
         val Settings = "Settings"
