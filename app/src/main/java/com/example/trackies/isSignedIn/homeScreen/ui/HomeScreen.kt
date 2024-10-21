@@ -15,32 +15,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddAnotherTrackie
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonShowAllTrackies
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.previewOfListOfTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingText
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.regularityChartLoading
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.rowWithRadioButtonsLoading
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonAddAnotherTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonShowAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
+import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
+import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
 @Composable
 fun homeScreen(
-//    heightOfHomeScreenLazyColumn: StateFlow<Int>,
-    uiState: SharedViewModelViewState,
-//    typeOfHomeScreenGraphToDisplay: HomeScreenGraphToDisplay,
+    sharedViewModelUiState: SharedViewModelViewState,
+    homeScreenUiState: HomeScreenViewState,
     onOpenSettings: () -> Unit,
     onAddNewTrackie: () -> Unit,
-//    onMarkTrackieAsIngestedForToday: (trackieViewState: TrackieViewState) -> Unit,
-//    onShowAllTrackies: () -> Unit,
-//    onChangeGraph: (HomeScreenGraphToDisplay) -> Unit,
-//    onDisplayDetailedTrackie: (trackieViewState: TrackieViewState) -> Unit
+    onUpdateHeightOfLazyColumn: (Int) -> Unit
 ) {
 
     Box(
@@ -77,7 +77,7 @@ fun homeScreen(
 
                             verticalSpacerL()
 
-                            when (uiState) {
+                            when (sharedViewModelUiState) {
 
                                 SharedViewModelViewState.Loading -> {
 
@@ -101,7 +101,27 @@ fun homeScreen(
 
                                 is SharedViewModelViewState.LoadedSuccessfully -> {
 
-                                    buttonAddAnotherTrackie { onAddNewTrackie() }
+                                    onUpdateHeightOfLazyColumn(sharedViewModelUiState.trackiesForToday.count())
+
+                                    textHeadlineMedium(content = "Your today's trackies")
+
+                                    previewOfListOfTrackies(
+                                        homeScreenUiState = homeScreenUiState,
+                                        sharedViewModelUiState = sharedViewModelUiState,
+                                        onMarkAsIngested = {},
+                                        onDisplayDetails = {}
+                                    )
+
+                                    verticalSpacerS()
+
+                                    buttonShowAllTrackies {  }
+
+                                    verticalSpacerS()
+
+                                    buttonAddAnotherTrackie {
+                                        onAddNewTrackie()
+                                    }
+
                                 }
 
                                 SharedViewModelViewState.FailedToLoadData -> {
@@ -147,7 +167,7 @@ fun homeScreen(
 
                         content = {
 
-                            when (uiState) {
+                            when (sharedViewModelUiState) {
 
                                 SharedViewModelViewState.Loading -> {
 

@@ -22,3 +22,22 @@ fun iconButtonToNavigateBetweenActivities (icon: ImageVector, onClick: () -> Uni
         }
     )
 }
+
+@Composable
+fun iconButtonDetails (
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+
+    IconButton(
+
+        onClick = { onClick() },
+        content = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = White,
+            )
+        }
+    )
+}

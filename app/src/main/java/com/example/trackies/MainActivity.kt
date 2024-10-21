@@ -30,6 +30,7 @@ import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
+import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
@@ -54,6 +55,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var lazySharedViewModel: Lazy<SharedViewModel>
+
+    private val homeScreenViewModel by lazy {
+        HomeScreenViewModel()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -295,11 +300,24 @@ class MainActivity : ComponentActivity() {
                         val sharedViewModel = lazySharedViewModel.get()
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
+                        val homeScreenUiState by homeScreenViewModel.uiState.collectAsState()
+
                         homeScreen(
-                            uiState = sharedViewModelUiState,
+
+                            sharedViewModelUiState = sharedViewModelUiState,
+
+                            homeScreenUiState = homeScreenUiState,
+
+                            onUpdateHeightOfLazyColumn = {
+                                homeScreenViewModel.updateHeightOfLazyColumn(
+                                    totalAmountOfTrackiesForToday = it
+                                )
+                            },
+
                             onOpenSettings = {
                                 navigationController.navigate(route = Destinations.Settings)
                             },
+
                             onAddNewTrackie = {
                                 navigationController.navigate(route = Destinations.AddNewTrackie)
                             }

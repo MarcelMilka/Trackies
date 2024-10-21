@@ -35,10 +35,16 @@ class SharedViewModel @Inject constructor(
                     Log.d("SharedViewModel-firebase", "init, fetchTrackiesForToday - $it")
                 }
             )
+            val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
+                onFailure = {
+                    Log.d("SharedViewModel-firebase", "init, fetchStatesOfTrackiesForToday - $it")
+                }
+            )
 
             if (
                 licenseInformation != null &&
-                trackiesForToday != null
+                trackiesForToday != null &&
+                statesOfTrackiesForToday != null
             ) {
 
                 _uiState.update {
@@ -46,6 +52,7 @@ class SharedViewModel @Inject constructor(
                     SharedViewModelViewState.LoadedSuccessfully(
                         license = licenseInformation,
                         trackiesForToday = trackiesForToday,
+                        statesOfTrackiesForToday = statesOfTrackiesForToday,
                         namesOfAllTrackies = null
                     )
                 }
@@ -102,6 +109,19 @@ class SharedViewModel @Inject constructor(
                 return copyOfTrackiesForToday
             }
 
+            fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
+
+                val newStatesOfTrackiesForToday: MutableMap<String, Boolean> = mutableMapOf()
+
+                copyOfViewState.statesOfTrackiesForToday.forEach {
+
+                    newStatesOfTrackiesForToday[it.key] = it.value
+                }
+                newStatesOfTrackiesForToday[trackieViewState.name] = false
+
+                return newStatesOfTrackiesForToday
+            }
+
 //          This method is responsible for adding name of the new Trackie to the mutableList which contains names of all trackies owned by a User.
             fun updateNamesOfAllTrackies(): MutableList<String> {
 
@@ -120,6 +140,7 @@ class SharedViewModel @Inject constructor(
 
             val updatedLicense = updateLicenseViewState()
             val trackiesForToday = updateTrackiesForToday()
+            val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
             val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
 
             _uiState.update {
@@ -127,6 +148,7 @@ class SharedViewModel @Inject constructor(
                 SharedViewModelViewState.LoadedSuccessfully(
                     license = updatedLicense,
                     trackiesForToday = trackiesForToday,
+                    statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
                     namesOfAllTrackies = updatedNamesOfAllTrackies,
                 )
             }

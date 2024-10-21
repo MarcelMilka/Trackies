@@ -10,6 +10,7 @@ sealed class SharedViewModelViewState {
     data class LoadedSuccessfully(
         var license: LicenseViewState,
         var trackiesForToday: List<TrackieViewState>,
+        var statesOfTrackiesForToday: Map<String,Boolean>,
         var namesOfAllTrackies: MutableList<String>?,
     ): SharedViewModelViewState()
 

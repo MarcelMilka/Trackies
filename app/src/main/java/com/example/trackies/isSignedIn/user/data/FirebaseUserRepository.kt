@@ -382,4 +382,63 @@ class FirebaseUserRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun fetchStatesOfTrackiesForToday(
+        onFailure: (String) -> Unit
+    ): Map<String, Boolean>? {
+
+        val namesOfTrackiesForToday: List<String>? =
+            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
+
+        var namesAndStatesOfTrackies = mutableMapOf<String, Boolean>()
+
+        return suspendCoroutine { continuation ->
+
+            if (namesOfTrackiesForToday != null) {
+
+                if (namesOfTrackiesForToday.isNotEmpty()) {
+
+                    namesOfTrackiesForToday.onEach {nameOfTheTrackie ->
+
+                        usersWeeklyStatistics
+                            .collection(CurrentTime.getCurrentDayOfWeek())
+                            .document(nameOfTheTrackie)
+                            .get()
+                            .addOnSuccessListener {document ->
+
+                                document.getBoolean("ingested").let { stateOfTheTrackie ->
+
+                                    if (stateOfTheTrackie != null) {
+
+                                        namesAndStatesOfTrackies[nameOfTheTrackie] = stateOfTheTrackie
+
+                                        if (namesAndStatesOfTrackies.size == namesOfTrackiesForToday.size) {
+
+                                            continuation.resume(value = namesAndStatesOfTrackies)
+                                        }
+                                    }
+
+                                    else {
+                                        continuation.resume(value = null)
+                                    }
+                                }
+                            }
+
+                            .addOnFailureListener {
+
+                                continuation.resume(value = null)
+                            }
+                    }
+                }
+
+                else {
+                    continuation.resume(value = emptyMap())
+                }
+            }
+
+            else {
+                continuation.resume(value = null)
+            }
+        }
+    }
 }

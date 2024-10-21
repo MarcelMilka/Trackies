@@ -26,4 +26,8 @@ interface UserRepository {
     suspend fun fetchTrackiesForToday(
         onFailure: (String) -> Unit
     ): List<TrackieViewState>?
+
+    suspend fun fetchStatesOfTrackiesForToday(
+        onFailure: (String) -> Unit
+    ): Map<String, Boolean>?
 }
