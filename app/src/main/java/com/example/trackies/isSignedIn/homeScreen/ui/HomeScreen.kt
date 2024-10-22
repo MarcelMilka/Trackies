@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.rowWithRadioButtonsLoadedSuccessfully
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddAnotherTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonDisplayAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.previewOfListOfTrackies
@@ -43,7 +45,8 @@ fun homeScreen(
     onDisplayAllTrackies: () -> Unit,
     onAddNewTrackie: () -> Unit,
     onDisplayDetailedTrackie: (TrackieViewState) -> Unit,
-    onUpdateHeightOfLazyColumn: (Int) -> Unit
+    onUpdateHeightOfLazyColumn: (Int) -> Unit,
+    onSwitchChart: (HomeScreenChartToDisplay) -> Unit
 ) {
 
     Box(
@@ -190,7 +193,19 @@ fun homeScreen(
 
                                 }
 
-                                is SharedViewModelViewState.LoadedSuccessfully -> {}
+                                is SharedViewModelViewState.LoadedSuccessfully -> {
+
+                                    textHeadlineMedium(content = "Regularity")
+
+                                    verticalSpacerS()
+
+                                    rowWithRadioButtonsLoadedSuccessfully(
+                                        graphToDisplay = homeScreenUiState.typeOfHomeScreenChart,
+                                        switchChart = {
+                                            onSwitchChart(it)
+                                        }
+                                    )
+                                }
 
                                 SharedViewModelViewState.FailedToLoadData -> {}
 

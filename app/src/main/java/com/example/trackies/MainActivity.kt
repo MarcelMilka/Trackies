@@ -340,6 +340,12 @@ class MainActivity : ComponentActivity() {
                                 homeScreenViewModel.updateHeightOfLazyColumn(
                                     totalAmountOfTrackiesForToday = it
                                 )
+                            },
+                            
+                            onSwitchChart = {
+                                homeScreenViewModel.updateTypeOfHomeScreenChart(
+                                    homeScreenChartToDisplay = it
+                                )
                             }
                         )
                     }
