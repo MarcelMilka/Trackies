@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddAnotherTrackie
-import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonShowAllTrackies
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonDisplayAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.previewOfListOfTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingText
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.regularityChartLoading
@@ -40,6 +40,7 @@ fun homeScreen(
     sharedViewModelUiState: SharedViewModelViewState,
     homeScreenUiState: HomeScreenViewState,
     onOpenSettings: () -> Unit,
+    onDisplayAllTrackies: () -> Unit,
     onAddNewTrackie: () -> Unit,
     onDisplayDetailedTrackie: (TrackieViewState) -> Unit,
     onUpdateHeightOfLazyColumn: (Int) -> Unit
@@ -118,7 +119,9 @@ fun homeScreen(
 
                                     verticalSpacerS()
 
-                                    buttonShowAllTrackies {  }
+                                    buttonDisplayAllTrackies {
+                                        onDisplayAllTrackies()
+                                    }
 
                                     verticalSpacerS()
 

@@ -6,7 +6,6 @@ import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.trackie.TrackieViewStateEntity
 import com.example.trackies.isSignedIn.trackie.convertEntityToTrackieViewState
-import com.example.trackies.isSignedIn.trackie.trackie
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewStateEntity
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.convertEntityToLicenseViewState
@@ -599,6 +598,70 @@ class FirebaseUserRepository @Inject constructor(
 
         else {
             onFailure("licenseViewState is null")
+        }
+    }
+
+    override suspend fun fetchAllTrackies(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): List<TrackieViewState>? {
+
+        val namesOfAllTrackies: List<String>? = fetchNamesOfTrackies("whole week")
+        val allTrackies: MutableList<TrackieViewState> = mutableListOf()
+
+        return suspendCoroutine { continuation ->
+
+            if (namesOfAllTrackies != null) {
+
+                if (namesOfAllTrackies.isNotEmpty()) {
+
+                    val tasks = namesOfAllTrackies.map { nameOfTrackie ->
+
+                        usersTrackies.collection(nameOfTrackie).document(nameOfTrackie)
+                            .get()
+                            .addOnSuccessListener { document ->
+
+                                val trackieViewStateEntity = document.toObject(TrackieViewStateEntity::class.java)
+
+                                if (trackieViewStateEntity != null) {
+
+                                    val trackieViewState = trackieViewStateEntity.convertEntityToTrackieViewState()
+
+                                    try {
+
+                                        allTrackies.add(element = trackieViewState)
+                                    }
+
+                                    catch (e: Exception) {
+
+                                        continuation.resume(value = null)
+                                        onFailure("$e")
+                                    }
+                                }
+                            }
+                            .addOnFailureListener {
+
+                                continuation.resume(value = null)
+                                onFailure("$it")
+                            }
+                    }
+
+                    Tasks.whenAllComplete(tasks).addOnCompleteListener {
+
+                        continuation.resume(value = allTrackies)
+                    }
+                }
+
+                else {
+
+                    continuation.resume(value = listOf<TrackieViewState>())
+                }
+            }
+
+            else {
+
+                continuation.resume(value = null)
+            }
         }
     }
 }

@@ -25,10 +25,10 @@ object Destinations {
         val AddNewTrackie = "AddNewTrackie"
 
         val DisplayDetailedTrackieRoute = "DisplayDetailedTrackieRoute"
-
             val DetailedTrackie = "DetailedTrackie"
             val ConfirmDeletionOfTheTrackie = "ConfirmDeletionOfTheTrackie"
 
+        val AllTrackies = "AllTrackies"
 
         val Settings = "Settings"
 

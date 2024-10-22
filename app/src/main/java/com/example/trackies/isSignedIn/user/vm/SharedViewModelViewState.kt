@@ -12,6 +12,7 @@ sealed class SharedViewModelViewState {
         var trackiesForToday: List<TrackieViewState>,
         var statesOfTrackiesForToday: Map<String,Boolean>,
         var namesOfAllTrackies: MutableList<String>?,
+        var allTrackies: List<TrackieViewState>?,
     ): SharedViewModelViewState()
 
     object FailedToLoadData: SharedViewModelViewState()

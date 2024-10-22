@@ -30,6 +30,7 @@ import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
+import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
 import com.example.trackies.isSignedIn.detailedTrackie.ui.confirmDeletionOfTheTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.vm.DetailedTrackieViewModel
@@ -319,6 +320,10 @@ class MainActivity : ComponentActivity() {
                                 navigationController.navigate(route = Destinations.Settings)
                             },
 
+                            onDisplayAllTrackies = {
+                                navigationController.navigate(route = Destinations.AllTrackies)
+                            },
+
                             onAddNewTrackie = {
                                 navigationController.navigate(route = Destinations.AddNewTrackie)
                             },
@@ -410,6 +415,46 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable(
+                        route = Destinations.AllTrackies,
+                        enterTransition = {
+                            EnterTransition.None
+                        },
+                        exitTransition = {
+                            ExitTransition.None
+                        }
+                    ) {
+
+                        val sharedViewModel = lazySharedViewModel.get()
+                        val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
+
+                        displayAllTrackies(
+
+                            sharedViewModelUiState = sharedViewModelUiState,
+
+                            fetchAllUsersTrackies = {
+                                sharedViewModel.fetchListOfAllTrackies(
+                                    onFailure = {}
+                                )
+                            },
+
+                            onReturn = {
+                                navigationController.navigateUp()
+                            },
+
+                            onMarkTrackieAsIngested = {},
+
+                            onDisplayDetailedTrackie = {
+
+                                detailedTrackieViewModel.setTrackieToDisplayDetailsOf(
+                                    trackieViewState = it)
+
+                                navigationController.navigate(route = Destinations.DisplayDetailedTrackieRoute)
+                            }
+
+                        )
+                    }
+
                     navigation(route = Destinations.DisplayDetailedTrackieRoute, startDestination = Destinations.DetailedTrackie) {
 
                         composable(
@@ -419,8 +464,6 @@ class MainActivity : ComponentActivity() {
                         ) {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
-
-                            val sharedViewModel = lazySharedViewModel.get()
 
                             detailedTrackie(
                                 uiState = detailedTrackieUiState,

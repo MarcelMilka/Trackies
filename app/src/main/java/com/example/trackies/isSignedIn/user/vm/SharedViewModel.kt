@@ -3,8 +3,8 @@ package com.example.trackies.isSignedIn.user.vm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.trackies.isSignedIn.constantValues.CurrentTime
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
-import com.example.trackies.isSignedIn.trackie.trackie
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 // To check any errors which occur while fetching/saving/deleting data type "SharedViewModel-firebase"
 
@@ -55,7 +54,8 @@ class SharedViewModel @Inject constructor(
                         license = licenseInformation,
                         trackiesForToday = trackiesForToday,
                         statesOfTrackiesForToday = statesOfTrackiesForToday,
-                        namesOfAllTrackies = null
+                        namesOfAllTrackies = null,
+                        allTrackies = null
                     )
                 }
             }
@@ -105,10 +105,18 @@ class SharedViewModel @Inject constructor(
 
             fun updateTrackiesForToday(): MutableList<TrackieViewState> {
 
+                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
                 var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
-                copyOfTrackiesForToday.add(element = trackieViewState)
 
-                return copyOfTrackiesForToday
+                return if (trackieViewState.repeatOn.contains(element = currentDayOfWeek)) {
+
+                    copyOfTrackiesForToday.add(element = trackieViewState)
+                    copyOfTrackiesForToday
+                }
+
+                else {
+                    copyOfTrackiesForToday
+                }
             }
 
             fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
@@ -140,10 +148,29 @@ class SharedViewModel @Inject constructor(
                 }
             }
 
+//          This method is responsible for adding Trackie to the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
+            fun updateListOfAllTrackies(): MutableList<TrackieViewState>? {
+
+                return if (copyOfViewState.allTrackies != null) {
+
+                    var listOfAllTrackies = copyOfViewState.allTrackies!!.toMutableList()
+                    listOfAllTrackies.add(element = trackieViewState)
+
+                    listOfAllTrackies
+                }
+
+                else {
+                    null
+                }
+            }
+
+
+
             val updatedLicense = updateLicenseViewState()
             val trackiesForToday = updateTrackiesForToday()
             val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
             val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
+            val updatedListOfAllTrackies = updateListOfAllTrackies()
 
             _uiState.update {
 
@@ -152,6 +179,7 @@ class SharedViewModel @Inject constructor(
                     trackiesForToday = trackiesForToday,
                     statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
                     namesOfAllTrackies = updatedNamesOfAllTrackies,
+                    allTrackies = updatedListOfAllTrackies
                 )
             }
         }
@@ -234,10 +262,27 @@ class SharedViewModel @Inject constructor(
                 }
             }
 
+//          This method is responsible for removing Trackie from the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
+            fun updateListOfAllTrackies(): MutableList<TrackieViewState>? {
+
+                return if (copyOfViewState.allTrackies != null) {
+
+                    var listOfAllTrackies = copyOfViewState.allTrackies!!.toMutableList()
+                    listOfAllTrackies.remove(element = trackieViewState)
+
+                    listOfAllTrackies
+                }
+
+                else {
+                    null
+                }
+            }
+
             val updatedLicense = updateLicenseViewState()
             val trackiesForToday = updateTrackiesForToday()
             val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
             val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
+            val updatedListOfAllTrackies = updateListOfAllTrackies()
 
             _uiState.update {
 
@@ -246,12 +291,42 @@ class SharedViewModel @Inject constructor(
                     trackiesForToday = trackiesForToday,
                     statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
                     namesOfAllTrackies = updatedNamesOfAllTrackies,
+                    allTrackies = updatedListOfAllTrackies
                 )
             }
         }
 
         else {
             onFailure("Wrong UI state")
+        }
+    }
+
+    fun fetchListOfAllTrackies(onFailure: (String) -> Unit) {
+
+        viewModelScope.launch {
+
+            val allTrackies = repository.fetchAllTrackies(
+                onSuccess = {},
+                onFailure = {
+                    Log.d("SharedViewModel-firebase", "fetchAllUsersTrackies - $it")
+                }
+            )
+
+            if (allTrackies != null) {
+
+                val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
+
+                _uiState.update {
+
+                    SharedViewModelViewState.LoadedSuccessfully(
+                        license = copyOfViewState.license,
+                        trackiesForToday = copyOfViewState.trackiesForToday,
+                        statesOfTrackiesForToday = copyOfViewState.statesOfTrackiesForToday,
+                        namesOfAllTrackies = copyOfViewState.namesOfAllTrackies,
+                        allTrackies = allTrackies
+                    )
+                }
+            }
         }
     }
 }

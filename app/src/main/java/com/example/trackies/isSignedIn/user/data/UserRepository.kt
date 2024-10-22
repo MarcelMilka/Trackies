@@ -36,4 +36,9 @@ interface UserRepository {
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )
+
+    suspend fun fetchAllTrackies(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): List<TrackieViewState>?
 }

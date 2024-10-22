@@ -13,7 +13,7 @@ import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.SecondaryColor
 
 @Composable
-fun buttonShowAllTrackies(onClick: () -> Unit) {
+fun buttonDisplayAllTrackies(onClick: () -> Unit) {
 
     Button(
 
