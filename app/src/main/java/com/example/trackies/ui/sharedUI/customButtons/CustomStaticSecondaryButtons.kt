@@ -14,7 +14,7 @@ import com.example.trackies.ui.theme.SecondaryColor
 import com.example.trackies.ui.theme.fonts
 
 @Composable
-fun SmallStaticSeondaryButton(textToDisplay: String, onClick: () -> Unit ) {
+fun smallStaticSecondaryButton(textToDisplay: String, onClick: () -> Unit ) {
 
     Button(
 

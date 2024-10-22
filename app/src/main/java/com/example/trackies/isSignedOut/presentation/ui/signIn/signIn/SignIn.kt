@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import com.example.trackies.auth.buisness.Credentials
-import com.example.trackies.ui.sharedUI.customButtons.SmallStaticSeondaryButton
+import com.example.trackies.ui.sharedUI.customButtons.smallStaticSecondaryButton
 import com.example.trackies.ui.sharedUI.customButtons.buttonChangingColor
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
@@ -178,7 +178,7 @@ fun signIn(
 
                             verticalSpacerS()
 
-                            SmallStaticSeondaryButton(
+                            smallStaticSecondaryButton(
                                 textToDisplay = "Recover the password",
                                 onClick = { onRecoverPassword() }
                             )

@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.trackies.navigation.Destinations
 import com.example.trackies.ui.sharedUI.customButtons.BigPrimaryButton
+import com.example.trackies.ui.sharedUI.customButtons.smallStaticSecondaryButton
+import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
+import com.example.trackies.ui.sharedUI.customText.textTitleMedium
+import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.Dimensions.heightOfUpperFragment
@@ -63,11 +66,26 @@ fun welcomeScreen(
 
                         content = {
 
-                            BigPrimaryButton(textToDisplay = "Sign up") { onNavigateSignUp() }
+                            BigPrimaryButton(textToDisplay = "Sign up") {
+                                onNavigateSignUp()
+                            }
 
                             verticalSpacerS()
 
-                            BigPrimaryButton(textToDisplay = "Sign in") { onNavigateSignIn() }
+                            BigPrimaryButton(textToDisplay = "Sign in") {
+                                onNavigateSignIn()
+                            }
+
+                            verticalSpacerM()
+
+                            textTitleMedium(content = "or...")
+
+                            verticalSpacerM()
+
+                            smallStaticSecondaryButton(textToDisplay = "continue as guest") {
+
+                            }
+
                         }
                     )
                 }
