@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.trackie.trackie
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -166,6 +167,18 @@ class SharedViewModel @Inject constructor(
     ) {
 
         if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
+
+//          Firebase
+            viewModelScope.launch {
+
+                repository.deleteTrackie(
+                    trackieViewState = trackieViewState,
+                    onSuccess = {},
+                    onFailure = {
+                        Log.d("SharedViewModel-firebase", "method 'deleteTrackie' - $it")
+                    }
+                )
+            }
 
 //          UI
             val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully

@@ -6,6 +6,7 @@ import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.trackie.TrackieViewStateEntity
 import com.example.trackies.isSignedIn.trackie.convertEntityToTrackieViewState
+import com.example.trackies.isSignedIn.trackie.trackie
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewStateEntity
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.convertEntityToLicenseViewState
@@ -439,6 +440,165 @@ class FirebaseUserRepository @Inject constructor(
             else {
                 continuation.resume(value = null)
             }
+        }
+    }
+
+    override suspend fun deleteTrackie(
+        trackieViewState: TrackieViewState,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+
+        val licenseViewState = fetchUsersLicense()
+
+        if (licenseViewState != null) {
+
+//          This method is responsible for deleting:
+//              - a document named after Trackie, which is contained by a document, also named after Trackie.
+//          (via deleting the document mentioned above, the collection also gets deleted.)
+//          route: 'user's trackies' -> 'trackies' -> '${TrackieViewState.name}' -> '${TrackieViewState.name}
+            fun deleteTrackieFromUsersTrackies (
+                onSuccess: () -> Unit,
+                onFailure: (String) -> Unit
+            ) {
+
+                usersTrackies
+                    .collection(trackieViewState.name)
+                    .document(trackieViewState.name)
+                    .delete()
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onFailure("$it")
+                    }
+            }
+
+
+//          This method is responsible for decreasing total amount of Trackies by one.
+//          route: "user's information" -> 'license'
+            fun decreaseTotalAmountOfTrackies(
+                onSuccess: () -> Unit,
+                onFailure: (String) -> Unit
+            ) {
+
+                val totalAmountOfTrackies = (licenseViewState.totalAmountOfTrackies - 1)
+                usersLicense.update("totalAmountOfTrackies", totalAmountOfTrackies)
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onFailure("$it")
+                    }
+            }
+
+
+//          This method is responsible for deleting name of the Trackie from the array which contains names of all the user's Trackies.
+//          route: 'names of trackies' -> 'names of trackies'
+            fun deleteNameOfTrackieFromWholeWeek(
+                onSuccess: () -> Unit,
+                onFailure: (String) -> Unit
+            ) {
+
+                namesOfTrackies.update("whole week", FieldValue.arrayRemove(trackieViewState.name))
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onFailure("$it")
+                    }
+            }
+
+
+//          This method is responsible for deleting name of the Trackie from the array which contains names of the user's Trackies
+//          assigned for a particular day of week
+//          route: 'names of trackies' -> 'names of trackies'
+            fun deleteNameOfTrackieFromDaysOfWeek(
+                onSuccess: () -> Unit,
+                onFailure: (String) -> Unit
+            ) {
+
+                trackieViewState.repeatOn.forEach { dayOfWeek ->
+
+                    namesOfTrackies.update(dayOfWeek, FieldValue.arrayRemove(trackieViewState.name))
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener {
+                            onFailure("$it")
+                        }
+                }
+            }
+
+
+//          This method is responsible for deleting
+//          route: 'user's statistics' -> 'user's weekly statistics'
+            fun deleteTrackieFromWeeklyStatistics(
+                onSuccess: () -> Unit,
+                onFailure: (String) -> Unit
+            ) {
+
+                setOf(
+                    DaysOfWeek.monday,
+                    DaysOfWeek.tuesday,
+                    DaysOfWeek.wednesday,
+                    DaysOfWeek.thursday,
+                    DaysOfWeek.friday,
+                    DaysOfWeek.saturday,
+                    DaysOfWeek.sunday
+                ).forEach { dayOfWeek ->
+
+                    usersWeeklyStatistics
+                        .collection(dayOfWeek)
+                        .document(trackieViewState.name)
+                        .delete()
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener {
+                            onFailure("$it")
+                        }
+                }
+            }
+
+            deleteTrackieFromUsersTrackies(
+                onSuccess = {},
+                onFailure = {
+                    onFailure(it)
+                }
+            )
+
+            decreaseTotalAmountOfTrackies(
+                onSuccess = {},
+                onFailure = {
+                    onFailure(it)
+                }
+            )
+
+            deleteNameOfTrackieFromWholeWeek(
+                onSuccess = {},
+                onFailure = {
+                    onFailure(it)
+                }
+            )
+
+            deleteNameOfTrackieFromDaysOfWeek(
+                onSuccess = {},
+                onFailure = {
+                    onFailure(it)
+                }
+            )
+
+            deleteTrackieFromWeeklyStatistics(
+                onSuccess = {},
+                onFailure = {
+                    onFailure(it)
+                }
+            )
+        }
+
+        else {
+            onFailure("licenseViewState is null")
         }
     }
 }

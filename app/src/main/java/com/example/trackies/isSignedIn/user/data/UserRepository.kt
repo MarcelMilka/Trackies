@@ -30,4 +30,10 @@ interface UserRepository {
     suspend fun fetchStatesOfTrackiesForToday(
         onFailure: (String) -> Unit
     ): Map<String, Boolean>?
+
+    suspend fun deleteTrackie(
+        trackieViewState: TrackieViewState,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    )
 }
