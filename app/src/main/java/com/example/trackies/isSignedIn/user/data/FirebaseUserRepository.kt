@@ -12,6 +12,12 @@ import com.example.trackies.isSignedIn.user.buisness.licenseViewState.convertEnt
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -661,6 +667,101 @@ class FirebaseUserRepository @Inject constructor(
             else {
 
                 continuation.resume(value = null)
+            }
+        }
+    }
+
+    override suspend fun fetchWeeklyRegularity(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): Map<String, Map<Int, Int>>? {
+
+        return suspendCoroutine { continuation ->
+
+            val mapWithCalculatedRegularity = mutableMapOf<String, Map<Int, Int>>()
+            val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+            var foundCurrentDayOfWeek = false
+
+            val jobs =  setOf(
+                DaysOfWeek.monday,
+                DaysOfWeek.tuesday,
+                DaysOfWeek.wednesday,
+                DaysOfWeek.thursday,
+                DaysOfWeek.friday,
+                DaysOfWeek.saturday,
+                DaysOfWeek.sunday,
+            ).map { dayOfWeek ->
+
+                CoroutineScope(Dispatchers.Default).async {
+
+                    if (!foundCurrentDayOfWeek) {
+
+                        val namesOfTrackiesForThisDayOfWeek = fetchNamesOfTrackies(dayOfWeek)
+
+                        var totalAmount = 0
+                        var ingestedAmount = 0
+
+                        if (namesOfTrackiesForThisDayOfWeek != null) {
+
+                            if (namesOfTrackiesForThisDayOfWeek.isNotEmpty()) {
+
+                                for (nameOfTrackie in namesOfTrackiesForThisDayOfWeek) {
+                                    val documentSnapshot = usersWeeklyStatistics
+                                        .collection(dayOfWeek)
+                                        .document(nameOfTrackie)
+                                        .get()
+                                        .await()
+
+                                    documentSnapshot.getBoolean("ingested")?.let { ingested ->
+                                        totalAmount += 1
+                                        if (ingested) {
+                                            ingestedAmount += 1
+                                        }
+                                    }
+                                }
+
+                                mapWithCalculatedRegularity[dayOfWeek] = mapOf(totalAmount to ingestedAmount)
+                            }
+
+                            else {
+
+                                mapWithCalculatedRegularity[dayOfWeek] = mapOf(0 to 0)
+                            }
+
+                            if (dayOfWeek == currentDayOfWeek) {
+
+                                foundCurrentDayOfWeek = true
+                            }
+                        }
+
+                        else {
+
+                            continuation.resume(value = null)
+                        }
+                    }
+
+                    else {
+
+                        mapWithCalculatedRegularity[dayOfWeek] = mapOf(0 to 0)
+                    }
+                }
+            }
+
+            CoroutineScope(Dispatchers.Default).launch {
+
+                jobs.awaitAll()
+
+                val mapToReturn = mapOf(
+                    DaysOfWeek.monday to mapWithCalculatedRegularity[DaysOfWeek.monday]!!,
+                    DaysOfWeek.tuesday to mapWithCalculatedRegularity[DaysOfWeek.tuesday]!!,
+                    DaysOfWeek.wednesday to mapWithCalculatedRegularity[DaysOfWeek.wednesday]!!,
+                    DaysOfWeek.thursday to mapWithCalculatedRegularity[DaysOfWeek.thursday]!!,
+                    DaysOfWeek.friday to mapWithCalculatedRegularity[DaysOfWeek.friday]!!,
+                    DaysOfWeek.saturday to mapWithCalculatedRegularity[DaysOfWeek.saturday]!!,
+                    DaysOfWeek.sunday to mapWithCalculatedRegularity[DaysOfWeek.sunday]!!,
+                )
+
+                continuation.resume(value = mapToReturn)
             }
         }
     }

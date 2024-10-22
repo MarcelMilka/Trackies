@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.constantValues.CurrentTime
+import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.String
+import kotlin.collections.Map
 
 // To check any errors which occur while fetching/saving/deleting data type "SharedViewModel-firebase"
 
@@ -41,11 +44,18 @@ class SharedViewModel @Inject constructor(
                     Log.d("SharedViewModel-firebase", "init, fetchStatesOfTrackiesForToday - $it")
                 }
             )
+            val weeklyRegularity = repository.fetchWeeklyRegularity(
+                onSuccess = {},
+                onFailure = {
+                    Log.d("SharedViewModel-firebase", "init, fetchWeeklyRegularity - $it")
+                }
+            )
 
             if (
                 licenseInformation != null &&
                 trackiesForToday != null &&
-                statesOfTrackiesForToday != null
+                statesOfTrackiesForToday != null &&
+                weeklyRegularity != null
             ) {
 
                 _uiState.update {
@@ -54,6 +64,7 @@ class SharedViewModel @Inject constructor(
                         license = licenseInformation,
                         trackiesForToday = trackiesForToday,
                         statesOfTrackiesForToday = statesOfTrackiesForToday,
+                        weeklyRegularity = weeklyRegularity,
                         namesOfAllTrackies = null,
                         allTrackies = null
                     )
@@ -164,6 +175,51 @@ class SharedViewModel @Inject constructor(
                 }
             }
 
+            fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
+
+                var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
+                var passedCurrentDayOfWeek = false
+
+                copyOfViewState.weeklyRegularity.forEach { array ->
+
+                    if (trackieViewState.repeatOn.contains(array.key)) {
+
+                        val total = array.value.keys.toIntArray()[0] + 1
+
+                        val ingested =
+                            when (passedCurrentDayOfWeek) {
+
+                                true -> { 0 }
+
+                                false -> {
+
+                                    if  (CurrentTime.getCurrentDayOfWeek() == array.key) {
+
+                                        passedCurrentDayOfWeek = true
+                                        array.value.values.toIntArray()[0]
+                                    }
+
+                                    else {
+
+                                        array.value.values.toIntArray()[0] + 1
+                                    }
+                                }
+                            }
+
+                        newWeeklyRegularity.put(key = array.key, value = mapOf(total to ingested))
+                    }
+
+                    else {
+
+                        val total = array.value.keys.toIntArray()[0]
+                        val ingested = array.value.values.toIntArray()[0]
+
+                        newWeeklyRegularity.put(key = array.key, value = mapOf(total to ingested))
+                    }
+                }
+
+                return newWeeklyRegularity
+            }
 
 
             val updatedLicense = updateLicenseViewState()
@@ -171,6 +227,7 @@ class SharedViewModel @Inject constructor(
             val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
             val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
             val updatedListOfAllTrackies = updateListOfAllTrackies()
+            val updatedWeeklyRegularity = updateWeeklyRegularity()
 
             _uiState.update {
 
@@ -178,6 +235,7 @@ class SharedViewModel @Inject constructor(
                     license = updatedLicense,
                     trackiesForToday = trackiesForToday,
                     statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
+                    weeklyRegularity = updatedWeeklyRegularity,
                     namesOfAllTrackies = updatedNamesOfAllTrackies,
                     allTrackies = updatedListOfAllTrackies
                 )
@@ -278,9 +336,85 @@ class SharedViewModel @Inject constructor(
                 }
             }
 
+            fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
+
+                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+                var passedCurrentDayOfWeek = false
+
+                var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
+
+                setOf(
+                    DaysOfWeek.monday,
+                    DaysOfWeek.tuesday,
+                    DaysOfWeek.wednesday,
+                    DaysOfWeek.thursday,
+                    DaysOfWeek.friday,
+                    DaysOfWeek.saturday,
+                    DaysOfWeek.sunday,
+                ).forEach { dayOfWeek ->
+
+                    if (!passedCurrentDayOfWeek) {
+
+                        if (trackieViewState.repeatOn.contains(dayOfWeek)) {
+
+                            val dayOfWeek = dayOfWeek
+
+//                          getting total amount of Trackies assigned for this day and decreasing it by one:
+                            val total = copyOfViewState.weeklyRegularity[dayOfWeek]!!.keys.toIntArray()[0] - 1
+
+//                          getting amount of ingested Trackies assigned for this day and ... todo
+                            val ingested =
+                                if (currentDayOfWeek == dayOfWeek) {
+
+                                    copyOfViewState.statesOfTrackiesForToday[trackieViewState.name].let { state ->
+
+                                        if (state!!) {
+                                            copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0] - 1
+                                        }
+
+                                        else {
+                                            copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0]
+                                        }
+                                    }
+                                }
+
+                                else {
+                                    copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0] - 1
+                                }
+
+                            newWeeklyRegularity[dayOfWeek] = mapOf(total to ingested)
+                        }
+
+                        else {
+
+                            val dayOfWeek = dayOfWeek
+
+//                          getting total amount of Trackies assigned for this day.
+                            val total = copyOfViewState.weeklyRegularity[dayOfWeek]!!.keys.toIntArray()[0]
+
+//                          getting amount of ingested Trackies assigned for this day.
+                            val ingested = copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0]
+
+                            newWeeklyRegularity[dayOfWeek] = mapOf(total to ingested)
+                        }
+                    }
+
+                    else {
+
+                        newWeeklyRegularity[dayOfWeek] = mapOf(1 to 0)
+                    }
+
+                    passedCurrentDayOfWeek = currentDayOfWeek == dayOfWeek
+
+                }
+
+                return newWeeklyRegularity
+            }
+
             val updatedLicense = updateLicenseViewState()
             val trackiesForToday = updateTrackiesForToday()
             val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
+            val updatedWeeklyRegularity = updateWeeklyRegularity()
             val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
             val updatedListOfAllTrackies = updateListOfAllTrackies()
 
@@ -290,6 +424,7 @@ class SharedViewModel @Inject constructor(
                     license = updatedLicense,
                     trackiesForToday = trackiesForToday,
                     statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
+                    weeklyRegularity = updatedWeeklyRegularity,
                     namesOfAllTrackies = updatedNamesOfAllTrackies,
                     allTrackies = updatedListOfAllTrackies
                 )
@@ -322,6 +457,7 @@ class SharedViewModel @Inject constructor(
                         license = copyOfViewState.license,
                         trackiesForToday = copyOfViewState.trackiesForToday,
                         statesOfTrackiesForToday = copyOfViewState.statesOfTrackiesForToday,
+                        weeklyRegularity = copyOfViewState.weeklyRegularity,
                         namesOfAllTrackies = copyOfViewState.namesOfAllTrackies,
                         allTrackies = allTrackies
                     )

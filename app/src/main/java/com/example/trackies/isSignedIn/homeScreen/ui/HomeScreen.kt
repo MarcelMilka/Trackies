@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.regularityChartLoadedSuccessFully
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.rowWithRadioButtonsLoadedSuccessfully
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddAnotherTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonDisplayAllTrackies
@@ -205,6 +206,13 @@ fun homeScreen(
                                             onSwitchChart(it)
                                         }
                                     )
+
+                                    verticalSpacerS()
+
+                                    regularityChartLoadedSuccessFully(
+                                        sharedViewModelUiState = sharedViewModelUiState
+                                    )
+
                                 }
 
                                 SharedViewModelViewState.FailedToLoadData -> {}

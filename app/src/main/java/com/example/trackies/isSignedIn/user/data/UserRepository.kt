@@ -41,4 +41,9 @@ interface UserRepository {
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ): List<TrackieViewState>?
+
+    suspend fun fetchWeeklyRegularity(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): Map<String, Map<Int, Int>>?
 }
