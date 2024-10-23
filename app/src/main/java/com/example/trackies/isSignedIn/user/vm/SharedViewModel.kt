@@ -178,35 +178,19 @@ class SharedViewModel @Inject constructor(
             fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
 
                 var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
-                var passedCurrentDayOfWeek = false
 
                 copyOfViewState.weeklyRegularity.forEach { array ->
 
                     if (trackieViewState.repeatOn.contains(array.key)) {
 
                         val total = array.value.keys.toIntArray()[0] + 1
+                        val ingested = array.value.values.toIntArray()[0]
 
-                        val ingested =
-                            when (passedCurrentDayOfWeek) {
+                        val value = mapOf(total to ingested)
 
-                                true -> { 0 }
-
-                                false -> {
-
-                                    if  (CurrentTime.getCurrentDayOfWeek() == array.key) {
-
-                                        passedCurrentDayOfWeek = true
-                                        array.value.values.toIntArray()[0]
-                                    }
-
-                                    else {
-
-                                        array.value.values.toIntArray()[0] + 1
-                                    }
-                                }
-                            }
-
-                        newWeeklyRegularity.put(key = array.key, value = mapOf(total to ingested))
+                        newWeeklyRegularity.put(
+                            key = array.key,
+                            value = value)
                     }
 
                     else {
@@ -214,13 +198,17 @@ class SharedViewModel @Inject constructor(
                         val total = array.value.keys.toIntArray()[0]
                         val ingested = array.value.values.toIntArray()[0]
 
-                        newWeeklyRegularity.put(key = array.key, value = mapOf(total to ingested))
+                        val value = mapOf(total to ingested)
+
+                        newWeeklyRegularity.put(
+                            key = array.key,
+                            value = value
+                        )
                     }
                 }
 
                 return newWeeklyRegularity
             }
-
 
             val updatedLicense = updateLicenseViewState()
             val trackiesForToday = updateTrackiesForToday()
@@ -500,7 +488,6 @@ class SharedViewModel @Inject constructor(
             fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
 
                 val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
-                var passedCurrentDayOfWeek = false
 
                 var updatedWeeklyRegularity = mutableMapOf<String, MutableMap<Int, Int>>()
 

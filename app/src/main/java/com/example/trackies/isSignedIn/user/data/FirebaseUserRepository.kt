@@ -281,7 +281,7 @@ class FirebaseUserRepository @Inject constructor(
             }
 
 //          add name of the trackies to { (user's statistics) -> user's weekly statistics} -> (*particular day of week*)
-            listOf(
+            setOf(
                 DaysOfWeek.monday,
                 DaysOfWeek.tuesday,
                 DaysOfWeek.wednesday,
@@ -291,27 +291,13 @@ class FirebaseUserRepository @Inject constructor(
                 DaysOfWeek.sunday
             ).forEach { dayOfWeek ->
 
-                if (!passedCurrentDayOfWeek) {
-
-                    passedCurrentDayOfWeek =
-                        if (currentDayOfWeek == dayOfWeek) {
-                            true
-                        }
-                        else {
-                            false
-                        }
-                }
-
                 if (trackieViewState.ingestionTime == null) {
 
                     if (trackieViewState.repeatOn.contains(dayOfWeek)) {
 
                         val fieldToSave = mutableMapOf<String, Boolean>()
 
-                        fieldToSave["ingested"] =
-                            if (!passedCurrentDayOfWeek) {true}
-                            else if (currentDayOfWeek == dayOfWeek) {false}
-                            else {false}
+                        fieldToSave["ingested"] = false
 
                         usersWeeklyStatistics
                             .collection(dayOfWeek)
