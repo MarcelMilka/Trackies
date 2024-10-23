@@ -34,6 +34,8 @@ import com.example.trackies.ui.theme.BackgroundColor
 
 @Composable
 fun displayAllTrackies(
+    listToDisplay: WhatToDisplay,
+    onChangeListToDisplay: (WhatToDisplay) -> Unit,
     sharedViewModelUiState: SharedViewModelViewState,
     fetchAllUsersTrackies: () -> Unit,
     onReturn: () -> Unit,
@@ -41,10 +43,29 @@ fun displayAllTrackies(
     onDisplayDetailedTrackie: (TrackieViewState) -> Unit
 ) {
 
-    var wholeWeek by remember { mutableStateOf(false) }
-    var today by remember { mutableStateOf(true) }
+    var whatToDisplay by remember { mutableStateOf(listToDisplay) }
 
-    var whatToDisplay by remember { mutableStateOf(WhatToDisplay.TrackiesForToday) }
+    var wholeWeekIsSelected by remember {
+
+        mutableStateOf(
+
+            when (whatToDisplay) {
+                WhatToDisplay.TrackiesForTheWholeWeek -> true
+                WhatToDisplay.TrackiesForToday -> false
+            }
+        )
+    }
+
+    var todayIsSelected by remember {
+
+        mutableStateOf(
+
+            when (whatToDisplay) {
+                WhatToDisplay.TrackiesForTheWholeWeek -> false
+                WhatToDisplay.TrackiesForToday -> true
+            }
+        )
+    }
 
     Box(
 
@@ -86,20 +107,26 @@ fun displayAllTrackies(
 
                         content = {
 
-                            mediumRadioTextButton(text = "whole week", isSelected = wholeWeek) {
+                            mediumRadioTextButton(
+                                text = "whole week",
+                                isSelected = wholeWeekIsSelected
+                            ) {
 
-                                wholeWeek = it
-                                today = !it
+                                wholeWeekIsSelected = true
+                                todayIsSelected = false
 
-                                whatToDisplay = WhatToDisplay.TrackiesForTheWholeWeek
+                                onChangeListToDisplay(WhatToDisplay.TrackiesForTheWholeWeek)
                             }
 
-                            mediumRadioTextButton(text = "today", isSelected = today) {
+                            mediumRadioTextButton(
+                                text = "today",
+                                isSelected = todayIsSelected
+                            ) {
 
-                                today = it
-                                wholeWeek = !it
+                                wholeWeekIsSelected = false
+                                todayIsSelected = true
 
-                                whatToDisplay = WhatToDisplay.TrackiesForToday
+                                onChangeListToDisplay(WhatToDisplay.TrackiesForToday)
                             }
                         }
                     )

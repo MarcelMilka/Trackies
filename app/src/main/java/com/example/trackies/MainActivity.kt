@@ -31,6 +31,7 @@ import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
+import com.example.trackies.isSignedIn.allTrackies.vm.AllTrackiesViewModel
 import com.example.trackies.isSignedIn.detailedTrackie.ui.confirmDeletionOfTheTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.vm.DetailedTrackieViewModel
@@ -62,6 +63,10 @@ class MainActivity : ComponentActivity() {
 
     private val homeScreenViewModel by lazy {
         HomeScreenViewModel()
+    }
+
+    private val lazyAllTrackiesViewModel by lazy {
+        AllTrackiesViewModel()
     }
 
     private val detailedTrackieViewModel by lazy {
@@ -431,10 +436,19 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
 
+                        val allTrackiesViewModel = lazyAllTrackiesViewModel
+                        val listToDisplay by allTrackiesViewModel.listToDisplay.collectAsState()
+
                         val sharedViewModel = lazySharedViewModel.get()
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         displayAllTrackies(
+
+                            listToDisplay = listToDisplay,
+
+                            onChangeListToDisplay = {
+                                allTrackiesViewModel.switchListToDisplay(it)
+                            },
 
                             sharedViewModelUiState = sharedViewModelUiState,
 
