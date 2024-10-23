@@ -465,4 +465,92 @@ class SharedViewModel @Inject constructor(
             }
         }
     }
+
+    fun markTrackieAsIngested(trackieViewState: TrackieViewState) {
+
+        if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
+
+            Log.d("Halla!", "marked trackie as ingested")
+//          Firebase
+            viewModelScope.launch {
+
+                repository.markTrackieAsIngested(
+                    trackieViewState = trackieViewState,
+                    onSuccess = {
+
+                    },
+                    onFailure = {
+                        Log.d("SharedViewModel-firebase", "method 'markTrackieAsIngested' - $it")
+                    }
+                )
+            }
+
+//          UI
+            val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
+
+            fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
+
+                val updatedMap = copyOfViewState.statesOfTrackiesForToday.toMutableMap()
+
+                updatedMap[trackieViewState.name] = true
+
+                return updatedMap
+            }
+
+            fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
+
+                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+                var passedCurrentDayOfWeek = false
+
+                var updatedWeeklyRegularity = mutableMapOf<String, MutableMap<Int, Int>>()
+
+                copyOfViewState.weeklyRegularity.forEach {
+
+                    if (it.key == currentDayOfWeek) {
+
+                        val total = it.value.keys.toIntArray()[0]
+                        var ingested = it.value.values.toIntArray()[0]
+                        ingested = ingested + 1
+
+                        val value = mutableMapOf(total to ingested)
+
+                        updatedWeeklyRegularity.put(
+                            key = it.key,
+                            value = value
+                        )
+                    }
+
+                    else {
+
+                        val total = it.value.keys.toIntArray()[0]
+                        var ingested = it.value.values.toIntArray()[0]
+
+                        val value = mutableMapOf(total to ingested)
+
+                        updatedWeeklyRegularity.put(
+                            key = it.key,
+                            value = value
+                        )
+                    }
+                }
+
+                return updatedWeeklyRegularity
+            }
+
+            val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
+            val updatedWeeklyRegularity = updateWeeklyRegularity()
+
+            _uiState.update {
+
+                SharedViewModelViewState.LoadedSuccessfully(
+                    license = copyOfViewState.license,
+                    trackiesForToday = copyOfViewState.trackiesForToday,
+                    statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
+                    weeklyRegularity = updatedWeeklyRegularity,
+                    namesOfAllTrackies = copyOfViewState.namesOfAllTrackies,
+                    allTrackies = copyOfViewState.allTrackies
+                )
+            }
+        }
+    }
 }

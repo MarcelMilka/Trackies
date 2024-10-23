@@ -46,4 +46,10 @@ interface UserRepository {
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ): Map<String, Map<Int, Int>>?
+
+    suspend fun markTrackieAsIngested(
+        trackieViewState: TrackieViewState,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    )
 }

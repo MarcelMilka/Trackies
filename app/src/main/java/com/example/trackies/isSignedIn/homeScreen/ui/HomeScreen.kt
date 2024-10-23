@@ -47,7 +47,8 @@ fun homeScreen(
     onAddNewTrackie: () -> Unit,
     onDisplayDetailedTrackie: (TrackieViewState) -> Unit,
     onUpdateHeightOfLazyColumn: (Int) -> Unit,
-    onSwitchChart: (HomeScreenChartToDisplay) -> Unit
+    onSwitchChart: (HomeScreenChartToDisplay) -> Unit,
+    onMarkAsIngested: (TrackieViewState) -> Unit
 ) {
 
     Box(
@@ -115,7 +116,9 @@ fun homeScreen(
                                     previewOfListOfTrackies(
                                         homeScreenUiState = homeScreenUiState,
                                         sharedViewModelUiState = sharedViewModelUiState,
-                                        onMarkAsIngested = {},
+                                        onMarkAsIngested = {
+                                            onMarkAsIngested(it)
+                                        },
                                         onDisplayDetails = {
                                             onDisplayDetailedTrackie(it)
                                         }

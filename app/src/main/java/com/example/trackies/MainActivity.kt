@@ -351,6 +351,12 @@ class MainActivity : ComponentActivity() {
                                 homeScreenViewModel.updateTypeOfHomeScreenChart(
                                     homeScreenChartToDisplay = it
                                 )
+                            },
+
+                            onMarkAsIngested = {
+                                sharedViewModel.markTrackieAsIngested(
+                                    trackieViewState = it
+                                )
                             }
                         )
                     }

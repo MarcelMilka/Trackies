@@ -765,4 +765,28 @@ class FirebaseUserRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun markTrackieAsIngested(
+        trackieViewState: TrackieViewState,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+
+        if (trackieViewState.ingestionTime == null) {
+
+            trackieViewState.repeatOn.forEach { dayOfWeek ->
+
+                usersWeeklyStatistics
+                    .collection(CurrentTime.getCurrentDayOfWeek()) // current day of week
+                    .document(trackieViewState.name)
+                    .update("ingested", true)
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onFailure("$it")
+                    }
+            }
+        }
+    }
 }
