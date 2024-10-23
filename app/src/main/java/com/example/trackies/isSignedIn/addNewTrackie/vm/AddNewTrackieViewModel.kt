@@ -9,6 +9,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.buisness.EnumMeasuringUnits
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.InsertDailyDosageViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.InsertNameOfTrackieViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleDaysViewState
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleTimeViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.StatesOfSegments
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.DailyDosageHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.InsertDailyDosageFixedHeightValues
@@ -39,6 +40,7 @@ class AddNewTrackieViewModel @Inject constructor(
     var insertNameOfTrackieViewState = MutableStateFlow(InsertNameOfTrackieViewState())
     var insertDailyDosageViewState = MutableStateFlow(InsertDailyDosageViewState())
     var scheduleDaysViewState = MutableStateFlow(ScheduleDaysViewState())
+    var scheduleTimeViewState = MutableStateFlow(ScheduleTimeViewState())
 
     init {
 
@@ -622,5 +624,10 @@ class AddNewTrackieViewModel @Inject constructor(
                 hint = ScheduleDaysHints.confirmSelectedDaysOfWeek
             )
         }
+    }
+
+//  Schedule time of ingestion operators
+    fun scheduleTimeDisplayButton() {
+
     }
 }

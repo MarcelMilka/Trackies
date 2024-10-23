@@ -24,6 +24,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTr
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loading.insertNameOfTrackieLoading
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.scheduleDays
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loading.scheduleDaysLoading
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.timeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
@@ -163,6 +164,13 @@ fun addNewTrackie(
                                     verticalSpacerS()
 
                                     scheduleDays(
+                                        viewModel = addNewTrackieViewModel
+                                    )
+
+                                    verticalSpacerS()
+
+                                    timeOfIngestion(
+                                        sharedViewModelViewState = sharedViewModelUiState,
                                         viewModel = addNewTrackieViewModel
                                     )
 
