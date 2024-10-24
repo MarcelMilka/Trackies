@@ -170,10 +170,8 @@ fun addNewTrackie(
                                     verticalSpacerS()
 
                                     timeOfIngestion(
-                                        sharedViewModelViewState = sharedViewModelUiState,
                                         viewModel = addNewTrackieViewModel
                                     )
-
                                 }
 
                                 SharedViewModelViewState.FailedToLoadData -> {

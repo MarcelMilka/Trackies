@@ -17,11 +17,12 @@ import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTr
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loadedSuccessfully.NameOfTrackieHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.ScheduleDaysHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.ScheduleDaysSetOfHeights
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.TimeOfIngestionHints
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.TimeOfIngestionSetOfHeights
 import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -627,7 +628,33 @@ class AddNewTrackieViewModel @Inject constructor(
     }
 
 //  Schedule time of ingestion operators
+    fun scheduleTimeDisplayUnactivated() {
+
+        scheduleTimeViewState.update {
+            it.copy(
+
+                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayUnactivatedComponent,
+
+                displayTheButton = false,
+
+                hint = TimeOfIngestionHints.scheduleTimeOfIngestion
+            )
+        }
+    }
+
     fun scheduleTimeDisplayButton() {
 
+        scheduleTimeViewState.update {
+            it.copy(
+
+                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayButton,
+
+                displayTheButton = true,
+
+                hint = TimeOfIngestionHints.scheduleTimeOfIngestion
+            )
+        }
     }
+
+
 }
