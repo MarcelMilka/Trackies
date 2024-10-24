@@ -43,7 +43,8 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun timeOfIngestion(
-    viewModel: AddNewTrackieViewModel
+    viewModel: AddNewTrackieViewModel,
+    onScheduleTimeAndAssignDose: () -> Unit,
 ) {
 
     var targetHeightOfTheSurface by remember {
@@ -215,7 +216,9 @@ import kotlinx.coroutines.launch
 
                                 mediumTextButton(
                                     text = "schedule time",
-                                    onClick = {}
+                                    onClick = {
+                                        onScheduleTimeAndAssignDose()
+                                    }
                                 )
                             }
                         )

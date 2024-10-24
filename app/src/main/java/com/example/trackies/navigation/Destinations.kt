@@ -22,7 +22,10 @@ object Destinations {
 
         val HomeScreen = "HomeScreen"
 
-        val AddNewTrackie = "AddNewTrackie"
+
+        val AddNewTrackieRoute = "AddNewTrackieRoute"
+            val AddNewTrackie = "AddNewTrackie"
+            val DialTimePicker = "DialTimePicker"
 
         val DisplayDetailedTrackieRoute = "DisplayDetailedTrackieRoute"
             val DetailedTrackie = "DetailedTrackie"

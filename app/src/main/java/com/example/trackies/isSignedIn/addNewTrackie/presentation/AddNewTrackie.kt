@@ -46,6 +46,7 @@ fun addNewTrackie(
     sharedViewModelUiState: SharedViewModelViewState,
     addNewTrackieViewModel: AddNewTrackieViewModel,
     onReturn: () -> Unit,
+    onScheduleTimeAndAssignDose: () -> Unit,
     onClearAll: () -> Unit,
     onAdd: (TrackieViewState) -> Unit
 ) {
@@ -170,7 +171,10 @@ fun addNewTrackie(
                                     verticalSpacerS()
 
                                     timeOfIngestion(
-                                        viewModel = addNewTrackieViewModel
+                                        viewModel = addNewTrackieViewModel,
+                                        onScheduleTimeAndAssignDose = {
+                                            onScheduleTimeAndAssignDose()
+                                        }
                                     )
                                 }
 

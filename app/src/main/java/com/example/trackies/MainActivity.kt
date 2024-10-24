@@ -29,6 +29,7 @@ import com.example.trackies.isSignedIn.ui.changePassword.yourPasswordGotChanged
 import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.dialTimePicker
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
 import com.example.trackies.isSignedIn.allTrackies.vm.AllTrackiesViewModel
@@ -330,7 +331,7 @@ class MainActivity : ComponentActivity() {
                             },
 
                             onAddNewTrackie = {
-                                navigationController.navigate(route = Destinations.AddNewTrackie)
+                                navigationController.navigate(route = Destinations.AddNewTrackieRoute)
                             },
 
                             onDisplayDetailedTrackie = {
@@ -357,42 +358,6 @@ class MainActivity : ComponentActivity() {
                                 sharedViewModel.markTrackieAsIngested(
                                     trackieViewState = it
                                 )
-                            }
-                        )
-                    }
-
-                    composable(
-                        route = Destinations.AddNewTrackie,
-                        enterTransition = {EnterTransition.None},
-                        exitTransition = {ExitTransition.None}
-                    ) {
-
-                        val sharedViewModel = lazySharedViewModel.get()
-                        val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
-
-                        val addNewTrackieViewModel = hiltViewModel<AddNewTrackieViewModel>()
-
-                        addNewTrackie(
-
-                            sharedViewModelUiState = sharedViewModelUiState,
-
-                            addNewTrackieViewModel = addNewTrackieViewModel,
-
-                            onReturn = {
-                                navigationController.navigateUp()
-                            },
-
-                            onClearAll = {
-                                addNewTrackieViewModel.clearAll()
-                            },
-
-                            onAdd = { trackieViewState ->
-
-                                sharedViewModel.addNewTrackie(
-                                    trackieViewState = trackieViewState,
-                                    onFailure = {}
-                                )
-                                addNewTrackieViewModel.clearAll()
                             }
                         )
                     }
@@ -479,6 +444,62 @@ class MainActivity : ComponentActivity() {
                             }
 
                         )
+                    }
+
+                    navigation(route = Destinations.AddNewTrackieRoute, startDestination = Destinations.AddNewTrackie) {
+
+                        composable(
+                            route = Destinations.AddNewTrackie,
+                            enterTransition = {EnterTransition.None},
+                            exitTransition = {ExitTransition.None}
+                        ) {
+
+                            val sharedViewModel = lazySharedViewModel.get()
+                            val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
+
+                            val addNewTrackieViewModel = hiltViewModel<AddNewTrackieViewModel>()
+
+                            addNewTrackie(
+
+                                sharedViewModelUiState = sharedViewModelUiState,
+
+                                addNewTrackieViewModel = addNewTrackieViewModel,
+
+                                onReturn = {
+                                    navigationController.navigateUp()
+                                },
+
+                                onScheduleTimeAndAssignDose = {
+                                    navigationController.navigate(route = Destinations.DialTimePicker)
+                                },
+
+                                onClearAll = {
+                                    addNewTrackieViewModel.clearAll()
+                                },
+
+                                onAdd = { trackieViewState ->
+
+                                    sharedViewModel.addNewTrackie(
+                                        trackieViewState = trackieViewState,
+                                        onFailure = {}
+                                    )
+                                    addNewTrackieViewModel.clearAll()
+                                }
+                            )
+                        }
+
+                        dialog(route = Destinations.DialTimePicker) {
+
+                            dialTimePicker(
+                                onConfirm = {
+                                    navigationController.navigateUp(
+                                    )
+                                },
+                                onDecline = {
+                                    navigationController.navigateUp()
+                                }
+                            )
+                        }
                     }
 
                     navigation(route = Destinations.DisplayDetailedTrackieRoute, startDestination = Destinations.DetailedTrackie) {

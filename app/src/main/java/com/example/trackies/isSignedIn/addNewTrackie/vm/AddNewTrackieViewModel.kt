@@ -48,8 +48,6 @@ class AddNewTrackieViewModel @Inject constructor(
         viewModelScope.launch {
             addNewTrackieViewState.collect {
 
-                Log.d("Halla!", "vms $it")
-
                 if (
                     it.name != "" &&
                     it.totalDose != 0 &&
