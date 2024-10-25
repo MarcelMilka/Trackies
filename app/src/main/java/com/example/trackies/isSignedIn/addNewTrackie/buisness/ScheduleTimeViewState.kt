@@ -5,6 +5,8 @@ import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestio
 
 data class ScheduleTimeViewState(
 
+    var timeOfIngestion: TimeOfIngestion? = null,
+
     var targetHeightOfTheSurface: Int = TimeOfIngestionSetOfHeights.displayUnactivatedComponent,
 
     var displayTheButton: Boolean = false, // The button responsible for adding new/another schedule.

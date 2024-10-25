@@ -11,6 +11,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.buisness.InsertNameOfTracki
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleDaysViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleTimeViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.StatesOfSegments
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.DailyDosageHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.InsertDailyDosageFixedHeightValues
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loadedSuccessfully.InsertNameOfTrackieFixedHeightValues
@@ -28,7 +29,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
+class AddNewTrackieViewModel @Inject constructor(
+    private var repository: UserRepository
+): ViewModel() {
+
+    init {
+        Log.d("Halla!", "Initialized $this")
+    }
 
     val namesOfAllExistingTrackies = mutableListOf<String>()
 
@@ -253,6 +260,24 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
                     )
                 }
             }
+        }
+    }
+
+    fun setOrUpdateTimeOfIngestion(timeOfIngestion: TimeOfIngestion) {
+
+        scheduleTimeViewState.update {
+            it.copy(
+                timeOfIngestion = timeOfIngestion,
+            )
+        }
+    }
+
+    fun deleteTimeOfIngestion() {
+
+        scheduleTimeViewState.update {
+            it.copy(
+                timeOfIngestion = null,
+            )
         }
     }
 
@@ -651,6 +676,4 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
             )
         }
     }
-
-
 }

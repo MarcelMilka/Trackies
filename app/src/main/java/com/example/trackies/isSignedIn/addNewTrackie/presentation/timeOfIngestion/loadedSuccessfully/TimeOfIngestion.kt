@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.trackie.premiumLogo
 import com.example.trackies.ui.sharedUI.customButtons.mediumTextButton
@@ -46,6 +47,10 @@ import kotlinx.coroutines.launch
     viewModel: AddNewTrackieViewModel,
     onScheduleTimeAndAssignDose: () -> Unit,
 ) {
+
+    var timeOfIngestion: TimeOfIngestion? by remember {
+        mutableStateOf(null)
+    }
 
     var targetHeightOfTheSurface by remember {
 
@@ -97,6 +102,7 @@ import kotlinx.coroutines.launch
     CoroutineScope(Dispatchers.Default).launch {
 
         viewModel.scheduleTimeViewState.collect {
+            timeOfIngestion = it.timeOfIngestion
             targetHeightOfTheSurface = it.targetHeightOfTheSurface
             displayFieldWithButton = it.displayTheButton
             hint = it.hint
@@ -211,7 +217,7 @@ import kotlinx.coroutines.launch
                             content = {
 
                                 mediumTextButton(
-                                    text = "schedule time",
+                                    text = "schedule time, $timeOfIngestion",
                                     onClick = {
                                         onScheduleTimeAndAssignDose()
                                     }

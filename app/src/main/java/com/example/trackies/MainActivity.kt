@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -61,6 +62,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var lazySharedViewModel: Lazy<SharedViewModel>
+
+    @Inject
+    lateinit var lazyAddNewTrackieViewModel: Lazy<AddNewTrackieViewModel>
 
     private val homeScreenViewModel by lazy {
         HomeScreenViewModel()
@@ -359,6 +363,7 @@ class MainActivity : ComponentActivity() {
                                     trackieViewState = it
                                 )
                             }
+
                         )
                     }
 
@@ -457,7 +462,7 @@ class MainActivity : ComponentActivity() {
                             val sharedViewModel = lazySharedViewModel.get()
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
-                            val addNewTrackieViewModel = hiltViewModel<AddNewTrackieViewModel>()
+                            val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
 
                             addNewTrackie(
 
@@ -467,13 +472,19 @@ class MainActivity : ComponentActivity() {
 
                                 onReturn = {
                                     navigationController.navigateUp()
+                                    addNewTrackieViewModel.clearAll()
                                 },
 
                                 onScheduleTimeAndAssignDose = {
                                     navigationController.navigate(route = Destinations.DialTimePicker)
                                 },
 
+                                onDeleteTimeOfIngestion = {
+                                    addNewTrackieViewModel.deleteTimeOfIngestion()
+                                },
+
                                 onClearAll = {
+
                                     addNewTrackieViewModel.clearAll()
                                 },
 
@@ -490,14 +501,21 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.DialTimePicker) {
 
+                            val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
+
                             dialTimePicker(
+
                                 onConfirm = {
-                                    navigationController.navigateUp(
+                                    navigationController.navigateUp()
+                                    addNewTrackieViewModel.setOrUpdateTimeOfIngestion(
+                                        timeOfIngestion = it
                                     )
                                 },
+
                                 onDecline = {
                                     navigationController.navigateUp()
                                 }
+
                             )
                         }
                     }

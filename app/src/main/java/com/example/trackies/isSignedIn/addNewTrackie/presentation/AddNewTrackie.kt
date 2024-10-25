@@ -47,6 +47,7 @@ fun addNewTrackie(
     addNewTrackieViewModel: AddNewTrackieViewModel,
     onReturn: () -> Unit,
     onScheduleTimeAndAssignDose: () -> Unit,
+    onDeleteTimeOfIngestion: () -> Unit,
     onClearAll: () -> Unit,
     onAdd: (TrackieViewState) -> Unit
 ) {
