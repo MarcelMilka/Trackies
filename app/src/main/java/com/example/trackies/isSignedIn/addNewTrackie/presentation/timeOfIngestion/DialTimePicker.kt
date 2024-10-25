@@ -1,5 +1,6 @@
 package com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +17,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.TimeOfIngestion
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
@@ -29,7 +32,7 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun dialTimePicker(
-    onConfirm: () -> Unit,
+    onConfirm: (TimeOfIngestion) -> Unit,
     onDecline: () -> Unit,
 ) {
 
@@ -37,7 +40,8 @@ fun dialTimePicker(
 
     val timePickerState = rememberTimePickerState(
         initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE)
+        initialMinute = currentTime.get(Calendar.MINUTE),
+        is24Hour = true
     )
 
 //  Whole screen
@@ -105,7 +109,7 @@ fun dialTimePicker(
                                                 },
 
                                                 onClick = {
-                                                    onConfirm()
+                                                    onDecline()
                                                 }
                                             )
 
@@ -118,7 +122,12 @@ fun dialTimePicker(
                                                 },
 
                                                 onClick = {
-                                                    onDecline()
+                                                    onConfirm(
+                                                        TimeOfIngestion(
+                                                            hour = timePickerState.hour,
+                                                            minute = timePickerState.minute
+                                                        )
+                                                    )
                                                 }
                                             )
                                         }

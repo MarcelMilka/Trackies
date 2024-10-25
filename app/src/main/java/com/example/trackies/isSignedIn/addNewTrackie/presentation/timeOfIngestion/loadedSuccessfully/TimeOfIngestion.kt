@@ -63,10 +63,6 @@ import kotlinx.coroutines.launch
         label = "",
     )
 
-    LaunchedEffect(heightOfTheSurface) {
-        Log.d("Halla!", "$heightOfTheSurface")
-    }
-
     var displayFieldWithButton by remember {
 
         mutableStateOf(false)

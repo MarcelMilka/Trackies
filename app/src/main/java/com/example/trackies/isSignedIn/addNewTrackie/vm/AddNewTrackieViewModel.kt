@@ -28,9 +28,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddNewTrackieViewModel @Inject constructor(
-    private var userRepository: UserRepository
-): ViewModel() {
+class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
     val namesOfAllExistingTrackies = mutableListOf<String>()
 
