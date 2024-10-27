@@ -49,6 +49,12 @@ val fonts = Typography(
         color = White
     ),
 
+//  Use this in buttons, as text buttons
+    titleLarge = TextStyle(
+        fontFamily = quickSandBold,
+        fontSize = 15.sp,
+        color = White
+    ),
 
 //  Use this in buttons, as text buttons
     titleMedium = TextStyle(

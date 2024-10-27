@@ -43,6 +43,14 @@ import com.example.trackies.ui.theme.fonts
     )
 }
 
+@Composable fun boldTextTitleMedium(content: String) {
+
+    Text(
+        text = content,
+        style = fonts.titleLarge
+    )
+}
+
 @Composable fun textTitleSmall(content: String) {
 
     Text(

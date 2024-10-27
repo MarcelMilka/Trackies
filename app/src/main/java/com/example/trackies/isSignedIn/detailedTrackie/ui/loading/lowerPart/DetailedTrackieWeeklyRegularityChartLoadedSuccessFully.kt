@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart
+package com.example.trackies.isSignedIn.detailedTrackie.ui.loading.lowerPart
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.constantValues.CurrentTime
+import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
@@ -33,7 +34,8 @@ import com.example.trackies.ui.theme.fonts
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun regularityChartLoadedSuccessFully(
+fun detailedTrackieWeeklyRegularityChartLoadedSuccessFully(
+    trackieViewState: TrackieViewState,
     sharedViewModelUiState: SharedViewModelViewState.LoadedSuccessfully
 ) {
 
@@ -115,7 +117,7 @@ fun regularityChartLoadedSuccessFully(
 
                                 val color = if (activatedBar == it.key) { PrimaryColor } else { SecondaryColor }
 
-                                if ( activatedBar == it.key ) {
+                                if (activatedBar == it.key) {
 
                                     Surface(
 

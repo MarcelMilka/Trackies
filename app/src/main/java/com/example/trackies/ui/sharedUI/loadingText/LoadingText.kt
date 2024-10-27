@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart
+package com.example.trackies.ui.sharedUI.loadingText
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

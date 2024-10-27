@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.detailedTrackie.ui.loading.lowerPart
+package com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButton
-import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
+import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
+import com.example.trackies.ui.sharedUI.customText.boldTextTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 
@@ -50,14 +51,14 @@ fun upperPartLoadedSuccessfully (
                 }
             )
 
-            verticalSpacerL()
+            verticalSpacerS()
 
-            textHeadlineMedium(content = "Scheduled days")
+            boldTextTitleMedium(content = "Scheduled days")
             textTitleMedium(content = abbreviateDaysOfWeek(trackieViewState.repeatOn))
 
-            verticalSpacerL()
+            verticalSpacerS()
 
-            textHeadlineMedium(content = "Daily dose")
+            boldTextTitleMedium(content = "Daily dose")
             textTitleMedium(content = "${trackieViewState.totalDose} ${trackieViewState.measuringUnit}")
 
         }

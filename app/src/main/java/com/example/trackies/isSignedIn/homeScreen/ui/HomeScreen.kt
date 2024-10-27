@@ -15,12 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
-import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.regularityChartLoadedSuccessFully
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.rowWithRadioButtonsLoadedSuccessfully
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddAnotherTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonDisplayAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.previewOfListOfTrackies
-import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingText
+import com.example.trackies.ui.sharedUI.loadingText.loadingText
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.regularityChartLoading
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.rowWithRadioButtonsLoading
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonAddAnotherTrackie
@@ -35,6 +34,7 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.homeScreenWeeklyRegularityChartLoadedSuccessFully
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
@@ -212,7 +212,7 @@ fun homeScreen(
 
                                     verticalSpacerS()
 
-                                    regularityChartLoadedSuccessFully(
+                                    homeScreenWeeklyRegularityChartLoadedSuccessFully(
                                         sharedViewModelUiState = sharedViewModelUiState
                                     )
 

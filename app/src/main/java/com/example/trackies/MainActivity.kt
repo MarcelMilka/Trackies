@@ -524,10 +524,14 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
+                            val sharedViewModel = lazySharedViewModel.get()
+                            val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
+
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
                             detailedTrackie(
-                                uiState = detailedTrackieUiState,
+                                sharedViewModelUiState = sharedViewModelUiState,
+                                trackieViewState = detailedTrackieUiState,
                                 onReturn = {
                                     navigationController.navigateUp()
                                 },
