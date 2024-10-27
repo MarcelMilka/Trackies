@@ -1,10 +1,7 @@
 package com.example.trackies
 
-import android.R.attr.targetActivity
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,8 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -33,7 +28,6 @@ import com.example.trackies.isSignedIn.ui.changePassword.yourPasswordGotChanged
 import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie.AddNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.scheduleIngestionTime
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
