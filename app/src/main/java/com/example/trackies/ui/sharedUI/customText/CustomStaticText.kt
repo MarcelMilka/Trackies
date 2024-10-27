@@ -43,11 +43,21 @@ import com.example.trackies.ui.theme.fonts
     )
 }
 
+@Composable fun centeredTextTitleMedium(content: String) {
+
+    Text(
+        text = content,
+        style = fonts.titleMedium,
+        textAlign = TextAlign.Center,
+    )
+}
+
 @Composable fun boldTextTitleMedium(content: String) {
 
     Text(
         text = content,
-        style = fonts.titleLarge
+        style = fonts.titleLarge,
+        textAlign = TextAlign.Center,
     )
 }
 

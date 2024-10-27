@@ -35,6 +35,8 @@ import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.homeScreenWeeklyRegularityChartLoadedSuccessFully
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.monthlyRegularityChartLoadedSuccessfully
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.yearlyRegularityChartLoadedSuccessfully
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
@@ -212,10 +214,25 @@ fun homeScreen(
 
                                     verticalSpacerS()
 
-                                    homeScreenWeeklyRegularityChartLoadedSuccessFully(
-                                        sharedViewModelUiState = sharedViewModelUiState
-                                    )
+                                    when (homeScreenUiState.typeOfHomeScreenChart) {
 
+                                        HomeScreenChartToDisplay.Weekly -> {
+
+                                            homeScreenWeeklyRegularityChartLoadedSuccessFully(
+                                                sharedViewModelUiState = sharedViewModelUiState
+                                            )
+                                        }
+
+                                        HomeScreenChartToDisplay.Monthly -> {
+
+                                            monthlyRegularityChartLoadedSuccessfully()
+                                        }
+
+                                        HomeScreenChartToDisplay.Yearly -> {
+
+                                            yearlyRegularityChartLoadedSuccessfully()
+                                        }
+                                    }
                                 }
 
                                 SharedViewModelViewState.FailedToLoadData -> {}
