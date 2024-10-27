@@ -12,8 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -30,7 +28,7 @@ import com.example.trackies.isSignedIn.ui.changePassword.yourPasswordGotChanged
 import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.dialTimePicker
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.scheduleIngestionTime
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
 import com.example.trackies.isSignedIn.allTrackies.vm.AllTrackiesViewModel
@@ -476,11 +474,7 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onScheduleTimeAndAssignDose = {
-                                    navigationController.navigate(route = Destinations.DialTimePicker)
-                                },
-
-                                onDeleteTimeOfIngestion = {
-                                    addNewTrackieViewModel.deleteTimeOfIngestion()
+                                    navigationController.navigate(route = Destinations.ScheduleIngestionTime)
                                 },
 
                                 onClearAll = {
@@ -499,16 +493,18 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        dialog(route = Destinations.DialTimePicker) {
+                        dialog(route = Destinations.ScheduleIngestionTime) {
 
                             val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
 
-                            dialTimePicker(
+                            scheduleIngestionTime(
 
                                 onConfirm = {
+
                                     navigationController.navigateUp()
-                                    addNewTrackieViewModel.setOrUpdateTimeOfIngestion(
-                                        timeOfIngestion = it
+
+                                    addNewTrackieViewModel.updateIngestionTime(
+                                        ingestionTimeEntity = it
                                     )
                                 },
 

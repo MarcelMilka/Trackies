@@ -1,7 +1,7 @@
 package com.example.trackies
 
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleTimeViewState
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.TimeOfIngestion
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.IngestionTime
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -14,25 +14,25 @@ class AddNewTrackieViewModelTest {
 
         var scheduleTimeViewState = MutableStateFlow(ScheduleTimeViewState())
 
-        fun setOrUpdateTimeOfIngestion(timeOfIngestion: TimeOfIngestion) {
+        fun setOrUpdateTimeOfIngestion(timeOfIngestion: IngestionTime) {
 
             scheduleTimeViewState.update {
                 it.copy(
-                    timeOfIngestion = timeOfIngestion,
+                    ingestionTime = timeOfIngestion,
                 )
             }
         }
 
         setOrUpdateTimeOfIngestion(
-            timeOfIngestion = TimeOfIngestion(
+            timeOfIngestion = IngestionTime(
                 hour = 10,
                 minute = 30
             )
         )
 
         assertEquals(
-            TimeOfIngestion(hour = 10, minute = 30),
-            scheduleTimeViewState.value.timeOfIngestion
+            IngestionTime(hour = 10, minute = 30),
+            scheduleTimeViewState.value.ingestionTime
         )
     }
 
@@ -41,37 +41,37 @@ class AddNewTrackieViewModelTest {
 
         var scheduleTimeViewState = MutableStateFlow(ScheduleTimeViewState())
 
-        fun setOrUpdateTimeOfIngestion(timeOfIngestion: TimeOfIngestion) {
+        fun setOrUpdateTimeOfIngestion(timeOfIngestion: IngestionTime) {
 
             scheduleTimeViewState.update {
                 it.copy(
-                    timeOfIngestion = timeOfIngestion,
+                    ingestionTime = timeOfIngestion,
                 )
             }
         }
 
         setOrUpdateTimeOfIngestion(
-            timeOfIngestion = TimeOfIngestion(
+            timeOfIngestion = IngestionTime(
                 hour = 10,
                 minute = 30
             )
         )
 
         assertEquals(
-            TimeOfIngestion(hour = 10, minute = 30),
-            scheduleTimeViewState.value.timeOfIngestion
+            IngestionTime(hour = 10, minute = 30),
+            scheduleTimeViewState.value.ingestionTime
         )
 
         setOrUpdateTimeOfIngestion(
-            timeOfIngestion = TimeOfIngestion(
+            timeOfIngestion = IngestionTime(
                 hour = 12,
                 minute = 15
             )
         )
 
         assertEquals(
-            TimeOfIngestion(hour = 12, minute = 15),
-            scheduleTimeViewState.value.timeOfIngestion
+            IngestionTime(hour = 12, minute = 15),
+            scheduleTimeViewState.value.ingestionTime
         )
     }
 
@@ -80,11 +80,11 @@ class AddNewTrackieViewModelTest {
 
         var scheduleTimeViewState = MutableStateFlow(ScheduleTimeViewState())
 
-        fun setOrUpdateTimeOfIngestion(timeOfIngestion: TimeOfIngestion) {
+        fun setOrUpdateTimeOfIngestion(timeOfIngestion: IngestionTime) {
 
             scheduleTimeViewState.update {
                 it.copy(
-                    timeOfIngestion = timeOfIngestion,
+                    ingestionTime = timeOfIngestion,
                 )
             }
         }
@@ -92,28 +92,28 @@ class AddNewTrackieViewModelTest {
 
             scheduleTimeViewState.update {
                 it.copy(
-                    timeOfIngestion = null,
+                    ingestionTime = null,
                 )
             }
         }
 
         setOrUpdateTimeOfIngestion(
-            timeOfIngestion = TimeOfIngestion(
+            timeOfIngestion = IngestionTime(
                 hour = 10,
                 minute = 30
             )
         )
 
         assertEquals(
-            TimeOfIngestion(hour = 10, minute = 30),
-            scheduleTimeViewState.value.timeOfIngestion
+            IngestionTime(hour = 10, minute = 30),
+            scheduleTimeViewState.value.ingestionTime
         )
 
         deleteTimeOfIngestion()
 
         assertEquals(
             null,
-            scheduleTimeViewState.value.timeOfIngestion
+            scheduleTimeViewState.value.ingestionTime
         )
     }
 }

@@ -2,15 +2,13 @@ package com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngesti
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,10 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.TimeOfIngestion
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.IngestionTime
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.trackies.isSignedIn.trackie.premiumLogo
-import com.example.trackies.ui.sharedUI.customButtons.mediumTextButton
+import com.example.trackies.isSignedIn.trackie.trackiesPremiumLogo
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.Dimensions
@@ -47,10 +44,6 @@ import kotlinx.coroutines.launch
     viewModel: AddNewTrackieViewModel,
     onScheduleTimeAndAssignDose: () -> Unit,
 ) {
-
-    var timeOfIngestion: TimeOfIngestion? by remember {
-        mutableStateOf(null)
-    }
 
     var targetHeightOfTheSurface by remember {
 
@@ -68,45 +61,69 @@ import kotlinx.coroutines.launch
         label = "",
     )
 
-    var displayFieldWithButton by remember {
+    var hint by remember {
+
+        mutableStateOf(TimeOfIngestionHints.clickToInsertTimeOfIngestion)
+    }
+
+    var ingestionTime: IngestionTime? by remember {
+        mutableStateOf(null)
+    }
+
+    var displayContentInTimeComponent by remember {
 
         mutableStateOf(false)
     }
 
-    var hint by remember {
+//  Control whether this segment is active.
+    var thisSegmentIsActive by remember {
 
-        mutableStateOf(TimeOfIngestionHints.scheduleTimeOfIngestion)
+        mutableStateOf(false)
     }
 
-//  Control whether this segment is active.
-    var thisSegmentIsActive by remember { mutableStateOf(false) }
     CoroutineScope(Dispatchers.Default).launch {
 
         viewModel.statesOfSegments.collect { statesOfSegments ->
-            thisSegmentIsActive = statesOfSegments.insertTimeOfIngestionIsActive
+
+            thisSegmentIsActive = statesOfSegments.timeOfIngestionIsActive
 
             when (thisSegmentIsActive) {
 
+//              Expand this segment
                 true -> {
-                    viewModel.scheduleTimeDisplayButton()
+                    viewModel.scheduleTimeDisplayActivatedTimeComponent()
                 }
 
+//              Collapse this segment
                 false -> {
-                    viewModel.scheduleTimeDisplayUnactivated()
+
+                    if (ingestionTime != null) {
+
+                        viewModel.scheduleTimeDisplayUnactivatedTimeComponent()
+                    }
+
+                    else {
+
+                        viewModel.scheduleTimeDisplayUnactivated()
+                    }
                 }
             }
         }
     }
 
-    //  Update values
+//  Update values
     CoroutineScope(Dispatchers.Default).launch {
 
         viewModel.scheduleTimeViewState.collect {
-            timeOfIngestion = it.timeOfIngestion
             targetHeightOfTheSurface = it.targetHeightOfTheSurface
-            displayFieldWithButton = it.displayTheButton
             hint = it.hint
+            ingestionTime = it.ingestionTime
+            displayContentInTimeComponent = it.displayContentInTimeComponent
         }
+    }
+
+    LaunchedEffect(targetHeightOfTheSurface) {
+        Log.d("Halla!", "$targetHeightOfTheSurface")
     }
 
     Surface(
@@ -129,17 +146,24 @@ import kotlinx.coroutines.launch
                         segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
                     )
 
-                    viewModel.scheduleTimeDisplayUnactivated()
+                    if (ingestionTime == null) {
+
+                        viewModel.deactivateSegment(
+                            segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
+                        )
+                    }
                 }
 
 //              Expand this segment
                 false -> {
 
+                    if (ingestionTime == null) {
+                        onScheduleTimeAndAssignDose()
+                    }
+
                     viewModel.activateSegment(
                         segmentToActivate = AddNewTrackieSegments.TimeOfIngestion
                     )
-
-                    viewModel.scheduleTimeDisplayButton()
                 }
             }
 
@@ -153,80 +177,109 @@ import kotlinx.coroutines.launch
 
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(Dimensions.roundedCornersOfMediumElements)
-            ) {
+                    .padding(Dimensions.roundedCornersOfMediumElements),
 
-//              Displays "Time of ingestion", hints and depending on the license: logo of Trackies Premium
-                Row(
+                content = {
 
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp),
+//                  Displays "Time of ingestion", hints and depending on the license: logo of Trackies Premium
+                    Row(
 
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(30.dp),
 
-                    content = {
+                        horizontalArrangement = Arrangement.SpaceBetween,
 
-                        Column(
+                        content = {
 
-                            modifier = Modifier
-                                .height(30.dp),
+                            Column(
 
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier
+                                    .height(30.dp),
 
-                            content = {
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.SpaceBetween,
 
-                                textTitleMedium(content = "Time of ingestion")
-                                textTitleSmall(content = TimeOfIngestionHints.scheduleTimeOfIngestion)
-                            }
-                        )
+                                content = {
 
-                        Column(
+                                    textTitleMedium(content = "Time of ingestion")
+                                    textTitleSmall(content = TimeOfIngestionHints.clickToInsertTimeOfIngestion)
+                                }
+                            )
 
-                            modifier = Modifier
-                                .height(30.dp),
+                            Column(
 
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .height(30.dp),
 
-                            content = {
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
 
-                                premiumLogo()
-                            }
-                        )
-                    }
-                )
+                                content = {
 
-                AnimatedVisibility(
+                                    trackiesPremiumLogo()
+                                }
+                            )
+                        }
+                    )
 
-                    visible = displayFieldWithButton,
-                    enter = fadeIn(animationSpec = tween(250)),
-                    exit = fadeOut(animationSpec = tween(250)),
+                    Row(
 
-                    content = {
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(top = 10.dp),
 
-                        Column(
+                        horizontalArrangement = Arrangement.SpaceBetween,
 
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
+                        content = {
 
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.Start,
-                            content = {
+                            timeComponent(
 
-                                mediumTextButton(
-                                    text = "schedule time, $timeOfIngestion",
-                                    onClick = {
-                                        onScheduleTimeAndAssignDose()
+                                displayButtons = displayContentInTimeComponent,
+
+                                hour = ingestionTime?.hour ?: "",
+
+                                minute = ingestionTime?.minute ?: "",
+
+                                onClick = {
+
+                                    when (thisSegmentIsActive) {
+
+                                        true -> {
+                                            viewModel.deactivateSegment(
+                                                segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
+                                            )
+                                        }
+
+                                        false -> {
+                                            viewModel.activateSegment(
+                                                segmentToActivate = AddNewTrackieSegments.TimeOfIngestion
+                                            )
+                                        }
+
                                     }
-                                )
-                            }
-                        )
-                    }
-                )
-            }
+                                },
+
+                                onEdit = {
+                                    onScheduleTimeAndAssignDose()
+                                },
+
+                                onDelete = {
+
+                                    viewModel.updateIngestionTime(
+                                        ingestionTimeEntity = null
+                                    )
+
+                                    viewModel.deactivateSegment(
+                                        segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
+                                    )
+                                }
+
+                            )
+                        }
+                    )
+                }
+            )
         }
     )
 }

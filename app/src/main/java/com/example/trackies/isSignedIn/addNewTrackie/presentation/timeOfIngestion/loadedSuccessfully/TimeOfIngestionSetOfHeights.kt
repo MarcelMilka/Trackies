@@ -2,15 +2,9 @@ package com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngesti
 
 object TimeOfIngestionSetOfHeights {
 
-    val displayUnactivatedComponent: Int = 50
+    val displayUnactivatedComponent = 50
 
-    val displayButton: Int = 106
+    val displayActivatedTimeComponent = 120
 
-    val displayOneSchedule: Int = 176
-
-    val displayTwoSchedules: Int = 241
-
-    val displayThreeSchedules: Int = 306
-
-    val displayFourSchedules: Int = 371
+    val displayUnactivatedTimeComponent = 100
 }

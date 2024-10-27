@@ -23,7 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.trackies.ui.sharedUI.customButtons.iconButtonDetails
+import com.example.trackies.ui.sharedUI.customButtons.iconButton
 import com.example.trackies.ui.sharedUI.customSpacers.horizontalSpacerS
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
@@ -133,7 +133,7 @@ import com.example.trackies.ui.theme.SecondaryColor
                 verticalArrangement = Arrangement.Center,
 
                 content = {
-                    iconButtonDetails(
+                    iconButton(
                         icon = Icons.Rounded.Search,
                         onClick = {
                             onDisplayDetails()

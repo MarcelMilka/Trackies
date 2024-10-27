@@ -2,6 +2,7 @@ package com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngesti
 
 object TimeOfIngestionHints {
 
-    val scheduleTimeOfIngestion: String = "click to schedule time of ingestion"
-    val editSelectedDaysOfWeek: String = "click to edit scheduled time of ingestion"
+    val clickToInsertTimeOfIngestion = "click to insert time of ingestion"
+    val clickToConfirmIngestionTime = "click to confirm ingestion time"
+    val clickToEditOrDeleteTimeOfIngestion = "click to edit or delete time of ingestion"
 }

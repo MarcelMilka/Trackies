@@ -4,5 +4,5 @@ data class StatesOfSegments (
     var insertNameIsActive: Boolean = false,
     var insertTotalDoseIsActive: Boolean = false,
     var scheduleDaysIsActive: Boolean = false,
-    var insertTimeOfIngestionIsActive: Boolean = false,
+    var timeOfIngestionIsActive: Boolean = false,
 )

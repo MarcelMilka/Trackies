@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.trackies.isSignedIn.trackie.TrackieViewState
-import com.example.trackies.ui.sharedUI.customButtons.iconButtonDetails
+import com.example.trackies.ui.sharedUI.customButtons.iconButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
@@ -41,7 +41,7 @@ fun upperPartLoadedSuccessfully (
 
                     textHeadlineMedium(content = trackieViewState.name)
 
-                    iconButtonDetails(
+                    iconButton(
                         icon = Icons.Rounded.Delete,
                         onClick = {
                             onDelete()

@@ -107,7 +107,10 @@ import kotlinx.coroutines.launch
     val focusRequester = remember { FocusRequester() }
 
 //  Control whether this segment is active
-    var thisSegmentIsActive by remember { mutableStateOf(false) }
+    var thisSegmentIsActive by remember {
+
+        mutableStateOf(false)
+    }
     CoroutineScope(Dispatchers.Default).launch {
 
         viewModel.statesOfSegments.collect { statesOfSegments ->

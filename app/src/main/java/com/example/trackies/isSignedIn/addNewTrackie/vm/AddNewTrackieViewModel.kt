@@ -11,15 +11,16 @@ import com.example.trackies.isSignedIn.addNewTrackie.buisness.InsertNameOfTracki
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleDaysViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleTimeViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.StatesOfSegments
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.DailyDosageHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.InsertDailyDosageFixedHeightValues
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loadedSuccessfully.InsertNameOfTrackieFixedHeightValues
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loadedSuccessfully.NameOfTrackieHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.ScheduleDaysHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.ScheduleDaysSetOfHeights
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.IngestionTimeEntity
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.TimeOfIngestionHints
 import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.TimeOfIngestionSetOfHeights
+import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.convertIntoTimeOfIngestion
 import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,7 +70,7 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-
+//  Operators of 'AddNewTrackieViewState'
     fun updateName(nameOfTheNewTrackie: String) {
 
         addNewTrackieViewState.update {
@@ -99,6 +100,17 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
+    fun updateIngestionTime(ingestionTimeEntity: IngestionTimeEntity?) {
+
+        val ingestionTime = ingestionTimeEntity?.convertIntoTimeOfIngestion()
+
+        scheduleTimeViewState.update {
+            it.copy(
+                ingestionTime = ingestionTime
+            )
+        }
+    }
+
     fun clearAll() {
 
         addNewTrackieViewState.update {
@@ -120,7 +132,7 @@ class AddNewTrackieViewModel @Inject constructor(
                 insertNameIsActive = false,
                 insertTotalDoseIsActive = false,
                 scheduleDaysIsActive = false,
-                insertTimeOfIngestionIsActive = false
+                timeOfIngestionIsActive = false
             )
         }
 
@@ -173,6 +185,16 @@ class AddNewTrackieViewModel @Inject constructor(
                 hint = ScheduleDaysHints.selectDaysOfWeek
             )
         }
+
+        scheduleTimeViewState.update {
+
+            it.copy(
+                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayUnactivatedComponent,
+                hint = TimeOfIngestionHints.clickToInsertTimeOfIngestion,
+                ingestionTime = null,
+                displayContentInTimeComponent = false
+            )
+        }
     }
 
     fun activateSegment(segmentToActivate: AddNewTrackieSegments) {
@@ -186,7 +208,7 @@ class AddNewTrackieViewModel @Inject constructor(
                         insertNameIsActive = true,
                         insertTotalDoseIsActive = false,
                         scheduleDaysIsActive = false,
-                        insertTimeOfIngestionIsActive = false
+                        timeOfIngestionIsActive = false
                     )
                 }
             }
@@ -197,7 +219,7 @@ class AddNewTrackieViewModel @Inject constructor(
                         insertNameIsActive = false,
                         insertTotalDoseIsActive = true,
                         scheduleDaysIsActive = false,
-                        insertTimeOfIngestionIsActive = false
+                        timeOfIngestionIsActive = false
                     )
                 }
             }
@@ -208,7 +230,7 @@ class AddNewTrackieViewModel @Inject constructor(
                         insertNameIsActive = false,
                         insertTotalDoseIsActive = false,
                         scheduleDaysIsActive = true,
-                        insertTimeOfIngestionIsActive = false
+                        timeOfIngestionIsActive = false
                     )
                 }
             }
@@ -219,7 +241,7 @@ class AddNewTrackieViewModel @Inject constructor(
                         insertNameIsActive = false,
                         insertTotalDoseIsActive = false,
                         scheduleDaysIsActive = false,
-                        insertTimeOfIngestionIsActive = true
+                        timeOfIngestionIsActive = true
                     )
                 }
             }
@@ -256,33 +278,15 @@ class AddNewTrackieViewModel @Inject constructor(
             AddNewTrackieSegments.TimeOfIngestion -> {
                 statesOfSegments.update { activityState ->
                     activityState.copy(
-                        insertTimeOfIngestionIsActive = false
+                        timeOfIngestionIsActive = false
                     )
                 }
             }
         }
     }
 
-    fun setOrUpdateTimeOfIngestion(timeOfIngestion: TimeOfIngestion) {
 
-        scheduleTimeViewState.update {
-            it.copy(
-                timeOfIngestion = timeOfIngestion,
-            )
-        }
-    }
-
-    fun deleteTimeOfIngestion() {
-
-        scheduleTimeViewState.update {
-            it.copy(
-                timeOfIngestion = null,
-            )
-        }
-    }
-
-
-//  InsertName operators
+//  'NameOfTrackie' operators
     fun nameOfTrackieInsertNewName(nameOfTrackie: String) {
 
         val hint = if (namesOfAllExistingTrackies.contains(nameOfTrackie)) {
@@ -371,7 +375,7 @@ class AddNewTrackieViewModel @Inject constructor(
     }
 
 
-//  InsertDailyDosage operators
+//  'DailyDose' operators
     fun dailyDoseInsertMeasuringUnit(measuringUnit: EnumMeasuringUnits) {
 
         insertDailyDosageViewState.update {
@@ -482,7 +486,7 @@ class AddNewTrackieViewModel @Inject constructor(
     }
 
 
-//  ScheduleDays operators
+//  'ScheduleDays' operators
     fun scheduleDaysInsertDayOfWeek(dayOfWeek: String) {
 
         when(dayOfWeek) {
@@ -648,31 +652,37 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-//  Schedule time of ingestion operators
+//  'TimeOfIngestion' operators
     fun scheduleTimeDisplayUnactivated() {
 
         scheduleTimeViewState.update {
             it.copy(
-
                 targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayUnactivatedComponent,
-
-                displayTheButton = false,
-
-                hint = TimeOfIngestionHints.scheduleTimeOfIngestion
+                hint = TimeOfIngestionHints.clickToInsertTimeOfIngestion,
+                ingestionTime = null,
+                displayContentInTimeComponent = false
             )
         }
     }
 
-    fun scheduleTimeDisplayButton() {
+    fun scheduleTimeDisplayActivatedTimeComponent() {
 
         scheduleTimeViewState.update {
             it.copy(
+                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayActivatedTimeComponent,
+                hint = TimeOfIngestionHints.clickToConfirmIngestionTime,
+                displayContentInTimeComponent = true
+            )
+        }
+    }
 
-                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayButton,
+    fun scheduleTimeDisplayUnactivatedTimeComponent() {
 
-                displayTheButton = true,
-
-                hint = TimeOfIngestionHints.scheduleTimeOfIngestion
+        scheduleTimeViewState.update {
+            it.copy(
+                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayUnactivatedTimeComponent,
+                hint = TimeOfIngestionHints.clickToEditOrDeleteTimeOfIngestion,
+                displayContentInTimeComponent = false
             )
         }
     }
