@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Trackies</string>
+    <string name="title_activity_add_new_trackie">AddNewTrackie</string>
 </resources>
