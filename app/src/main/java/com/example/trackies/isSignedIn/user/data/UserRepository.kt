@@ -19,7 +19,6 @@ interface UserRepository {
 
     suspend fun addNewTrackie(
         trackieViewState: TrackieViewState,
-        onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )
 

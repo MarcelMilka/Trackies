@@ -58,6 +58,11 @@ class SharedViewModel @Inject constructor(
                 weeklyRegularity != null
             ) {
 
+                Log.d("Halla!", "licenseInformation = $licenseInformation")
+                Log.d("Halla!", "trackiesForToday = $trackiesForToday")
+                Log.d("Halla!", "statesOfTrackiesForToday = $statesOfTrackiesForToday")
+                Log.d("Halla!", "weeklyRegularity = $weeklyRegularity")
+
                 _uiState.update {
 
                     SharedViewModelViewState.LoadedSuccessfully(
@@ -91,7 +96,6 @@ class SharedViewModel @Inject constructor(
 
                 repository.addNewTrackie(
                     trackieViewState = trackieViewState,
-                    onSuccess = {},
                     onFailure = {
                         Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - $it")
                     }

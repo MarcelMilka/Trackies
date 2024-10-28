@@ -251,12 +251,8 @@ class FirebaseUserRepository @Inject constructor(
 //  This method is responsible for adding new trackie to the user's database.
     override suspend fun addNewTrackie(
         trackieViewState: TrackieViewState,
-        onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
-
-        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
-        var passedCurrentDayOfWeek = false
 
         val licenseViewState = fetchUsersLicense()
 
@@ -264,23 +260,23 @@ class FirebaseUserRepository @Inject constructor(
 
             licenseViewState.totalAmountOfTrackies
 
-//          add new trackie to { (user's trackies) -> (trackies) }
+//          add new trackie to 'user's trackies' -> 'trackies'
             usersTrackies.collection(trackieViewState.name).document(trackieViewState.name).set(trackieViewState)
 
-//          update total amount of trackies owned by the user { (user's information) -> (license) -> (totalAmountOfTrackies) }
+//          update total amount of trackies owned by the user 'user's information' -> 'license'
             val updatedTotalAmountOfTrackies = (licenseViewState.totalAmountOfTrackies + 1)
             usersLicense.update("totalAmountOfTrackies", updatedTotalAmountOfTrackies)
 
-//          add name of the trackie to { (names of trackies) -> (names of trackies) -> (whole week) }
+//          add name of the trackie to 'names of trackies' -> 'names of trackies' -> 'whole week'
             namesOfTrackies.update("whole week", FieldValue.arrayUnion(trackieViewState.name))
 
-//          add name of the trackie to { (names of trackies) -> (names of trackies) -> (*particular day of week*) }
+//          add name of the trackie to 'names of trackies' -> '(names of trackies)' -> *specific day of week*
             trackieViewState.repeatOn.forEach { dayOfWeek ->
 
                 namesOfTrackies.update(dayOfWeek, FieldValue.arrayUnion(trackieViewState.name))
             }
 
-//          add name of the trackies to { (user's statistics) -> user's weekly statistics} -> (*particular day of week*)
+//          add name of the trackies to 'user's statistics' -> 'user's weekly statistics' -> *specific day of week*
             setOf(
                 DaysOfWeek.monday,
                 DaysOfWeek.tuesday,
@@ -306,8 +302,6 @@ class FirebaseUserRepository @Inject constructor(
                     }
                 }
             }
-
-            onSuccess()
         }
 
         else {
