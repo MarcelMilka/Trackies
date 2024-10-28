@@ -1,4 +1,4 @@
-package com.example.trackies.navigation
+package com.example.globalConstants
 
 object Destinations {
 

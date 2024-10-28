@@ -2,7 +2,7 @@ package com.example.trackies.auth.data
 
 import android.util.Patterns
 import com.example.trackies.isSignedIn.ui.deleteAccount.DeleteAccountHints
-import com.example.trackies.navigation.Destinations
+import com.example.globalConstants.Destinations
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrors
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors

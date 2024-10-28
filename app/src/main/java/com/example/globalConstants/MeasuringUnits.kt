@@ -1,7 +1,6 @@
-package com.example.trackies.isSignedIn.constantValues
+package com.example.globalConstants
 
 object MeasuringUnits {
-
     val ml = "ml"
     val g = "g"
     val pcs = "pcs"

@@ -1,8 +1,8 @@
 package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
-import com.example.trackies.isSignedIn.constantValues.CurrentTime
-import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
+import com.example.globalConstants.CurrentTime
+import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModelEntity
 import com.example.trackies.isSignedIn.xTrackie.buisness.convertEntityToTrackieModel

@@ -25,7 +25,7 @@ import com.example.trackies.isSignedIn.ui.deleteAccount.verifyYourIdentityToDele
 import com.example.trackies.isSignedIn.ui.deleteAccount.yourAccountGotDeleted
 import com.example.trackies.isSignedIn.ui.changePassword.verifyYourIdentityToChangePassword
 import com.example.trackies.isSignedIn.ui.changePassword.yourPasswordGotChanged
-import com.example.trackies.navigation.Destinations
+import com.example.globalConstants.Destinations
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.schedueTimeDialog

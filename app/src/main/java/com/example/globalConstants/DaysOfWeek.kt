@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.constantValues
+package com.example.globalConstants
 
 object DaysOfWeek {
 

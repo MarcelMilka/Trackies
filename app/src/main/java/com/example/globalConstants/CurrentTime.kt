@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.constantValues
+package com.example.globalConstants
 
 import java.time.LocalDate
 import java.time.LocalTime

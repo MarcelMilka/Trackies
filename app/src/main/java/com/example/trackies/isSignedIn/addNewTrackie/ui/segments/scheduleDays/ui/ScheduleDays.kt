@@ -30,7 +30,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegme
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
+import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.Dimensions

@@ -44,7 +44,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisn
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.trackies.isSignedIn.constantValues.MeasuringUnits
+import com.example.globalConstants.MeasuringUnits
 import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall

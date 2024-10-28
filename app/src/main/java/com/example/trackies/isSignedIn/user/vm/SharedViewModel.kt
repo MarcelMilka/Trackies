@@ -3,8 +3,8 @@ package com.example.trackies.isSignedIn.user.vm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.trackies.isSignedIn.constantValues.CurrentTime
-import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
+import com.example.globalConstants.CurrentTime
+import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
