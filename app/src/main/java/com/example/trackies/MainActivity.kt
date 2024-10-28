@@ -27,8 +27,8 @@ import com.example.trackies.isSignedIn.ui.changePassword.verifyYourIdentityToCha
 import com.example.trackies.isSignedIn.ui.changePassword.yourPasswordGotChanged
 import com.example.trackies.navigation.Destinations
 import com.example.trackies.auth.data.AuthenticationService
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.addNewTrackie
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.scheduleIngestionTime
+import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.schedueTimeDialog
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
 import com.example.trackies.isSignedIn.allTrackies.vm.AllTrackiesViewModel
@@ -497,7 +497,7 @@ class MainActivity : ComponentActivity() {
 
                             val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
 
-                            scheduleIngestionTime(
+                            schedueTimeDialog(
 
                                 onConfirm = {
 

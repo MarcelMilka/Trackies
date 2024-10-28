@@ -4,23 +4,23 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieViewState
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.EnumMeasuringUnits
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.IngestionTimeEntity
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.InsertDailyDosageViewState
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.InsertNameOfTrackieViewState
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleDaysViewState
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.ScheduleTimeViewState
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.StatesOfSegments
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.convertIntoTimeOfIngestion
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.DailyDosageHints
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertDailyDosage.loadedSuccessfully.InsertDailyDosageFixedHeightValues
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loadedSuccessfully.InsertNameOfTrackieFixedHeightValues
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.insertNameOfTrackie.loadedSuccessfully.NameOfTrackieHints
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.ScheduleDaysHints
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.scheduleDays.loadedSuccessfully.ScheduleDaysSetOfHeights
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.TimeOfIngestionHints
-import com.example.trackies.isSignedIn.addNewTrackie.presentation.timeOfIngestion.loadedSuccessfully.TimeOfIngestionSetOfHeights
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieModel
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.EnumMeasuringUnits
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestionEntity
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.DailyDoseViewState
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.buisness.NameOfTrackieViewState
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.buisness.ScheduleDaysViewState
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestionViewState
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.ActivityStatesOfSegments
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.convertIntoTimeOfIngestion
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHintOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHeightOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHeightOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHintOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHintOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
 import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,19 +40,19 @@ class AddNewTrackieViewModel @Inject constructor(
 
     val namesOfAllExistingTrackies = mutableListOf<String>()
 
-    var addNewTrackieViewState = MutableStateFlow(AddNewTrackieViewState())
-    var statesOfSegments = MutableStateFlow(StatesOfSegments())
+    var addNewTrackieModel = MutableStateFlow(AddNewTrackieModel())
+    var activityStatesOfSegments = MutableStateFlow(ActivityStatesOfSegments())
     var buttonAddNewTrackieIsEnabled = MutableStateFlow(false)
 
-    var insertNameOfTrackieViewState = MutableStateFlow(InsertNameOfTrackieViewState())
-    var insertDailyDosageViewState = MutableStateFlow(InsertDailyDosageViewState())
+    var nameOfTrackieViewState = MutableStateFlow(NameOfTrackieViewState())
+    var dailyDoseViewState = MutableStateFlow(DailyDoseViewState())
     var scheduleDaysViewState = MutableStateFlow(ScheduleDaysViewState())
-    var scheduleTimeViewState = MutableStateFlow(ScheduleTimeViewState())
+    var timeOfIngestionViewState = MutableStateFlow(TimeOfIngestionViewState())
 
     init {
 
         viewModelScope.launch {
-            addNewTrackieViewState.collect {
+            addNewTrackieModel.collect {
 
                 if (
                     it.name != "" &&
@@ -73,7 +73,7 @@ class AddNewTrackieViewModel @Inject constructor(
 //  Operators of 'AddNewTrackieViewState'
     fun updateName(nameOfTheNewTrackie: String) {
 
-        addNewTrackieViewState.update {
+        addNewTrackieModel.update {
             it.copy(
                 name = nameOfTheNewTrackie
             )
@@ -82,7 +82,7 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun updateMeasuringUnitAndDose(totalDose: Int, measuringUnit: String) {
 
-        addNewTrackieViewState.update {
+        addNewTrackieModel.update {
             it.copy(
                 totalDose = totalDose,
                 measuringUnit = measuringUnit
@@ -92,7 +92,7 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun updateRepeatOn(repeatOn: MutableSet<String>) {
 
-        addNewTrackieViewState.update {
+        addNewTrackieModel.update {
 
             it.copy(
                 repeatOn = repeatOn.toMutableList()
@@ -100,11 +100,11 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun updateIngestionTime(ingestionTimeEntity: IngestionTimeEntity?) {
+    fun updateIngestionTime(ingestionTimeEntity: TimeOfIngestionEntity?) {
 
         val ingestionTime = ingestionTimeEntity?.convertIntoTimeOfIngestion()
 
-        scheduleTimeViewState.update {
+        timeOfIngestionViewState.update {
             it.copy(
                 ingestionTime = ingestionTime
             )
@@ -113,7 +113,7 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun clearAll() {
 
-        addNewTrackieViewState.update {
+        addNewTrackieModel.update {
 
             it.copy(
 
@@ -125,31 +125,31 @@ class AddNewTrackieViewModel @Inject constructor(
             )
         }
 
-        statesOfSegments.update {
+        activityStatesOfSegments.update {
 
             it.copy(
 
-                insertNameIsActive = false,
-                insertTotalDoseIsActive = false,
+                nameOfTrackieIsActive = false,
+                dailyDoseIsActive = false,
                 scheduleDaysIsActive = false,
                 timeOfIngestionIsActive = false
             )
         }
 
-        insertNameOfTrackieViewState.update {
+        nameOfTrackieViewState.update {
 
             it.copy(
                 nameOfTrackie = "",
-                targetHeightOfTheColumn = InsertNameOfTrackieFixedHeightValues.displayUnactivatedComponent,
-                targetHeightOfTheSurface = InsertNameOfTrackieFixedHeightValues.displayUnactivatedComponent,
+                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayUnactivatedComponent,
                 displayFieldWithInsertedName = false,
                 displayFieldWithTextField = false,
-                hint = NameOfTrackieHints.insertNewName,
+                hint = NameOfTrackieHintOptions.insertNewName,
                 error = false
             )
         }
 
-        insertDailyDosageViewState.update {
+        dailyDoseViewState.update {
 
             it.copy(
                 measuringUnit = null,
@@ -157,12 +157,12 @@ class AddNewTrackieViewModel @Inject constructor(
                 mlIsChosen = false,
                 gIsChosen = false,
                 pcsIsChosen = false,
-                targetHeightOfTheColumn = InsertDailyDosageFixedHeightValues.displayUnactivatedComponent,
-                targetHeightOfTheSurface = InsertDailyDosageFixedHeightValues.displayUnactivatedComponent,
+                targetHeightOfTheColumn = DailyDoseHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = DailyDoseHeightOptions.displayUnactivatedComponent,
                 displayFieldWithInsertedDose = false,
                 displayFieldWithMeasuringUnits = false,
                 displayFieldWithTextField = false,
-                hint = DailyDosageHints.insertDailyDosage,
+                hint = DailyDoseHintOptions.insertDailyDosage,
                 error = false
             )
         }
@@ -178,19 +178,19 @@ class AddNewTrackieViewModel @Inject constructor(
                 fridayIsSelected = false,
                 saturdayIsSelected = false,
                 sundayIsSelected = false,
-                targetHeightOfTheColumn = ScheduleDaysSetOfHeights.displayUnactivatedComponent,
-                targetHeightOfTheSurface = ScheduleDaysSetOfHeights.displayUnactivatedComponent,
+                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
                 displayFieldWithChosenDaysOfWeek = false,
                 displayFieldWithSelectableButtons = false,
-                hint = ScheduleDaysHints.selectDaysOfWeek
+                hint = ScheduleDaysHintOptions.selectDaysOfWeek
             )
         }
 
-        scheduleTimeViewState.update {
+        timeOfIngestionViewState.update {
 
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayUnactivatedComponent,
-                hint = TimeOfIngestionHints.clickToInsertTimeOfIngestion,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedComponent,
+                hint = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
                 ingestionTime = null,
                 displayContentInTimeComponent = false
             )
@@ -203,21 +203,21 @@ class AddNewTrackieViewModel @Inject constructor(
 
             AddNewTrackieSegments.NameOfTrackie -> {
 
-                statesOfSegments.update { activityState ->
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
-                        insertNameIsActive = true,
-                        insertTotalDoseIsActive = false,
+                        nameOfTrackieIsActive = true,
+                        dailyDoseIsActive = false,
                         scheduleDaysIsActive = false,
                         timeOfIngestionIsActive = false
                     )
                 }
             }
 
-            AddNewTrackieSegments.DailyDosage -> {
-                statesOfSegments.update { activityState ->
+            AddNewTrackieSegments.DailyDose -> {
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
-                        insertNameIsActive = false,
-                        insertTotalDoseIsActive = true,
+                        nameOfTrackieIsActive = false,
+                        dailyDoseIsActive = true,
                         scheduleDaysIsActive = false,
                         timeOfIngestionIsActive = false
                     )
@@ -225,10 +225,10 @@ class AddNewTrackieViewModel @Inject constructor(
             }
 
             AddNewTrackieSegments.ScheduleDays -> {
-                statesOfSegments.update { activityState ->
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
-                        insertNameIsActive = false,
-                        insertTotalDoseIsActive = false,
+                        nameOfTrackieIsActive = false,
+                        dailyDoseIsActive = false,
                         scheduleDaysIsActive = true,
                         timeOfIngestionIsActive = false
                     )
@@ -236,10 +236,10 @@ class AddNewTrackieViewModel @Inject constructor(
             }
 
             AddNewTrackieSegments.TimeOfIngestion -> {
-                statesOfSegments.update { activityState ->
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
-                        insertNameIsActive = false,
-                        insertTotalDoseIsActive = false,
+                        nameOfTrackieIsActive = false,
+                        dailyDoseIsActive = false,
                         scheduleDaysIsActive = false,
                         timeOfIngestionIsActive = true
                     )
@@ -252,23 +252,23 @@ class AddNewTrackieViewModel @Inject constructor(
 
         when (segmentToDeactivate) {
             AddNewTrackieSegments.NameOfTrackie -> {
-                statesOfSegments.update { activityState ->
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
-                        insertNameIsActive = false,
+                        nameOfTrackieIsActive = false,
                     )
                 }
             }
 
-            AddNewTrackieSegments.DailyDosage -> {
-                statesOfSegments.update { activityState ->
+            AddNewTrackieSegments.DailyDose -> {
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
-                        insertTotalDoseIsActive = false,
+                        dailyDoseIsActive = false,
                     )
                 }
             }
 
             AddNewTrackieSegments.ScheduleDays -> {
-                statesOfSegments.update { activityState ->
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
                         scheduleDaysIsActive = false,
                     )
@@ -276,7 +276,7 @@ class AddNewTrackieViewModel @Inject constructor(
             }
 
             AddNewTrackieSegments.TimeOfIngestion -> {
-                statesOfSegments.update { activityState ->
+                activityStatesOfSegments.update { activityState ->
                     activityState.copy(
                         timeOfIngestionIsActive = false
                     )
@@ -290,14 +290,14 @@ class AddNewTrackieViewModel @Inject constructor(
     fun nameOfTrackieInsertNewName(nameOfTrackie: String) {
 
         val hint = if (namesOfAllExistingTrackies.contains(nameOfTrackie)) {
-            NameOfTrackieHints.nameAlreadyExists
+            NameOfTrackieHintOptions.nameAlreadyExists
         }
 
         else {
-            NameOfTrackieHints.confirmNewName
+            NameOfTrackieHintOptions.confirmNewName
         }
 
-        insertNameOfTrackieViewState.update {
+        nameOfTrackieViewState.update {
             it.copy(
                 nameOfTrackie = nameOfTrackie,
                 hint = hint
@@ -307,14 +307,14 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun nameOfTrackieDisplayCollapsed() {
 
-        insertNameOfTrackieViewState.update {
+        nameOfTrackieViewState.update {
 
             it.copy(
-                targetHeightOfTheColumn = InsertNameOfTrackieFixedHeightValues.displayUnactivatedComponent,
-                targetHeightOfTheSurface = InsertNameOfTrackieFixedHeightValues.displayUnactivatedComponent,
+                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayUnactivatedComponent,
                 displayFieldWithInsertedName = false,
                 displayFieldWithTextField = false,
-                hint = NameOfTrackieHints.insertNewName
+                hint = NameOfTrackieHintOptions.insertNewName
             )
         }
     }
@@ -325,20 +325,20 @@ class AddNewTrackieViewModel @Inject constructor(
         var error = false
 
         if (namesOfAllExistingTrackies.contains(nameOfTrackie)) {
-            hint = NameOfTrackieHints.nameAlreadyExists
+            hint = NameOfTrackieHintOptions.nameAlreadyExists
             error = true
         }
 
         else {
-            hint = NameOfTrackieHints.confirmNewName
+            hint = NameOfTrackieHintOptions.confirmNewName
             error = false
         }
 
-        insertNameOfTrackieViewState.update {
+        nameOfTrackieViewState.update {
 
             it.copy(
-                targetHeightOfTheColumn = InsertNameOfTrackieFixedHeightValues.displayInsertedName,
-                targetHeightOfTheSurface = InsertNameOfTrackieFixedHeightValues.displayInsertedName,
+                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayInsertedName,
+                targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayInsertedName,
                 displayFieldWithInsertedName = true,
                 displayFieldWithTextField = false,
                 hint = hint,
@@ -353,19 +353,19 @@ class AddNewTrackieViewModel @Inject constructor(
         var error = false
 
         if (namesOfAllExistingTrackies.contains(nameOfTrackie)) {
-            hint = NameOfTrackieHints.nameAlreadyExists
+            hint = NameOfTrackieHintOptions.nameAlreadyExists
             error = true
         }
         else {
-            hint = NameOfTrackieHints.confirmNewName
+            hint = NameOfTrackieHintOptions.confirmNewName
             error = false
         }
 
-        insertNameOfTrackieViewState.update {
+        nameOfTrackieViewState.update {
 
             it.copy(
-                targetHeightOfTheColumn = InsertNameOfTrackieFixedHeightValues.displayTextField,
-                targetHeightOfTheSurface = InsertNameOfTrackieFixedHeightValues.displayTextField,
+                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayTextField,
+                targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayTextField,
                 displayFieldWithInsertedName = false,
                 displayFieldWithTextField = true,
                 hint = hint,
@@ -378,7 +378,7 @@ class AddNewTrackieViewModel @Inject constructor(
 //  'DailyDose' operators
     fun dailyDoseInsertMeasuringUnit(measuringUnit: EnumMeasuringUnits) {
 
-        insertDailyDosageViewState.update {
+        dailyDoseViewState.update {
 
             when (measuringUnit) {
 
@@ -414,7 +414,7 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun dailyDoseInsertTotalDose(totalDose: Int) {
 
-        insertDailyDosageViewState.update {
+        dailyDoseViewState.update {
             it.copy(
                 totalDailyDose = totalDose
             )
@@ -423,64 +423,64 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun dailyDoseDisplayCollapsed() {
 
-        insertDailyDosageViewState.update {
+        dailyDoseViewState.update {
             it.copy(
-                targetHeightOfTheColumn = InsertDailyDosageFixedHeightValues.displayUnactivatedComponent,
-                targetHeightOfTheSurface = InsertDailyDosageFixedHeightValues.displayUnactivatedComponent,
+                targetHeightOfTheColumn = DailyDoseHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = DailyDoseHeightOptions.displayUnactivatedComponent,
 
                 displayFieldWithInsertedDose = false,
                 displayFieldWithMeasuringUnits = false,
                 displayFieldWithTextField = false,
 
-                hint = DailyDosageHints.insertDailyDosage
+                hint = DailyDoseHintOptions.insertDailyDosage
             )
         }
     }
 
     fun dailyDoseDisplayInsertedValue() {
 
-        insertDailyDosageViewState.update {
+        dailyDoseViewState.update {
             it.copy(
-                targetHeightOfTheColumn = InsertDailyDosageFixedHeightValues.displayFieldWithInsertedDose,
-                targetHeightOfTheSurface = InsertDailyDosageFixedHeightValues.displayFieldWithInsertedDose,
+                targetHeightOfTheColumn = DailyDoseHeightOptions.displayFieldWithInsertedDose,
+                targetHeightOfTheSurface = DailyDoseHeightOptions.displayFieldWithInsertedDose,
 
                 displayFieldWithInsertedDose = true,
                 displayFieldWithMeasuringUnits = false,
                 displayFieldWithTextField = false,
 
-                hint = DailyDosageHints.editDailyDosage
+                hint = DailyDoseHintOptions.editDailyDosage
             )
         }
     }
 
     fun dailyDoseDisplayMeasuringUnitsToChoose() {
 
-        insertDailyDosageViewState.update {
+        dailyDoseViewState.update {
             it.copy(
-                targetHeightOfTheColumn = InsertDailyDosageFixedHeightValues.displayFieldWithAvailableMeasuringUnitsToChoose,
-                targetHeightOfTheSurface = InsertDailyDosageFixedHeightValues.displayFieldWithAvailableMeasuringUnitsToChoose,
+                targetHeightOfTheColumn = DailyDoseHeightOptions.displayFieldWithAvailableMeasuringUnitsToChoose,
+                targetHeightOfTheSurface = DailyDoseHeightOptions.displayFieldWithAvailableMeasuringUnitsToChoose,
 
                 displayFieldWithInsertedDose = false,
                 displayFieldWithMeasuringUnits = true,
                 displayFieldWithTextField = false,
 
-                hint = DailyDosageHints.chooseMeasuringUnitAndInsertDose
+                hint = DailyDoseHintOptions.chooseMeasuringUnitAndInsertDose
             )
         }
     }
 
     fun dailyDoseDisplayTextField() {
 
-        insertDailyDosageViewState.update {
+        dailyDoseViewState.update {
             it.copy(
-                targetHeightOfTheColumn = InsertDailyDosageFixedHeightValues.displayTextField,
-                targetHeightOfTheSurface = InsertDailyDosageFixedHeightValues.displayTextField,
+                targetHeightOfTheColumn = DailyDoseHeightOptions.displayTextField,
+                targetHeightOfTheSurface = DailyDoseHeightOptions.displayTextField,
 
                 displayFieldWithInsertedDose = false,
                 displayFieldWithMeasuringUnits = true,
                 displayFieldWithTextField = true,
 
-                hint = DailyDosageHints.confirmDailyDosage
+                hint = DailyDoseHintOptions.confirmDailyDosage
             )
         }
     }
@@ -611,13 +611,13 @@ class AddNewTrackieViewModel @Inject constructor(
 
         scheduleDaysViewState.update {
             it.copy(
-                targetHeightOfTheColumn = ScheduleDaysSetOfHeights.displayUnactivatedComponent,
-                targetHeightOfTheSurface = ScheduleDaysSetOfHeights.displayUnactivatedComponent,
+                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
 
                 displayFieldWithChosenDaysOfWeek = false,
                 displayFieldWithSelectableButtons = false,
 
-                hint = ScheduleDaysHints.selectDaysOfWeek
+                hint = ScheduleDaysHintOptions.selectDaysOfWeek
             )
         }
     }
@@ -626,13 +626,13 @@ class AddNewTrackieViewModel @Inject constructor(
 
         scheduleDaysViewState.update {
             it.copy(
-                targetHeightOfTheColumn = ScheduleDaysSetOfHeights.displayChosenDaysOfWeek,
-                targetHeightOfTheSurface = ScheduleDaysSetOfHeights.displayChosenDaysOfWeek,
+                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayChosenDaysOfWeek,
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayChosenDaysOfWeek,
 
                 displayFieldWithChosenDaysOfWeek = false,
                 displayFieldWithSelectableButtons = true,
 
-                hint = ScheduleDaysHints.editSelectedDaysOfWeek
+                hint = ScheduleDaysHintOptions.editSelectedDaysOfWeek
             )
         }
     }
@@ -641,13 +641,13 @@ class AddNewTrackieViewModel @Inject constructor(
 
         scheduleDaysViewState.update {
             it.copy(
-                targetHeightOfTheColumn = ScheduleDaysSetOfHeights.displayRadioButtons,
-                targetHeightOfTheSurface = ScheduleDaysSetOfHeights.displayRadioButtons,
+                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayRadioButtons,
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayRadioButtons,
 
                 displayFieldWithChosenDaysOfWeek = false,
                 displayFieldWithSelectableButtons = true,
 
-                hint = ScheduleDaysHints.confirmSelectedDaysOfWeek
+                hint = ScheduleDaysHintOptions.confirmSelectedDaysOfWeek
             )
         }
     }
@@ -655,10 +655,10 @@ class AddNewTrackieViewModel @Inject constructor(
 //  'TimeOfIngestion' operators
     fun scheduleTimeDisplayUnactivated() {
 
-        scheduleTimeViewState.update {
+        timeOfIngestionViewState.update {
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayUnactivatedComponent,
-                hint = TimeOfIngestionHints.clickToInsertTimeOfIngestion,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedComponent,
+                hint = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
                 ingestionTime = null,
                 displayContentInTimeComponent = false
             )
@@ -667,10 +667,10 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun scheduleTimeDisplayActivatedTimeComponent() {
 
-        scheduleTimeViewState.update {
+        timeOfIngestionViewState.update {
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayActivatedTimeComponent,
-                hint = TimeOfIngestionHints.clickToConfirmIngestionTime,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayActivatedTimeComponent,
+                hint = TimeOfIngestionHintOptions.clickToConfirmIngestionTime,
                 displayContentInTimeComponent = true
             )
         }
@@ -678,10 +678,10 @@ class AddNewTrackieViewModel @Inject constructor(
 
     fun scheduleTimeDisplayUnactivatedTimeComponent() {
 
-        scheduleTimeViewState.update {
+        timeOfIngestionViewState.update {
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionSetOfHeights.displayUnactivatedTimeComponent,
-                hint = TimeOfIngestionHints.clickToEditOrDeleteTimeOfIngestion,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedTimeComponent,
+                hint = TimeOfIngestionHintOptions.clickToEditOrDeleteTimeOfIngestion,
                 displayContentInTimeComponent = false
             )
         }
