@@ -26,7 +26,7 @@ import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingBu
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonShowAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
@@ -47,10 +47,10 @@ fun homeScreen(
     onOpenSettings: () -> Unit,
     onDisplayAllTrackies: () -> Unit,
     onAddNewTrackie: () -> Unit,
-    onDisplayDetailedTrackie: (TrackieViewState) -> Unit,
+    onDisplayDetailedTrackie: (TrackieModel) -> Unit,
     onUpdateHeightOfLazyColumn: (Int) -> Unit,
     onSwitchChart: (HomeScreenChartToDisplay) -> Unit,
-    onMarkAsIngested: (TrackieViewState) -> Unit
+    onMarkAsIngested: (TrackieModel) -> Unit
 ) {
 
     Box(

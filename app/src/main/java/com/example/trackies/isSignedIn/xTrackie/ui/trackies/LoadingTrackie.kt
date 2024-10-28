@@ -1,4 +1,4 @@
-package com.example.trackies.ui.sharedUI.trackieRelatedComponents
+package com.example.trackies.isSignedIn.xTrackie.ui.trackies
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

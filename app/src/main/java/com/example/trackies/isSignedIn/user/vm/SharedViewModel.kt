@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.constantValues.CurrentTime
 import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -85,7 +85,7 @@ class SharedViewModel @Inject constructor(
     }
 
     fun addNewTrackie(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onFailure: (String) -> Unit
     ) {
 
@@ -118,7 +118,7 @@ class SharedViewModel @Inject constructor(
                 )
             }
 
-            fun updateTrackiesForToday(): MutableList<TrackieViewState> {
+            fun updateTrackiesForToday(): MutableList<TrackieModel> {
 
                 val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
                 var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
@@ -164,7 +164,7 @@ class SharedViewModel @Inject constructor(
             }
 
 //          This method is responsible for adding Trackie to the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
-            fun updateListOfAllTrackies(): MutableList<TrackieViewState>? {
+            fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
 
                 return if (copyOfViewState.allTrackies != null) {
 
@@ -240,7 +240,7 @@ class SharedViewModel @Inject constructor(
     }
 
     fun deleteTrackie(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onFailure: (String) -> Unit
     ) {
 
@@ -274,7 +274,7 @@ class SharedViewModel @Inject constructor(
                 )
             }
 
-            fun updateTrackiesForToday(): MutableList<TrackieViewState> {
+            fun updateTrackiesForToday(): MutableList<TrackieModel> {
 
                 var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
                 copyOfTrackiesForToday.remove(element = trackieViewState)
@@ -313,7 +313,7 @@ class SharedViewModel @Inject constructor(
             }
 
 //          This method is responsible for removing Trackie from the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
-            fun updateListOfAllTrackies(): MutableList<TrackieViewState>? {
+            fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
 
                 return if (copyOfViewState.allTrackies != null) {
 
@@ -458,7 +458,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun markTrackieAsIngested(trackieViewState: TrackieViewState) {
+    fun markTrackieAsIngested(trackieViewState: TrackieModel) {
 
         if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
 

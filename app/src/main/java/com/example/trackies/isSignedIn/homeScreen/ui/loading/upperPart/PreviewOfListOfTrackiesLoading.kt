@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
-import com.example.trackies.ui.sharedUI.trackieRelatedComponents.loadingTrackie
+import com.example.trackies.isSignedIn.xTrackie.ui.trackies.loadingTrackie
 
 @Composable
 fun previewOfListOfTrackiesLoading() {

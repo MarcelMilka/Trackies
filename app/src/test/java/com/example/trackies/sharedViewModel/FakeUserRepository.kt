@@ -1,7 +1,6 @@
 package com.example.trackies.sharedViewModel
 
-import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 
@@ -52,22 +51,22 @@ class FakeUserRepository: UserRepository {
         return listWithData
     }
 
-    override suspend fun fetchTodayTrackies(): List<TrackieViewState>? = null
+    override suspend fun fetchTodayTrackies(): List<TrackieModel>? = null
 
     override suspend fun addNewTrackie(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onFailure: (String) -> Unit
     ) {}
 
-    override suspend fun fetchTrackiesForToday(onFailure: (String) -> Unit): List<TrackieViewState>? {
+    override suspend fun fetchTrackiesForToday(onFailure: (String) -> Unit): List<TrackieModel>? {
 
         val error = null
 
-        val emptyList = emptyList<TrackieViewState>()
+        val emptyList = emptyList<TrackieModel>()
 
         val listWithData = listOf(
 
-            TrackieViewState(
+            TrackieModel(
                 name= "X",
                 totalDose=2,
                 measuringUnit= "pcs",
@@ -75,7 +74,7 @@ class FakeUserRepository: UserRepository {
                 ingestionTime=null
             ),
 
-            TrackieViewState(
+            TrackieModel(
                 name = "Y",
                 totalDose = 1,
                 measuringUnit = "pcs",
@@ -83,7 +82,7 @@ class FakeUserRepository: UserRepository {
                 ingestionTime = null
             ),
 
-            TrackieViewState(
+            TrackieModel(
                 name = "Z",
                 totalDose = 10,
                 measuringUnit = "pcs",
@@ -111,7 +110,7 @@ class FakeUserRepository: UserRepository {
     }
 
     override suspend fun deleteTrackie(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {}
@@ -119,7 +118,7 @@ class FakeUserRepository: UserRepository {
     override suspend fun fetchAllTrackies(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
-    ): List<TrackieViewState>? = null
+    ): List<TrackieModel>? = null
 
     override suspend fun fetchWeeklyRegularity(
         onSuccess: () -> Unit,
@@ -144,7 +143,7 @@ class FakeUserRepository: UserRepository {
     }
 
     override suspend fun markTrackieAsIngested(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {}

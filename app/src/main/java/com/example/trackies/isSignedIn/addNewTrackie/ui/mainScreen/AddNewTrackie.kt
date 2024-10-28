@@ -27,7 +27,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.ui
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.ui.scheduleDaysLoading
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.timeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
@@ -49,7 +49,7 @@ fun addNewTrackie(
     onReturn: () -> Unit,
     onScheduleTimeAndAssignDose: () -> Unit,
     onClearAll: () -> Unit,
-    onAdd: (TrackieViewState) -> Unit
+    onAdd: (TrackieModel) -> Unit
 ) {
 
     Scaffold(
@@ -88,7 +88,7 @@ fun addNewTrackie(
                                     ) {
 
                                         onAdd(
-                                            TrackieViewState(
+                                            TrackieModel(
 
                                                 name = it.name,
                                                 totalDose = it.totalDose,

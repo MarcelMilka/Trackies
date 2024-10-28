@@ -1,6 +1,6 @@
-package com.example.trackies.isSignedIn.trackie
+package com.example.trackies.isSignedIn.xTrackie.buisness
 
-data class TrackieViewState(
+data class TrackieModel(
     val name: String,
     val totalDose: Int,
     val measuringUnit: String,

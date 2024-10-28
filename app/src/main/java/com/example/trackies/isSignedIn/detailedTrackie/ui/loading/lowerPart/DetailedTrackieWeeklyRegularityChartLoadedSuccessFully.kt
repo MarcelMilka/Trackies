@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.constantValues.CurrentTime
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
@@ -35,7 +35,7 @@ import com.example.trackies.ui.theme.fonts
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun detailedTrackieWeeklyRegularityChartLoadedSuccessFully(
-    trackieViewState: TrackieViewState,
+    trackieViewState: TrackieModel,
     sharedViewModelUiState: SharedViewModelViewState.LoadedSuccessfully
 ) {
 

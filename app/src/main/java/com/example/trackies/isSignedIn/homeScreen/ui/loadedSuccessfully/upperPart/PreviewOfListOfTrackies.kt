@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
-import com.example.trackies.isSignedIn.trackie.trackie
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
+import com.example.trackies.isSignedIn.xTrackie.ui.trackies.trackie
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
@@ -25,8 +25,8 @@ import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 fun previewOfListOfTrackies(
     homeScreenUiState: HomeScreenViewState,
     sharedViewModelUiState: SharedViewModelViewState.LoadedSuccessfully,
-    onMarkAsIngested: (TrackieViewState) -> Unit,
-    onDisplayDetails: (TrackieViewState) -> Unit
+    onMarkAsIngested: (TrackieModel) -> Unit,
+    onDisplayDetails: (TrackieModel) -> Unit
 ) {
 
     val targetHeightOfLazyColumn = homeScreenUiState.heightOfLazyColumn

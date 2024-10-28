@@ -9,7 +9,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.ui.sharedUI.customButtons.iconButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.boldTextTitleMedium
@@ -18,7 +18,7 @@ import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 
 @Composable
 fun upperPartLoadedSuccessfully (
-    trackieViewState: TrackieViewState,
+    trackieViewState: TrackieModel,
     onDelete: () -> Unit
 ) {
 

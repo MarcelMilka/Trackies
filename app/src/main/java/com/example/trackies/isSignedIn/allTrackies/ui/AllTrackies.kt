@@ -23,7 +23,7 @@ import com.example.trackies.isSignedIn.allTrackies.buisness.WhatToDisplay
 import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrackies
 import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrackiesForToday
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
@@ -39,8 +39,8 @@ fun displayAllTrackies(
     sharedViewModelUiState: SharedViewModelViewState,
     fetchAllUsersTrackies: () -> Unit,
     onReturn: () -> Unit,
-    onMarkTrackieAsIngested: (TrackieViewState) -> Unit,
-    onDisplayDetailedTrackie: (TrackieViewState) -> Unit
+    onMarkTrackieAsIngested: (TrackieModel) -> Unit,
+    onDisplayDetailedTrackie: (TrackieModel) -> Unit
 ) {
 
     var whatToDisplay by remember { mutableStateOf(listToDisplay) }

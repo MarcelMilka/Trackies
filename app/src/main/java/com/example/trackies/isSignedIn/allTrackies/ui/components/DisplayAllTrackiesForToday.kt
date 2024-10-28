@@ -7,16 +7,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
-import com.example.trackies.isSignedIn.trackie.trackie
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
+import com.example.trackies.isSignedIn.xTrackie.ui.trackies.trackie
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 
 @Composable
 fun displayAllTrackiesForToday(
-    listOfTrackies: List<TrackieViewState>,
+    listOfTrackies: List<TrackieModel>,
     statesOfTrackiesForToday: Map<String,Boolean>,
-    onMarkAsIngested: (TrackieViewState) -> Unit,
-    onDisplayDetails: (TrackieViewState) -> Unit,
+    onMarkAsIngested: (TrackieModel) -> Unit,
+    onDisplayDetails: (TrackieModel) -> Unit,
 ) {
 
     LazyColumn(

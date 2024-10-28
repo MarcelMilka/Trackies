@@ -1,6 +1,6 @@
-package com.example.trackies.isSignedIn.trackie
+package com.example.trackies.isSignedIn.xTrackie.buisness
 
-data class TrackieViewStateEntity(
+data class TrackieModelEntity(
     val name: String? = null,
     val totalDose: Int? = null,
     val measuringUnit: String? = null,
@@ -8,8 +8,8 @@ data class TrackieViewStateEntity(
     val ingestionTime: Map<String, Int>? = null
 )
 
-fun TrackieViewStateEntity.convertEntityToTrackieViewState(): TrackieViewState =
-    TrackieViewState(
+fun TrackieModelEntity.convertEntityToTrackieModel(): TrackieModel =
+    TrackieModel(
         name = this.name!!,
         totalDose = this.totalDose!!,
         measuringUnit = this.measuringUnit!!,

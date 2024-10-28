@@ -31,7 +31,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.trackies.isSignedIn.trackie.trackiesPremiumLogo
+import com.example.trackies.isSignedIn.xTrackie.ui.componentsOfTrackies.trackiesPremiumLogo
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.Dimensions

@@ -1,6 +1,6 @@
 package com.example.trackies.isSignedIn.user.data
 
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 
 interface UserRepository {
@@ -15,23 +15,23 @@ interface UserRepository {
 
     suspend fun fetchNamesOfAllTrackies(): MutableList<String>?
 
-    suspend fun fetchTodayTrackies(): List<TrackieViewState>?
+    suspend fun fetchTodayTrackies(): List<TrackieModel>?
 
     suspend fun addNewTrackie(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onFailure: (String) -> Unit
     )
 
     suspend fun fetchTrackiesForToday(
         onFailure: (String) -> Unit
-    ): List<TrackieViewState>?
+    ): List<TrackieModel>?
 
     suspend fun fetchStatesOfTrackiesForToday(
         onFailure: (String) -> Unit
     ): Map<String, Boolean>?
 
     suspend fun deleteTrackie(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )
@@ -39,7 +39,7 @@ interface UserRepository {
     suspend fun fetchAllTrackies(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
-    ): List<TrackieViewState>?
+    ): List<TrackieModel>?
 
     suspend fun fetchWeeklyRegularity(
         onSuccess: () -> Unit,
@@ -47,7 +47,7 @@ interface UserRepository {
     ): Map<String, Map<Int, Int>>?
 
     suspend fun markTrackieAsIngested(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )

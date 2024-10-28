@@ -1,8 +1,5 @@
-package com.example.trackies.isSignedIn.trackie
+package com.example.trackies.isSignedIn.xTrackie.ui.trackies
 
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,13 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedIn.xTrackie.ui.componentsOfTrackies.trackieProgressBar
 import com.example.trackies.ui.sharedUI.customButtons.iconButton
 import com.example.trackies.ui.sharedUI.customSpacers.horizontalSpacerS
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
@@ -30,50 +24,16 @@ import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.SecondaryColor
 
-@Composable fun trackie(
-    trackieViewState: TrackieViewState,
-    stateOfTheTrackie: Boolean,
-    onMarkAsIngested: () -> Unit,
+@Composable
+fun staticTrackie(
+    name: String,
+    totalDose: Int,
+    measuringUnit: String,
+    repeatOn: List<String>,
+    ingestionTime: Map<String, Int>?,
+
     onDisplayDetails: () -> Unit
 ) {
-
-    var targetValueOfProgressBar by remember { mutableIntStateOf(0) }
-    var targetValueOfCurrentDose by remember { mutableIntStateOf(0) }
-
-    when (stateOfTheTrackie) {
-
-        true -> {
-
-            targetValueOfProgressBar = 100
-            targetValueOfCurrentDose = trackieViewState.totalDose
-        }
-        false -> {
-
-            targetValueOfProgressBar = 0
-            targetValueOfCurrentDose = 0
-        }
-    }
-
-    val progressOfTheProgressBar by animateIntAsState(
-        targetValue = targetValueOfProgressBar,
-        animationSpec = tween(
-            durationMillis = 1000,
-            delayMillis = 50,
-            easing = LinearOutSlowInEasing
-        ),
-        label = "",
-    )
-
-    val progressOfTheCurrentDose by animateIntAsState(
-        targetValue = targetValueOfCurrentDose,
-        animationSpec = tween(
-            durationMillis = 1000,
-            delayMillis = 50,
-            easing = LinearOutSlowInEasing
-        ),
-        label = "",
-    )
-
 
     Row(
 
@@ -102,7 +62,7 @@ import com.example.trackies.ui.theme.SecondaryColor
 
                 content = {
 
-                    textTitleMedium(content = trackieViewState.name)
+                    textTitleMedium(content = name)
 
                     verticalSpacerS()
 
@@ -116,9 +76,10 @@ import com.example.trackies.ui.theme.SecondaryColor
 
                         content = {
 
-                            trackieProgressBar(progress = progressOfTheProgressBar)
+                            trackieProgressBar(progress = 0)
 
-                            textTitleSmall(content = " $progressOfTheCurrentDose/${trackieViewState.totalDose} ${trackieViewState.measuringUnit}")
+                            textTitleSmall(content = " 0/$totalDose $measuringUnit")
+
                         }
                     )
                 }
@@ -133,6 +94,7 @@ import com.example.trackies.ui.theme.SecondaryColor
                 verticalArrangement = Arrangement.Center,
 
                 content = {
+
                     iconButton(
                         icon = Icons.Rounded.Search,
                         onClick = {
@@ -142,30 +104,8 @@ import com.example.trackies.ui.theme.SecondaryColor
                 }
             )
 
-            when (stateOfTheTrackie) {
+            horizontalSpacerS()
 
-                true -> {
-
-                    magicButtonMarkedAsIngested()
-
-                    horizontalSpacerS()
-
-                }
-
-                false -> {
-
-                    magicButton(
-                        totalDose = trackieViewState.totalDose,
-                        measuringUnit = trackieViewState.measuringUnit,
-                        onMarkAsIngested = {
-                            onMarkAsIngested()
-                        }
-                    )
-
-                    horizontalSpacerS()
-
-                }
-            }
         }
     )
 }

@@ -3,9 +3,9 @@ package com.example.trackies.isSignedIn.user.data
 import android.util.Log
 import com.example.trackies.isSignedIn.constantValues.CurrentTime
 import com.example.trackies.isSignedIn.constantValues.DaysOfWeek
-import com.example.trackies.isSignedIn.trackie.TrackieViewState
-import com.example.trackies.isSignedIn.trackie.TrackieViewStateEntity
-import com.example.trackies.isSignedIn.trackie.convertEntityToTrackieViewState
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
+import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModelEntity
+import com.example.trackies.isSignedIn.xTrackie.buisness.convertEntityToTrackieModel
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewStateEntity
 import com.example.trackies.isSignedIn.user.buisness.licenseViewState.convertEntityToLicenseViewState
@@ -182,12 +182,12 @@ class FirebaseUserRepository @Inject constructor(
         fetchNamesOfTrackies(dayOfWeek = "whole week")?.toMutableList()
 
 //  This method is responsible for fetching all Trackies assigned to the current day of week.
-    override suspend fun fetchTodayTrackies(): List<TrackieViewState>? {
+    override suspend fun fetchTodayTrackies(): List<TrackieModel>? {
 
         val namesOfTrackiesForToday: List<String>? =
             fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
 
-        val fetchedTrackies: MutableList<TrackieViewState> = mutableListOf()
+        val fetchedTrackies: MutableList<TrackieModel> = mutableListOf()
 
         return suspendCoroutine { continuation ->
 
@@ -201,12 +201,12 @@ class FirebaseUserRepository @Inject constructor(
                             .get()
                             .addOnSuccessListener { document ->
 
-                                val trackieViewStateEntity = document.toObject(TrackieViewStateEntity::class.java)
+                                val trackieViewStateEntity = document.toObject(TrackieModelEntity::class.java)
 
                                 if (trackieViewStateEntity != null) {
 
                                     try {
-                                        val trackieViewState = trackieViewStateEntity.convertEntityToTrackieViewState()
+                                        val trackieViewState = trackieViewStateEntity.convertEntityToTrackieModel()
                                         fetchedTrackies.add(element = trackieViewState)
                                     }
                                     catch (e: Exception) {
@@ -250,8 +250,8 @@ class FirebaseUserRepository @Inject constructor(
 
 //  This method is responsible for adding new trackie to the user's database.
     override suspend fun addNewTrackie(
-        trackieViewState: TrackieViewState,
-        onFailure: (String) -> Unit
+    trackieViewState: TrackieModel,
+    onFailure: (String) -> Unit
     ) {
 
         val licenseViewState = fetchUsersLicense()
@@ -312,12 +312,12 @@ class FirebaseUserRepository @Inject constructor(
 //  This method is responsible for fetching all the user's trackies assigned to the current day of week.
     override suspend fun fetchTrackiesForToday(
         onFailure: (String) -> Unit
-    ): List<TrackieViewState>? {
+    ): List<TrackieModel>? {
 
         val namesOfTrackiesForToday: List<String>? =
             fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
 
-        val trackiesForToday: MutableList<TrackieViewState> = mutableListOf()
+        val trackiesForToday: MutableList<TrackieModel> = mutableListOf()
 
         return suspendCoroutine { continuation ->
 
@@ -331,11 +331,11 @@ class FirebaseUserRepository @Inject constructor(
                             .get()
                             .addOnSuccessListener { document ->
 
-                                val trackieViewStateEntity = document.toObject(TrackieViewStateEntity::class.java)
+                                val trackieViewStateEntity = document.toObject(TrackieModelEntity::class.java)
 
                                 if (trackieViewStateEntity != null) {
 
-                                    val trackieViewState = trackieViewStateEntity.convertEntityToTrackieViewState()
+                                    val trackieViewState = trackieViewStateEntity.convertEntityToTrackieModel()
 
                                     try {
                                         trackiesForToday.add(trackieViewState)
@@ -429,7 +429,7 @@ class FirebaseUserRepository @Inject constructor(
     }
 
     override suspend fun deleteTrackie(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
@@ -590,10 +590,10 @@ class FirebaseUserRepository @Inject constructor(
     override suspend fun fetchAllTrackies(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
-    ): List<TrackieViewState>? {
+    ): List<TrackieModel>? {
 
         val namesOfAllTrackies: List<String>? = fetchNamesOfTrackies("whole week")
-        val allTrackies: MutableList<TrackieViewState> = mutableListOf()
+        val allTrackies: MutableList<TrackieModel> = mutableListOf()
 
         return suspendCoroutine { continuation ->
 
@@ -607,11 +607,11 @@ class FirebaseUserRepository @Inject constructor(
                             .get()
                             .addOnSuccessListener { document ->
 
-                                val trackieViewStateEntity = document.toObject(TrackieViewStateEntity::class.java)
+                                val trackieViewStateEntity = document.toObject(TrackieModelEntity::class.java)
 
                                 if (trackieViewStateEntity != null) {
 
-                                    val trackieViewState = trackieViewStateEntity.convertEntityToTrackieViewState()
+                                    val trackieViewState = trackieViewStateEntity.convertEntityToTrackieModel()
 
                                     try {
 
@@ -640,7 +640,7 @@ class FirebaseUserRepository @Inject constructor(
 
                 else {
 
-                    continuation.resume(value = listOf<TrackieViewState>())
+                    continuation.resume(value = listOf<TrackieModel>())
                 }
             }
 
@@ -747,7 +747,7 @@ class FirebaseUserRepository @Inject constructor(
     }
 
     override suspend fun markTrackieAsIngested(
-        trackieViewState: TrackieViewState,
+        trackieViewState: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
