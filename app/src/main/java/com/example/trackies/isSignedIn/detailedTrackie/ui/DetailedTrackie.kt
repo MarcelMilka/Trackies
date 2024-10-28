@@ -16,7 +16,7 @@ import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.lowerPart.deta
 import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart.upperPartLoadedSuccessfully
 import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart.upperPartLoading
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
-import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
+import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS

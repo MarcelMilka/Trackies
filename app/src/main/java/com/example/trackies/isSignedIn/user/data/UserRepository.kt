@@ -1,7 +1,7 @@
 package com.example.trackies.isSignedIn.user.data
 
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
-import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
+import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 
 interface UserRepository {
 
@@ -9,7 +9,7 @@ interface UserRepository {
 
     fun addNewUser()
 
-    suspend fun fetchUsersLicense(): LicenseViewState?
+    suspend fun fetchUsersLicense(): LicenseModel?
 
     suspend fun fetchNamesOfTrackies(dayOfWeek: String): List<String>?
 

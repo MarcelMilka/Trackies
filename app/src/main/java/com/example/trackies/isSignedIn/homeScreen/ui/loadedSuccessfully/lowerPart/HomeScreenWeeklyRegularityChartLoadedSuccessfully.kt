@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.globalConstants.CurrentTime
-import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
+import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.PrimaryColor

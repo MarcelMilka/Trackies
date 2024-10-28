@@ -1,13 +1,13 @@
-package com.example.trackies.isSignedIn.user.buisness.licenseViewState
+package com.example.trackies.isSignedIn.user.buisness
 
-data class LicenseViewStateEntity(
+data class LicenseModelEntity(
     val active: Boolean? = null,
     val validUntil: String? = null,
     val totalAmountOfTrackies: Int? = null
 )
 
-fun LicenseViewStateEntity.convertEntityToLicenseViewState(): LicenseViewState =
-    LicenseViewState(
+fun LicenseModelEntity.convertEntityToLicenseModel(): LicenseModel =
+    LicenseModel(
         active = this.active!!,
         validUntil = this.validUntil,
         totalAmountOfTrackies = this.totalAmountOfTrackies!!

@@ -1,7 +1,7 @@
 package com.example.trackies.sharedViewModel
 
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
-import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
+import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.data.UserRepository
 
 class FakeUserRepository: UserRepository {
@@ -10,17 +10,17 @@ class FakeUserRepository: UserRepository {
 
     override fun addNewUser() {}
 
-    override suspend fun fetchUsersLicense(): LicenseViewState? {
+    override suspend fun fetchUsersLicense(): LicenseModel? {
 
         val error = null
 
-        val inactiveLicenseViewState = LicenseViewState(
+        val inactiveLicenseViewState = LicenseModel(
             active = false,
             validUntil = null,
             totalAmountOfTrackies = 0
         )
 
-        val activeLicenseViewState = LicenseViewState(
+        val activeLicenseViewState = LicenseModel(
             active = true,
             validUntil = "01.01.2025",
             totalAmountOfTrackies = 3

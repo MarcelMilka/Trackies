@@ -24,7 +24,7 @@ import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrack
 import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrackiesForToday
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
-import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
+import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL

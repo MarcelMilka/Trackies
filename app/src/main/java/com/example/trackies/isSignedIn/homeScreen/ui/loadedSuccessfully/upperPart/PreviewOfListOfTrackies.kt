@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.xTrackie.ui.trackies.trackie
-import com.example.trackies.isSignedIn.user.vm.SharedViewModelViewState
+import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 

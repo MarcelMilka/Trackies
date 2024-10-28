@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
-import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
+import com.example.trackies.isSignedIn.user.buisness.LicenseModel
+import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -106,12 +107,12 @@ class SharedViewModel @Inject constructor(
             val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
 
 //          This method is responsible for updating information contained by LicenseViewState and increasing the amount of trackies by one.
-            fun updateLicenseViewState(): LicenseViewState {
+            fun updateLicenseViewState(): LicenseModel {
 
                 val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
                 val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies + 1
 
-                return LicenseViewState(
+                return LicenseModel(
                     active = copyOfLicenseViewState.active,
                     validUntil = copyOfLicenseViewState.validUntil,
                     totalAmountOfTrackies = newAmountOfTrackies
@@ -262,12 +263,12 @@ class SharedViewModel @Inject constructor(
             val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
 
 //          This method is responsible for updating information contained by LicenseViewState and decreasing the amount of trackies by one.
-            fun updateLicenseViewState(): LicenseViewState {
+            fun updateLicenseViewState(): LicenseModel {
 
                 val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
                 val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies - 1
 
-                return LicenseViewState(
+                return LicenseModel(
                     active = copyOfLicenseViewState.active,
                     validUntil = copyOfLicenseViewState.validUntil,
                     totalAmountOfTrackies = newAmountOfTrackies

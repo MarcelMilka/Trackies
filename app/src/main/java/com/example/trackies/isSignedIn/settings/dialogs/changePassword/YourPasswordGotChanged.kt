@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.ui.changePassword
+package com.example.trackies.isSignedIn.settings.dialogs.changePassword
 
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background

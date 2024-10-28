@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.ui.deleteAccount
+package com.example.trackies.isSignedIn.settings.dialogs.deleteAccount
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

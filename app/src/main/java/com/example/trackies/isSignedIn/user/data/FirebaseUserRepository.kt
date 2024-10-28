@@ -6,9 +6,9 @@ import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModelEntity
 import com.example.trackies.isSignedIn.xTrackie.buisness.convertEntityToTrackieModel
-import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewState
-import com.example.trackies.isSignedIn.user.buisness.licenseViewState.LicenseViewStateEntity
-import com.example.trackies.isSignedIn.user.buisness.licenseViewState.convertEntityToLicenseViewState
+import com.example.trackies.isSignedIn.user.buisness.LicenseModel
+import com.example.trackies.isSignedIn.user.buisness.LicenseModelEntity
+import com.example.trackies.isSignedIn.user.buisness.convertEntityToLicenseModel
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -71,7 +71,7 @@ class FirebaseUserRepository @Inject constructor(
             }
 
 //      "user's information" -> "license"
-        usersLicense.set(LicenseViewState(active = false, validUntil = null, totalAmountOfTrackies = 0))
+        usersLicense.set(LicenseModel(active = false, validUntil = null, totalAmountOfTrackies = 0))
 
 //      "names of trackies" -> "names of trackies"
         namesOfTrackies.set(hashMapOf("whole week" to listOf<String>()))
@@ -102,7 +102,7 @@ class FirebaseUserRepository @Inject constructor(
 //  - 'totalAmountOfTrackies' (when user does not have a premium account, there's a limited amount of trackies)
 //  - 'validUntil' determines how long the premium account is active
 //  license information gets returned as data class LicenseViewState
-    override suspend fun fetchUsersLicense(): LicenseViewState? {
+    override suspend fun fetchUsersLicense(): LicenseModel? {
 
         return suspendCoroutine { continuation ->
 
@@ -110,11 +110,11 @@ class FirebaseUserRepository @Inject constructor(
                 .get()
                 .addOnSuccessListener { document ->
 
-                    val licenseViewState = document.toObject(LicenseViewStateEntity::class.java)
+                    val licenseViewState = document.toObject(LicenseModelEntity::class.java)
 
                     if (licenseViewState != null) {
 
-                        LicenseViewStateEntity(
+                        LicenseModelEntity(
                             active = licenseViewState.active,
                             validUntil = licenseViewState.validUntil,
                             totalAmountOfTrackies = licenseViewState.totalAmountOfTrackies
@@ -122,7 +122,7 @@ class FirebaseUserRepository @Inject constructor(
 
                             if (licenseViewStateEntity.active != null && licenseViewStateEntity.totalAmountOfTrackies != null) {
 
-                                val licenseViewState = licenseViewStateEntity.convertEntityToLicenseViewState()
+                                val licenseViewState = licenseViewStateEntity.convertEntityToLicenseModel()
                                 continuation.resume(licenseViewState)
                             }
 

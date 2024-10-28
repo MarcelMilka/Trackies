@@ -1,4 +1,4 @@
-package com.example.trackies.isSignedIn.ui.deleteAccount
+package com.example.trackies.isSignedIn.settings.dialogs.deleteAccount
 
 object DeleteAccountHints {
 
