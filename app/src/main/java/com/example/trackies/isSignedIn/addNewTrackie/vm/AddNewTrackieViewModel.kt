@@ -25,6 +25,7 @@ import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,30 +53,104 @@ class AddNewTrackieViewModel @Inject constructor(
     init {
 
         viewModelScope.launch {
-            addNewTrackieModel.collect {
 
-                if (
-                    it.name != "" &&
-                    it.totalDose != 0 &&
-                    it.measuringUnit != "" &&
-                    it.repeatOn.count() != 0
-                ) {
-                    buttonAddNewTrackieIsEnabled.emit(value = true)
+//          Enabling/disabling button responsible for adding new Trackie
+            this.launch {
+
+                addNewTrackieModel.collect {
+
+                    if (
+                        it.name != "" &&
+                        it.totalDose != 0 &&
+                        it.measuringUnit != "" &&
+                        it.repeatOn.count() != 0
+                    ) {
+                        buttonAddNewTrackieIsEnabled.emit(value = true)
+                    }
+
+                    else {
+                        buttonAddNewTrackieIsEnabled.emit(value = false)
+                    }
                 }
+            }
 
-                else {
-                    buttonAddNewTrackieIsEnabled.emit(value = false)
+
+//          Following and updating UI state of the segment 'NameOfTrackie'
+            this.launch {
+
+                activityStatesOfSegments.collect {
+
+//                  when this segment is active...
+                    when (it.nameOfTrackieIsActive) {
+
+                        true -> {
+                            nameOfTrackieDisplayTextField()
+                        }
+
+                        false -> {
+
+                            if (addNewTrackieModel.value.name != "") {
+                                nameOfTrackieDisplayInsertedValue()
+                            }
+
+                            else {
+                                nameOfTrackieDisplayCollapsed()
+                            }
+                        }
+                    }
+                }
+            }
+
+//          Following and updating UI state of the segment 'DailyDose'
+            this.launch {
+
+                activityStatesOfSegments.collect {
+
+                    when (it.dailyDoseIsActive) {
+
+                        true -> {}
+
+                        false -> {}
+                    }
+                }
+            }
+
+//          Following and updating UI state of the segment 'ScheduleDays'
+            this.launch {
+
+                activityStatesOfSegments.collect {
+
+                    when (it.scheduleDaysIsActive) {
+
+                        true -> {}
+
+                        false -> {}
+                    }
+                }
+            }
+
+//          Following and updating UI state of the segment 'TimeOfIngestion'
+            this.launch {
+
+                activityStatesOfSegments.collect {
+
+                    when (it.timeOfIngestionIsActive) {
+
+                        true -> {}
+
+                        false -> {}
+                    }
                 }
             }
         }
     }
 
 //  Operators of 'AddNewTrackieViewState'
-    fun updateName(nameOfTheNewTrackie: String) {
+    fun updateName(name: String) {
 
         addNewTrackieModel.update {
             it.copy(
-                name = nameOfTheNewTrackie
+                name = name
             )
         }
     }
@@ -139,8 +214,6 @@ class AddNewTrackieViewModel @Inject constructor(
         nameOfTrackieViewState.update {
 
             it.copy(
-                nameOfTrackie = "",
-                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayUnactivatedComponent,
                 targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayUnactivatedComponent,
                 displayFieldWithInsertedName = false,
                 displayFieldWithTextField = false,
@@ -286,31 +359,36 @@ class AddNewTrackieViewModel @Inject constructor(
     }
 
 
-//  'NameOfTrackie' operators
-    fun nameOfTrackieInsertNewName(nameOfTrackie: String) {
 
-        val hint = if (namesOfAllExistingTrackies.contains(nameOfTrackie)) {
-            NameOfTrackieHintOptions.nameAlreadyExists
-        }
+    fun updateUiState (
+        segment: AddNewTrackieSegments,
+        toActivate: Boolean
+    ) {
 
-        else {
-            NameOfTrackieHintOptions.confirmNewName
-        }
+        viewModelScope.launch {
 
-        nameOfTrackieViewState.update {
-            it.copy(
-                nameOfTrackie = nameOfTrackie,
-                hint = hint
-            )
+            when (toActivate) {
+
+                true -> {
+
+                    activateSegment(segmentToActivate = segment)
+                }
+
+                false -> {
+
+                    deactivateSegment(segmentToDeactivate = segment)
+                }
+            }
         }
     }
 
-    fun nameOfTrackieDisplayCollapsed() {
+
+//  'NameOfTrackie' operators
+    private fun nameOfTrackieDisplayCollapsed() {
 
         nameOfTrackieViewState.update {
 
             it.copy(
-                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayUnactivatedComponent,
                 targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayUnactivatedComponent,
                 displayFieldWithInsertedName = false,
                 displayFieldWithTextField = false,
@@ -319,12 +397,14 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun nameOfTrackieDisplayInsertedValue(nameOfTrackie: String) {
+    private fun nameOfTrackieDisplayInsertedValue() {
+
+        val currentNameOfTrackie = addNewTrackieModel.value.name
 
         var hint = ""
         var error = false
 
-        if (namesOfAllExistingTrackies.contains(nameOfTrackie)) {
+        if (namesOfAllExistingTrackies.contains(currentNameOfTrackie)) {
             hint = NameOfTrackieHintOptions.nameAlreadyExists
             error = true
         }
@@ -337,7 +417,6 @@ class AddNewTrackieViewModel @Inject constructor(
         nameOfTrackieViewState.update {
 
             it.copy(
-                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayInsertedName,
                 targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayInsertedName,
                 displayFieldWithInsertedName = true,
                 displayFieldWithTextField = false,
@@ -347,12 +426,14 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun nameOfTrackieDisplayTextField(nameOfTrackie: String) {
+    private fun nameOfTrackieDisplayTextField() {
+
+        val currentNameOfTrackie = addNewTrackieModel.value.name
 
         var hint = ""
         var error = false
 
-        if (namesOfAllExistingTrackies.contains(nameOfTrackie)) {
+        if (namesOfAllExistingTrackies.contains(currentNameOfTrackie)) {
             hint = NameOfTrackieHintOptions.nameAlreadyExists
             error = true
         }
@@ -364,7 +445,6 @@ class AddNewTrackieViewModel @Inject constructor(
         nameOfTrackieViewState.update {
 
             it.copy(
-                targetHeightOfTheColumn = NameOfTrackieHeightOptions.displayTextField,
                 targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayTextField,
                 displayFieldWithInsertedName = false,
                 displayFieldWithTextField = true,

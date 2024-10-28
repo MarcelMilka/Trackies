@@ -4,9 +4,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.s
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHintOptions
 
 data class NameOfTrackieViewState(
-    var nameOfTrackie: String = "",
 
-    var targetHeightOfTheColumn: Int = NameOfTrackieHeightOptions.displayUnactivatedComponent,
     var targetHeightOfTheSurface: Int = NameOfTrackieHeightOptions.displayUnactivatedComponent,
 
     var displayFieldWithInsertedName: Boolean = false,

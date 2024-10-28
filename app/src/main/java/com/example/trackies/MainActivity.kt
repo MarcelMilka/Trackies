@@ -473,6 +473,29 @@ class MainActivity : ComponentActivity() {
                                     addNewTrackieViewModel.clearAll()
                                 },
 
+                                onUpdateName = {
+
+                                    addNewTrackieViewModel.updateName(
+                                        name = it
+                                    )
+                                },
+
+                                onActivate = { segmentToActivate ->
+
+                                    addNewTrackieViewModel.updateUiState(
+                                        segment = segmentToActivate,
+                                        toActivate = true
+                                    )
+                                },
+
+                                onDeactivate = { segmentToDeactivate ->
+
+                                    addNewTrackieViewModel.updateUiState(
+                                        segment = segmentToDeactivate,
+                                        toActivate = false
+                                    )
+                                },
+
                                 onScheduleTimeAndAssignDose = {
                                     navigationController.navigate(route = Destinations.ScheduleIngestionTime)
                                 },

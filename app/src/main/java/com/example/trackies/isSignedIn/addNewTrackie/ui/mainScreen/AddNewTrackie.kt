@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.scaffold.addNewTrackieBottomBar
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.ui.dailyDose
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.ui.dailyDoseLoading
@@ -47,6 +48,11 @@ fun addNewTrackie(
     sharedViewModelUiState: SharedViewModelViewState,
     addNewTrackieViewModel: AddNewTrackieViewModel,
     onReturn: () -> Unit,
+
+    onUpdateName: (String) -> Unit,
+
+    onActivate: (AddNewTrackieSegments) -> Unit,
+    onDeactivate: (AddNewTrackieSegments) -> Unit,
     onScheduleTimeAndAssignDose: () -> Unit,
     onClearAll: () -> Unit,
     onAdd: (TrackieModel) -> Unit
@@ -155,7 +161,21 @@ fun addNewTrackie(
                                 is SharedViewModelViewState.LoadedSuccessfully -> {
 
                                     nameOfTrackie(
-                                        addNewTrackieViewModel = addNewTrackieViewModel
+                                        addNewTrackieViewModel = addNewTrackieViewModel,
+                                        updateName = {
+
+                                            onUpdateName(it)
+                                        },
+                                        activate = {
+                                            onActivate(
+                                                AddNewTrackieSegments.NameOfTrackie
+                                            )
+                                        },
+                                        deactivate = {
+                                            onDeactivate(
+                                                AddNewTrackieSegments.NameOfTrackie
+                                            )
+                                        }
                                     )
 
                                     verticalSpacerS()

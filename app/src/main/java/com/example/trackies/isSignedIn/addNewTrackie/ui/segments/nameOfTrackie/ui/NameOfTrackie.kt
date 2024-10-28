@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
@@ -50,24 +49,22 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun nameOfTrackie(addNewTrackieViewModel: AddNewTrackieViewModel) {
+@Composable fun nameOfTrackie(
+    addNewTrackieViewModel: AddNewTrackieViewModel,
+    updateName: (String) -> Unit,
+    activate: () -> Unit,
+    deactivate: () -> Unit,
+) {
 
-    var nameOfTrackie by remember { mutableStateOf("") }
+//  AddNewTrackieModel-data:
+    var name by remember {
+        mutableStateOf("")
+    }
 
-    var targetHeightOfTheColumn by remember {
+//  NameOfTrackieViewState-data:
+    var targetHeightOfTheSurface by remember {
         mutableIntStateOf(NameOfTrackieHeightOptions.displayUnactivatedComponent)
     }
-    val heightOfTheColumn by animateIntAsState(
-        targetValue = targetHeightOfTheColumn,
-        animationSpec = tween(
-            durationMillis = 1000,
-            delayMillis = 50,
-            easing = LinearOutSlowInEasing
-        ),
-        label = "",
-    )
-
-    var targetHeightOfTheSurface by remember { mutableIntStateOf(50) }
     val heightOfTheSurface by animateIntAsState(
         targetValue = targetHeightOfTheSurface,
         animationSpec = tween(
@@ -78,132 +75,137 @@ import kotlinx.coroutines.launch
         label = "",
     )
 
-    var displayFieldWithInsertedName by remember { mutableStateOf(false) }
-    var displayFieldWithTextField by remember { mutableStateOf(false) }
+    var displayFieldWithInsertedName by remember {
+        mutableStateOf(false)
+    }
+    var displayFieldWithTextField by remember {
+        mutableStateOf(false)
+    }
     var hint by remember {
         mutableStateOf(NameOfTrackieHintOptions.insertNewName)
     }
 
-    var error by remember { mutableStateOf(false) }
-
+//  Segment-specific values
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember {
         FocusRequester()
     }
 
 //  Control whether this segment is active
-    var thisSegmentIsActive by remember { mutableStateOf(false) }
+    var thisSegmentIsActive by remember {
+        mutableStateOf(false)
+    }
+
+//  'Collector' of changes
     CoroutineScope(Dispatchers.Default).launch {
 
-        addNewTrackieViewModel.activityStatesOfSegments.collect { statesOfSegments ->
-            thisSegmentIsActive = statesOfSegments.nameOfTrackieIsActive
+//      Collect changes from 'addNewTrackieModel'
+        this.launch {
 
-            when(thisSegmentIsActive) {
+            addNewTrackieViewModel.addNewTrackieModel.collect {addNewTrackieModel ->
 
-                true -> {addNewTrackieViewModel.nameOfTrackieDisplayTextField(nameOfTrackie)}
+                name = addNewTrackieModel.name
+            }
+        }
 
-                false -> {
+//      Collect changes from 'nameOfTrackieViewState'
+        this.launch {
 
-                    if (nameOfTrackie != "") {
-                        addNewTrackieViewModel.nameOfTrackieDisplayInsertedValue(nameOfTrackie = nameOfTrackie)
+            addNewTrackieViewModel.nameOfTrackieViewState.collect { nameOfTrackieViewState ->
+
+                targetHeightOfTheSurface = nameOfTrackieViewState.targetHeightOfTheSurface
+                displayFieldWithInsertedName = nameOfTrackieViewState.displayFieldWithInsertedName
+                displayFieldWithTextField = nameOfTrackieViewState.displayFieldWithTextField
+                hint = nameOfTrackieViewState.hint
+            }
+        }
+
+//      Control whether this segment is active, or not
+        this.launch {
+
+            addNewTrackieViewModel.activityStatesOfSegments.collect {
+
+                thisSegmentIsActive = when (it.nameOfTrackieIsActive) {
+
+                    true -> {
+                        true
                     }
 
-                    else {
-                        addNewTrackieViewModel.nameOfTrackieDisplayCollapsed()
+                    false -> {
+                        false
                     }
                 }
             }
         }
     }
 
-//  Update values
-    CoroutineScope(Dispatchers.Default).launch {
-
-        addNewTrackieViewModel.nameOfTrackieViewState.collect {
-
-            nameOfTrackie = it.nameOfTrackie
-
-            targetHeightOfTheColumn = it.targetHeightOfTheColumn
-            targetHeightOfTheSurface = it.targetHeightOfTheSurface
-
-            displayFieldWithInsertedName = it.displayFieldWithInsertedName
-            displayFieldWithTextField = it.displayFieldWithTextField
-
-            hint = it.hint
-
-            error = it.error
-        }
-    }
-
-//  Holder of the surface and the supporting text
-    Column(
+//  Background of the composable, adjusts height of the whole composable and displays appropriate data (hint, inserted/chosen values)
+    Surface(
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(heightOfTheColumn.dp),
+            .height(heightOfTheSurface.dp),
+
+        color = SecondaryColor,
+        shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
+
+        onClick = {
+
+            when (thisSegmentIsActive) {
+
+//              Collapse
+                true -> {
+
+                    deactivate()
+                    keyboardController?.hide()
+                }
+
+//              Expand
+                false -> {
+
+                    activate()
+                    keyboardController?.show()
+                }
+            }
+        },
 
         content = {
 
-//          Background of the composable, adjusts height of the whole composable and displays appropriate data
-            Surface(
+//          This column sets padding
+            Column(
 
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(heightOfTheSurface.dp),
+                    .fillMaxSize()
+                    .padding(Dimensions.roundedCornersOfMediumElements)
 
-                color = SecondaryColor,
-                shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
+            ) {
 
-                onClick = {
+//              This column displays "Name of trackie" and an appropriate hint
+                Column(
 
-                    when (thisSegmentIsActive) {
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(30.dp),
 
-//                      Collapse
-                        true -> {
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.SpaceBetween,
 
-                            addNewTrackieViewModel.deactivateSegment(segmentToDeactivate = AddNewTrackieSegments.NameOfTrackie)
-                            addNewTrackieViewModel.updateName(nameOfTheNewTrackie = nameOfTrackie)
+                    content = {
 
-//                          Collapse completely
-                            if (nameOfTrackie == "") {
-
-                                addNewTrackieViewModel.nameOfTrackieDisplayCollapsed()
-                            }
-
-//                          Collapse to display inserted name of trackie
-                            else {
-
-                                addNewTrackieViewModel.nameOfTrackieDisplayInsertedValue(nameOfTrackie = nameOfTrackie)
-                            }
-
-                            keyboardController?.hide()
-                        }
-
-//                      Expand to display text field
-                        false -> {
-
-                            addNewTrackieViewModel.activateSegment(segmentToActivate = AddNewTrackieSegments.NameOfTrackie)
-
-                            addNewTrackieViewModel.nameOfTrackieDisplayTextField(nameOfTrackie)
-
-                            keyboardController?.show()
-                        }
+                        textTitleMedium(content = "Name of trackie")
+                        textTitleSmall(content = hint)
                     }
+                )
 
-                    thisSegmentIsActive = !thisSegmentIsActive
-                },
-                content = {
+//              Depending on a value of displayFieldWithInsertedName, displays inserted name of the trackie
+                AnimatedVisibility(
 
-//                  This column sets padding
-                    Column(
+                    visible = displayFieldWithInsertedName,
+                    enter = fadeIn(animationSpec = tween(500)),
+                    exit = fadeOut(animationSpec = tween(500)),
 
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(Dimensions.roundedCornersOfMediumElements)
+                    content = {
 
-                    ) {
-
-//                      This column displays what is requested
                         Column(
 
                             modifier = Modifier
@@ -211,102 +213,74 @@ import kotlinx.coroutines.launch
                                 .height(30.dp),
 
                             horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center,
+
+                            content = {
+                                textTitleMedium(content = name)
+                            }
+                        )
+                    }
+                )
+
+//              Depending on a value of displayFieldWithTextField, display a text field
+                AnimatedVisibility(
+
+                    visible = displayFieldWithTextField,
+                    enter = fadeIn(animationSpec = tween(250)),
+                    exit = fadeOut(animationSpec = tween(250)),
+
+                    content = {
+
+                        Column(
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+
+                            horizontalAlignment = Alignment.Start,
                             verticalArrangement = Arrangement.SpaceBetween,
 
                             content = {
-                                textTitleMedium(content = "Name of trackie")
-                                textTitleSmall(content = hint)
-                            }
-                        )
 
-//                      Depending on a value of displayFieldWithInsertedName, displays inserted name of the trackie
-                        AnimatedVisibility(
+                                TextField(
 
-                            visible = displayFieldWithInsertedName,
-                            enter = fadeIn(animationSpec = tween(500)),
-                            exit = fadeOut(animationSpec = tween(500)),
+                                    value = name,
+                                    onValueChange = {
 
-                            content = {
+                                        updateName(it)
+                                    },
 
-                                Column(
+                                    singleLine = true,
 
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(30.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
 
-                                    horizontalAlignment = Alignment.Start,
-                                    verticalArrangement = Arrangement.Center,
+//                                      textColor = if (error) {Red} else {White},
+                                        cursorColor = White,
+                                        unfocusedLabelColor = White,
+                                        focusedLabelColor = Transparent,
 
-                                    content = {
-                                        textTitleMedium(content = nameOfTrackie)
-                                    }
-                                )
-                            }
-                        )
+                                        errorCursorColor = Red,
 
-//                      Depending on a value of displayFieldWithTextField, display a text field
-                        AnimatedVisibility(
+                                        containerColor = Transparent,
 
-                            modifier = Modifier,
+                                        unfocusedIndicatorColor = Transparent,
+                                        focusedIndicatorColor = Transparent,
+                                        errorIndicatorColor = Transparent
+                                    ),
 
-                            visible = displayFieldWithTextField,
-                            enter = fadeIn(animationSpec = tween(250)),
-                            exit = fadeOut(animationSpec = tween(250)),
-
-                            content = {
-
-                                Column(
+                                    textStyle = TextStyle.Default.copy(fontSize = 20.sp),
 
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(56.dp),
-
-                                    horizontalAlignment = Alignment.Start,
-                                    verticalArrangement = Arrangement.SpaceBetween,
-
-                                    content = {
-
-                                        TextField(
-
-                                            value = nameOfTrackie,
-                                            onValueChange = {
-
-                                                addNewTrackieViewModel.nameOfTrackieInsertNewName(nameOfTrackie = it)
-                                            },
-
-                                            isError = error,
-
-                                            singleLine = true,
-
-                                            colors = TextFieldDefaults.textFieldColors(
-
-//                                                textColor = if (error) {Red} else {White},
-                                                cursorColor = White,
-                                                unfocusedLabelColor = White,
-                                                focusedLabelColor = Transparent,
-
-                                                errorCursorColor = Red,
-
-                                                containerColor = Transparent,
-
-                                                unfocusedIndicatorColor = Transparent,
-                                                focusedIndicatorColor = Transparent,
-                                                errorIndicatorColor = Transparent
-                                            ),
-
-                                            textStyle = TextStyle.Default.copy(fontSize = 20.sp),
-
-                                            modifier = Modifier
-                                                .focusRequester(focusRequester)
-                                                .onGloballyPositioned { focusRequester.requestFocus() }
-                                        )
-                                    }
+                                        .focusRequester(focusRequester)
+                                        .onGloballyPositioned {
+                                            focusRequester.requestFocus()
+                                        }
                                 )
                             }
                         )
                     }
-                }
-            )
+                )
+            }
         }
     )
 }
