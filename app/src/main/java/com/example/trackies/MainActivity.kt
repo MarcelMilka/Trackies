@@ -490,6 +490,12 @@ class MainActivity : ComponentActivity() {
                                         dose = it
                                     )
                                 },
+                                onUpdateRepeatOn = {
+
+                                    addNewTrackieViewModel.updateRepeatOn(
+                                        repeatOn = it
+                                    )
+                                },
                                 onScheduleTimeAndAssignDose = {
                                     navigationController.navigate(route = Destinations.ScheduleIngestionTime)
                                 },

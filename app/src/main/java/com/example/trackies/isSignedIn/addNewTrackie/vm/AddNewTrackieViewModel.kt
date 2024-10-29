@@ -21,6 +21,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.st
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
 import com.example.globalConstants.DaysOfWeek
+import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -159,9 +160,25 @@ class AddNewTrackieViewModel @Inject constructor(
 
                     when (it.scheduleDaysIsActive) {
 
-                        true -> {}
+//                      Expand
+                        true -> {
 
-                        false -> {}
+                            scheduleDaysDisplayDaysToSchedule()
+                        }
+
+//                      Collapse
+                        false -> {
+
+                            if (addNewTrackieModel.value.repeatOn.isEmpty()) {
+
+                                scheduleDaysDisplayCollapsed()
+                            }
+
+                            else {
+
+                                scheduleDaysDisplayScheduledDays()
+                            }
+                        }
                     }
                 }
             }
@@ -214,9 +231,8 @@ class AddNewTrackieViewModel @Inject constructor(
     fun updateRepeatOn(repeatOn: MutableSet<String>) {
 
         addNewTrackieModel.update {
-
             it.copy(
-                repeatOn = repeatOn.toMutableList()
+                repeatOn = repeatOn,
             )
         }
     }
@@ -240,7 +256,7 @@ class AddNewTrackieViewModel @Inject constructor(
 
                 name = "",
                 dose = 0,
-                repeatOn = mutableListOf(),
+                repeatOn = mutableSetOf(),
                 measuringUnit = null,
                 ingestionTime = null
             )
@@ -283,15 +299,6 @@ class AddNewTrackieViewModel @Inject constructor(
         scheduleDaysViewState.update {
 
             it.copy(
-                repeatOn = mutableSetOf(),
-                mondayIsSelected = false,
-                tuesdayIsSelected = false,
-                wednesdayIsSelected = false,
-                thursdayIsSelected = false,
-                fridayIsSelected = false,
-                saturdayIsSelected = false,
-                sundayIsSelected = false,
-                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayUnactivatedComponent,
                 targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
                 displayFieldWithChosenDaysOfWeek = false,
                 displayFieldWithSelectableButtons = false,
@@ -534,11 +541,11 @@ class AddNewTrackieViewModel @Inject constructor(
 
 
 //  'ScheduleDays' operators
-    fun scheduleDaysDisplayCollapsed() {
+    private fun scheduleDaysDisplayCollapsed() {
 
     scheduleDaysViewState.update {
+
         it.copy(
-            targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayUnactivatedComponent,
             targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
 
             displayFieldWithChosenDaysOfWeek = false,
@@ -549,152 +556,32 @@ class AddNewTrackieViewModel @Inject constructor(
     }
 }
 
-    fun scheduleDaysInsertDayOfWeek(dayOfWeek: String) {
-
-        when(dayOfWeek) {
-
-            DaysOfWeek.monday -> {
-                scheduleDaysViewState.update {
-                    it.copy(mondayIsSelected = true)
-                }
-            }
-
-            DaysOfWeek.tuesday -> {
-                scheduleDaysViewState.update {
-                    it.copy(tuesdayIsSelected = true)
-                }
-            }
-
-            DaysOfWeek.wednesday -> {
-                scheduleDaysViewState.update {
-                    it.copy(wednesdayIsSelected = true)
-                }
-            }
-
-            DaysOfWeek.thursday -> {
-                scheduleDaysViewState.update {
-                    it.copy(thursdayIsSelected = true)
-                }
-            }
-
-            DaysOfWeek.friday -> {
-                scheduleDaysViewState.update {
-                    it.copy(fridayIsSelected = true)
-                }
-            }
-
-            DaysOfWeek.saturday -> {
-                scheduleDaysViewState.update {
-                    it.copy(saturdayIsSelected = true)
-                }
-            }
-
-            DaysOfWeek.sunday -> {
-                scheduleDaysViewState.update {
-                    it.copy(sundayIsSelected = true)
-                }
-            }
-
-        }
-
-        val outdatedRepeatOn: MutableSet<String> = scheduleDaysViewState.value.repeatOn
-        val updatedRepeatOn: MutableSet<String> = outdatedRepeatOn.toMutableSet()
-        updatedRepeatOn.add(dayOfWeek)
+    private fun scheduleDaysDisplayDaysToSchedule() {
 
         scheduleDaysViewState.update {
 
             it.copy(
-                repeatOn = updatedRepeatOn
-            )
-        }
-    }
-
-    fun scheduleDaysExtractDayOfWeek(dayOfWeek: String) {
-
-        when(dayOfWeek) {
-
-            DaysOfWeek.monday -> {
-                scheduleDaysViewState.update {
-                    it.copy(mondayIsSelected = false)
-                }
-            }
-
-            DaysOfWeek.tuesday -> {
-                scheduleDaysViewState.update {
-                    it.copy(tuesdayIsSelected = false)
-                }
-            }
-
-            DaysOfWeek.wednesday -> {
-                scheduleDaysViewState.update {
-                    it.copy(wednesdayIsSelected = false)
-                }
-            }
-
-            DaysOfWeek.thursday -> {
-                scheduleDaysViewState.update {
-                    it.copy(thursdayIsSelected = false)
-                }
-            }
-
-            DaysOfWeek.friday -> {
-                scheduleDaysViewState.update {
-                    it.copy(fridayIsSelected = false)
-                }
-            }
-
-            DaysOfWeek.saturday -> {
-                scheduleDaysViewState.update {
-                    it.copy(saturdayIsSelected = false)
-                }
-            }
-
-            DaysOfWeek.sunday -> {
-                scheduleDaysViewState.update {
-                    it.copy(sundayIsSelected = false)
-                }
-            }
-
-        }
-
-        val outdatedRepeatOn: MutableSet<String> = scheduleDaysViewState.value.repeatOn
-        val updatedRepeatOn: MutableSet<String> = outdatedRepeatOn.toMutableSet()
-        updatedRepeatOn.remove(dayOfWeek)
-
-        scheduleDaysViewState.update {
-
-            it.copy(
-                repeatOn = updatedRepeatOn
-            )
-        }
-    }
-
-    fun scheduleDaysDisplayScheduledDays() {
-
-        scheduleDaysViewState.update {
-            it.copy(
-                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayChosenDaysOfWeek,
-                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayChosenDaysOfWeek,
-
-                displayFieldWithChosenDaysOfWeek = false,
-                displayFieldWithSelectableButtons = true,
-
-                hint = ScheduleDaysHintOptions.editSelectedDaysOfWeek
-            )
-        }
-    }
-
-    fun scheduleDaysDisplayDaysToSchedule() {
-
-        scheduleDaysViewState.update {
-            it.copy(
-                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayRadioButtons,
                 targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayRadioButtons,
 
                 displayFieldWithChosenDaysOfWeek = false,
                 displayFieldWithSelectableButtons = true,
 
                 hint = ScheduleDaysHintOptions.confirmSelectedDaysOfWeek
+            )
+        }
+    }
+
+    private fun scheduleDaysDisplayScheduledDays() {
+
+        scheduleDaysViewState.update {
+
+            it.copy(
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayChosenDaysOfWeek,
+
+                displayFieldWithChosenDaysOfWeek = true,
+                displayFieldWithSelectableButtons = false,
+
+                hint = ScheduleDaysHintOptions.editSelectedDaysOfWeek
             )
         }
     }

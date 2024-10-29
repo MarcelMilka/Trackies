@@ -6,6 +6,6 @@ data class AddNewTrackieModel(
     var name: String = "",
     var dose: Int = 0,
     var measuringUnit: EnumMeasuringUnits? = null,
-    var repeatOn: MutableList<String> = mutableListOf<String>(),
+    var repeatOn: MutableSet<String> = mutableSetOf<String>(),
     var ingestionTime: MutableMap<String, Int>? = null
 )

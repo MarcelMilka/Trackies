@@ -54,6 +54,7 @@ fun addNewTrackie(
     onUpdateName: (String) -> Unit,
     onUpdateMeasuringUnit: (EnumMeasuringUnits) -> Unit,
     onUpdateDose: (Int) -> Unit,
+    onUpdateRepeatOn: (MutableSet<String>) -> Unit,
     onScheduleTimeAndAssignDose: () -> Unit,
 
     onActivate: (AddNewTrackieSegments) -> Unit,
@@ -187,7 +188,23 @@ fun addNewTrackie(
                                     verticalSpacerS()
 
                                     scheduleDays(
-                                        addNewTrackieViewModel = addNewTrackieViewModel
+                                        addNewTrackieViewModel = addNewTrackieViewModel,
+
+                                        updateRepeatOn = {
+
+                                            onUpdateRepeatOn(it)
+                                        },
+
+                                        activate = {
+                                            onActivate(
+                                                AddNewTrackieSegments.ScheduleDays
+                                            )
+                                        },
+                                        deactivate = {
+                                            onDeactivate(
+                                                AddNewTrackieSegments.ScheduleDays
+                                            )
+                                        },
                                     )
 
                                     verticalSpacerS()
