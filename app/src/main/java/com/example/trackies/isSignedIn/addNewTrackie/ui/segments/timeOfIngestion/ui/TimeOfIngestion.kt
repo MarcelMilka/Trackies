@@ -1,7 +1,6 @@
 package com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
@@ -17,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
@@ -44,9 +41,19 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun timeOfIngestion(
     addNewTrackieViewModel: AddNewTrackieViewModel,
-    onScheduleTimeAndAssignDose: () -> Unit,
+    update: () -> Unit,
+    delete: () -> Unit,
+    activate: () -> Unit,
+    deactivate: () -> Unit,
 ) {
 
+//  AddNewTrackieModel-data:
+    var timeOfIngestion: TimeOfIngestion? by remember {
+        mutableStateOf(null)
+    }
+
+
+//  TimeOfIngestionViewState-data:
     var targetHeightOfTheSurface by remember {
 
         mutableIntStateOf(
@@ -68,14 +75,11 @@ import kotlinx.coroutines.launch
         mutableStateOf(TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion)
     }
 
-    var ingestionTime: TimeOfIngestion? by remember {
-        mutableStateOf(null)
-    }
-
     var displayContentInTimeComponent by remember {
 
         mutableStateOf(false)
     }
+
 
 //  Control whether this segment is active.
     var thisSegmentIsActive by remember {
@@ -83,50 +87,48 @@ import kotlinx.coroutines.launch
         mutableStateOf(false)
     }
 
+
+//  'Collector' of changes
     CoroutineScope(Dispatchers.Default).launch {
 
-        addNewTrackieViewModel.activityStatesOfSegments.collect { statesOfSegments ->
+//      Collect changes from 'addNewTrackieModel'
+        this.launch {
 
-            thisSegmentIsActive = statesOfSegments.timeOfIngestionIsActive
+            addNewTrackieViewModel.addNewTrackieModel.collect { addNewTrackieModel ->
 
-            when (thisSegmentIsActive) {
+                timeOfIngestion = addNewTrackieModel.ingestionTime
+            }
+        }
 
-//              Expand this segment
-                true -> {
-                    addNewTrackieViewModel.scheduleTimeDisplayActivatedTimeComponent()
-                }
+//      Collect changes from 'nameOfTrackieViewState'
+        this.launch {
 
-//              Collapse this segment
-                false -> {
+            addNewTrackieViewModel.timeOfIngestionViewState.collect {
+                targetHeightOfTheSurface = it.targetHeightOfTheSurface
+                hint = it.hint
+                displayContentInTimeComponent = it.displayContentInTimeComponent
+            }
+        }
 
-                    if (ingestionTime != null) {
+//      Control whether this segment is active, or not
+        this.launch {
 
-                        addNewTrackieViewModel.scheduleTimeDisplayUnactivatedTimeComponent()
+            addNewTrackieViewModel.activityStatesOfSegments.collect {
+
+                thisSegmentIsActive = when (it.timeOfIngestionIsActive) {
+
+                    true -> {
+                        true
                     }
 
-                    else {
-
-                        addNewTrackieViewModel.scheduleTimeDisplayUnactivated()
+                    false -> {
+                        false
                     }
                 }
             }
         }
     }
 
-//  Update values
-    CoroutineScope(Dispatchers.Default).launch {
-
-        addNewTrackieViewModel.timeOfIngestionViewState.collect {
-            targetHeightOfTheSurface = it.targetHeightOfTheSurface
-            hint = it.hint
-            ingestionTime = it.ingestionTime
-            displayContentInTimeComponent = it.displayContentInTimeComponent
-        }
-    }
-
-    LaunchedEffect(targetHeightOfTheSurface) {
-        Log.d("Halla!", "$targetHeightOfTheSurface")
-    }
 
     Surface(
 
@@ -141,35 +143,18 @@ import kotlinx.coroutines.launch
 
             when (thisSegmentIsActive) {
 
-//              Collapse this segment
+//              Collapse
                 true -> {
 
-                    addNewTrackieViewModel.deactivateSegment(
-                        segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
-                    )
-
-                    if (ingestionTime == null) {
-
-                        addNewTrackieViewModel.deactivateSegment(
-                            segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
-                        )
-                    }
+                    deactivate()
                 }
 
-//              Expand this segment
+//              Expand
                 false -> {
 
-                    if (ingestionTime == null) {
-                        onScheduleTimeAndAssignDose()
-                    }
-
-                    addNewTrackieViewModel.activateSegment(
-                        segmentToActivate = AddNewTrackieSegments.TimeOfIngestion
-                    )
+                    activate()
                 }
             }
-
-            thisSegmentIsActive = !thisSegmentIsActive
         },
 
         content = {
@@ -239,44 +224,36 @@ import kotlinx.coroutines.launch
 
                                 displayButtons = displayContentInTimeComponent,
 
-                                hour = ingestionTime?.hour ?: "",
+                                hour = timeOfIngestion?.hour ?: "",
 
-                                minute = ingestionTime?.minute ?: "",
+                                minute = timeOfIngestion?.minute ?: "",
 
                                 onClick = {
 
                                     when (thisSegmentIsActive) {
 
                                         true -> {
-                                            addNewTrackieViewModel.deactivateSegment(
-                                                segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
-                                            )
+
+                                            deactivate()
                                         }
 
                                         false -> {
-                                            addNewTrackieViewModel.activateSegment(
-                                                segmentToActivate = AddNewTrackieSegments.TimeOfIngestion
-                                            )
+
+                                            activate()
                                         }
 
                                     }
                                 },
 
                                 onEdit = {
-                                    onScheduleTimeAndAssignDose()
+
+                                    update()
                                 },
 
                                 onDelete = {
 
-                                    addNewTrackieViewModel.updateIngestionTime(
-                                        ingestionTimeEntity = null
-                                    )
-
-                                    addNewTrackieViewModel.deactivateSegment(
-                                        segmentToDeactivate = AddNewTrackieSegments.TimeOfIngestion
-                                    )
+                                    delete()
                                 }
-
                             )
                         }
                     )

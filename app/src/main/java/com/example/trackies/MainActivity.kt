@@ -27,6 +27,7 @@ import com.example.trackies.isSignedIn.settings.dialogs.changePassword.verifyYou
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.yourPasswordGotChanged
 import com.example.globalConstants.Destinations
 import com.example.trackies.auth.data.AuthenticationService
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.schedueTimeDialog
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
@@ -496,15 +497,37 @@ class MainActivity : ComponentActivity() {
                                         repeatOn = it
                                     )
                                 },
-                                onScheduleTimeAndAssignDose = {
+
+                                onUpdateTimeOfIngestion = {
                                     navigationController.navigate(route = Destinations.ScheduleIngestionTime)
+                                },
+                                onDeleteTimeOfIngestion = {
+
+                                    addNewTrackieViewModel.updateTimeOfIngestion(
+                                        ingestionTimeEntity = null
+                                    )
                                 },
 
                                 onActivate = { segmentToActivate ->
 
-                                    addNewTrackieViewModel.activateSegment(
-                                        segmentToActivate = segmentToActivate
-                                    )
+                                    if (
+                                        segmentToActivate == AddNewTrackieSegments.TimeOfIngestion &&
+                                        addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime == null
+                                    ) {
+
+                                        navigationController.navigate(route = Destinations.ScheduleIngestionTime)
+
+                                        addNewTrackieViewModel.activateSegment(
+                                            segmentToActivate = segmentToActivate
+                                        )
+                                    }
+
+                                    else {
+
+                                        addNewTrackieViewModel.activateSegment(
+                                            segmentToActivate = segmentToActivate
+                                        )
+                                    }
                                 },
                                 onDeactivate = { segmentToDeactivate ->
 
@@ -531,7 +554,7 @@ class MainActivity : ComponentActivity() {
 
                                     navigationController.navigateUp()
 
-                                    addNewTrackieViewModel.updateIngestionTime(
+                                    addNewTrackieViewModel.updateTimeOfIngestion(
                                         ingestionTimeEntity = it
                                     )
                                 },

@@ -27,6 +27,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.u
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.ui.nameOfTrackieLoading
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.ui.scheduleDays
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.ui.scheduleDaysLoading
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.timeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
@@ -38,9 +39,6 @@ import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +53,9 @@ fun addNewTrackie(
     onUpdateMeasuringUnit: (EnumMeasuringUnits) -> Unit,
     onUpdateDose: (Int) -> Unit,
     onUpdateRepeatOn: (MutableSet<String>) -> Unit,
-    onScheduleTimeAndAssignDose: () -> Unit,
+
+    onUpdateTimeOfIngestion: () -> Unit,
+    onDeleteTimeOfIngestion: () -> Unit,
 
     onActivate: (AddNewTrackieSegments) -> Unit,
     onDeactivate: (AddNewTrackieSegments) -> Unit,
@@ -211,9 +211,24 @@ fun addNewTrackie(
 
                                     timeOfIngestion(
                                         addNewTrackieViewModel = addNewTrackieViewModel,
-                                        onScheduleTimeAndAssignDose = {
-                                            onScheduleTimeAndAssignDose()
-                                        }
+                                        update = {
+
+                                            onUpdateTimeOfIngestion()
+                                        },
+                                        delete = {
+
+                                            onDeleteTimeOfIngestion()
+                                        },
+                                        activate = {
+                                            onActivate(
+                                                AddNewTrackieSegments.TimeOfIngestion
+                                            )
+                                        },
+                                        deactivate = {
+                                            onDeactivate(
+                                                AddNewTrackieSegments.TimeOfIngestion
+                                            )
+                                        },
                                     )
                                 }
 

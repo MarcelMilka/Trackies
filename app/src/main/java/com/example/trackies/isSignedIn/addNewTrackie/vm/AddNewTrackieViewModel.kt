@@ -20,8 +20,6 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.st
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
-import com.example.globalConstants.DaysOfWeek
-import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -187,13 +185,37 @@ class AddNewTrackieViewModel @Inject constructor(
 //          Following and updating UI state of the segment 'TimeOfIngestion'
             this.launch {
 
+                if (addNewTrackieModel.value.ingestionTime == null) {
+
+                    scheduleTimeDisplayUnactivated()
+                }
+            }
+
+            this.launch {
+
                 activityStatesOfSegments.collect {
 
                     when (it.timeOfIngestionIsActive) {
 
-                        true -> {}
+//                      Expand
+                        true -> {
 
-                        false -> {}
+                            scheduleTimeDisplayActivatedTimeComponent()
+                        }
+
+//                      Collapse
+                        false -> {
+
+                            if (addNewTrackieModel.value.ingestionTime == null) {
+
+                                scheduleTimeDisplayUnactivated()
+                            }
+
+                            else {
+
+                                scheduleTimeDisplayUnactivatedTimeComponent()
+                            }
+                        }
                     }
                 }
             }
@@ -237,11 +259,12 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun updateIngestionTime(ingestionTimeEntity: TimeOfIngestionEntity?) {
+    fun updateTimeOfIngestion(ingestionTimeEntity: TimeOfIngestionEntity?) {
 
         val ingestionTime = ingestionTimeEntity?.convertIntoTimeOfIngestion()
 
-        timeOfIngestionViewState.update {
+        addNewTrackieModel.update {
+
             it.copy(
                 ingestionTime = ingestionTime
             )
@@ -311,7 +334,6 @@ class AddNewTrackieViewModel @Inject constructor(
             it.copy(
                 targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedComponent,
                 hint = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
-                ingestionTime = null,
                 displayContentInTimeComponent = false
             )
         }
@@ -588,19 +610,18 @@ class AddNewTrackieViewModel @Inject constructor(
 
 
 //  'TimeOfIngestion' operators
-    fun scheduleTimeDisplayUnactivated() {
+    private fun scheduleTimeDisplayUnactivated() {
 
         timeOfIngestionViewState.update {
             it.copy(
                 targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedComponent,
                 hint = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
-                ingestionTime = null,
                 displayContentInTimeComponent = false
             )
         }
     }
 
-    fun scheduleTimeDisplayActivatedTimeComponent() {
+    private fun scheduleTimeDisplayActivatedTimeComponent() {
 
         timeOfIngestionViewState.update {
             it.copy(
@@ -611,7 +632,7 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun scheduleTimeDisplayUnactivatedTimeComponent() {
+    private fun scheduleTimeDisplayUnactivatedTimeComponent() {
 
         timeOfIngestionViewState.update {
             it.copy(

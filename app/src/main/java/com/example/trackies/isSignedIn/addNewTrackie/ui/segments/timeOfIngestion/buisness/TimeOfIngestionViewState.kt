@@ -9,7 +9,5 @@ data class TimeOfIngestionViewState(
 
     var hint: String = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
 
-    var ingestionTime: TimeOfIngestion? = null,
-
     var displayContentInTimeComponent: Boolean = false
 )
