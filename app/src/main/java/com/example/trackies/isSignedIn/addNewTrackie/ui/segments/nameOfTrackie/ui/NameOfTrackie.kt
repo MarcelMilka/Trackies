@@ -102,7 +102,7 @@ import kotlinx.coroutines.launch
 //      Collect changes from 'addNewTrackieModel'
         this.launch {
 
-            addNewTrackieViewModel.addNewTrackieModel.collect {addNewTrackieModel ->
+            addNewTrackieViewModel.addNewTrackieModel.collect { addNewTrackieModel ->
 
                 name = addNewTrackieModel.name
             }

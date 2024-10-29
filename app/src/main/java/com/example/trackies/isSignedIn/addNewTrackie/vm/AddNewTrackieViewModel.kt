@@ -1,6 +1,5 @@
 package com.example.trackies.isSignedIn.addNewTrackie.vm
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
@@ -25,7 +24,6 @@ import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,10 +32,6 @@ import javax.inject.Inject
 class AddNewTrackieViewModel @Inject constructor(
     private var repository: UserRepository
 ): ViewModel() {
-
-    init {
-        Log.d("Halla!", "Initialized $this")
-    }
 
     val namesOfAllExistingTrackies = mutableListOf<String>()
 
@@ -61,8 +55,8 @@ class AddNewTrackieViewModel @Inject constructor(
 
                     if (
                         it.name != "" &&
-                        it.totalDose != 0 &&
-                        it.measuringUnit != "" &&
+                        it.dose != 0 &&
+                        it.measuringUnit != null &&
                         it.repeatOn.count() != 0
                     ) {
                         buttonAddNewTrackieIsEnabled.emit(value = true)
@@ -83,10 +77,12 @@ class AddNewTrackieViewModel @Inject constructor(
 //                  when this segment is active...
                     when (it.nameOfTrackieIsActive) {
 
+//                      Expand
                         true -> {
                             nameOfTrackieDisplayTextField()
                         }
 
+//                      Collapse
                         false -> {
 
                             if (addNewTrackieModel.value.name != "") {
@@ -101,19 +97,60 @@ class AddNewTrackieViewModel @Inject constructor(
                 }
             }
 
+
+
 //          Following and updating UI state of the segment 'DailyDose'
+            this.launch {
+
+                addNewTrackieModel.collect {
+
+                    if (
+                        it.measuringUnit != null &&
+                        activityStatesOfSegments.value.dailyDoseIsActive
+                        ) {
+
+                        dailyDoseDisplayTextField()
+                    }
+                }
+            }
+
             this.launch {
 
                 activityStatesOfSegments.collect {
 
                     when (it.dailyDoseIsActive) {
 
-                        true -> {}
+//                      Expand
+                        true -> {
 
-                        false -> {}
+                            if (addNewTrackieModel.value.measuringUnit == null) {
+
+                                dailyDoseDisplayMeasuringUnitsToChoose()
+                            }
+
+                            else {
+
+                                dailyDoseDisplayTextField()
+                            }
+                        }
+
+//                      Collapse
+                        false -> {
+
+                            if (addNewTrackieModel.value.measuringUnit == null) {
+
+                                dailyDoseDisplayCollapsed()
+                            }
+
+                            else {
+
+                                dailyDoseDisplayInsertedValue()
+                            }
+                        }
                     }
                 }
             }
+
 
 //          Following and updating UI state of the segment 'ScheduleDays'
             this.launch {
@@ -128,6 +165,7 @@ class AddNewTrackieViewModel @Inject constructor(
                     }
                 }
             }
+
 
 //          Following and updating UI state of the segment 'TimeOfIngestion'
             this.launch {
@@ -155,11 +193,19 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun updateMeasuringUnitAndDose(totalDose: Int, measuringUnit: String) {
+    fun updateDose(dose: Int) {
 
         addNewTrackieModel.update {
             it.copy(
-                totalDose = totalDose,
+                dose = dose,
+            )
+        }
+    }
+
+    fun updateMeasuringUnit(measuringUnit: EnumMeasuringUnits) {
+
+        addNewTrackieModel.update {
+            it.copy(
                 measuringUnit = measuringUnit
             )
         }
@@ -193,9 +239,9 @@ class AddNewTrackieViewModel @Inject constructor(
             it.copy(
 
                 name = "",
-                totalDose = 0,
+                dose = 0,
                 repeatOn = mutableListOf(),
-                measuringUnit = "",
+                measuringUnit = null,
                 ingestionTime = null
             )
         }
@@ -225,12 +271,6 @@ class AddNewTrackieViewModel @Inject constructor(
         dailyDoseViewState.update {
 
             it.copy(
-                measuringUnit = null,
-                totalDailyDose = 1,
-                mlIsChosen = false,
-                gIsChosen = false,
-                pcsIsChosen = false,
-                targetHeightOfTheColumn = DailyDoseHeightOptions.displayUnactivatedComponent,
                 targetHeightOfTheSurface = DailyDoseHeightOptions.displayUnactivatedComponent,
                 displayFieldWithInsertedDose = false,
                 displayFieldWithMeasuringUnits = false,
@@ -359,30 +399,6 @@ class AddNewTrackieViewModel @Inject constructor(
     }
 
 
-
-    fun updateUiState (
-        segment: AddNewTrackieSegments,
-        toActivate: Boolean
-    ) {
-
-        viewModelScope.launch {
-
-            when (toActivate) {
-
-                true -> {
-
-                    activateSegment(segmentToActivate = segment)
-                }
-
-                false -> {
-
-                    deactivateSegment(segmentToDeactivate = segment)
-                }
-            }
-        }
-    }
-
-
 //  'NameOfTrackie' operators
     private fun nameOfTrackieDisplayCollapsed() {
 
@@ -393,6 +409,34 @@ class AddNewTrackieViewModel @Inject constructor(
                 displayFieldWithInsertedName = false,
                 displayFieldWithTextField = false,
                 hint = NameOfTrackieHintOptions.insertNewName
+            )
+        }
+    }
+
+    private fun nameOfTrackieDisplayTextField() {
+
+        val currentNameOfTrackie = addNewTrackieModel.value.name
+
+        var hint = ""
+        var error = false
+
+        if (namesOfAllExistingTrackies.contains(currentNameOfTrackie)) {
+            hint = NameOfTrackieHintOptions.nameAlreadyExists
+            error = true
+        }
+        else {
+            hint = NameOfTrackieHintOptions.confirmNewName
+            error = false
+        }
+
+        nameOfTrackieViewState.update {
+
+            it.copy(
+                targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayTextField,
+                displayFieldWithInsertedName = false,
+                displayFieldWithTextField = true,
+                hint = hint,
+                error = error
             )
         }
     }
@@ -426,118 +470,27 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    private fun nameOfTrackieDisplayTextField() {
-
-        val currentNameOfTrackie = addNewTrackieModel.value.name
-
-        var hint = ""
-        var error = false
-
-        if (namesOfAllExistingTrackies.contains(currentNameOfTrackie)) {
-            hint = NameOfTrackieHintOptions.nameAlreadyExists
-            error = true
-        }
-        else {
-            hint = NameOfTrackieHintOptions.confirmNewName
-            error = false
-        }
-
-        nameOfTrackieViewState.update {
-
-            it.copy(
-                targetHeightOfTheSurface = NameOfTrackieHeightOptions.displayTextField,
-                displayFieldWithInsertedName = false,
-                displayFieldWithTextField = true,
-                hint = hint,
-                error = error
-            )
-        }
-    }
-
 
 //  'DailyDose' operators
-    fun dailyDoseInsertMeasuringUnit(measuringUnit: EnumMeasuringUnits) {
+    private fun dailyDoseDisplayCollapsed() {
 
         dailyDoseViewState.update {
 
-            when (measuringUnit) {
-
-                EnumMeasuringUnits.ml -> {
-                    it.copy(
-                        measuringUnit = measuringUnit,
-                        mlIsChosen = true,
-                        gIsChosen = false,
-                        pcsIsChosen = false
-                    )
-                }
-
-                EnumMeasuringUnits.g -> {
-                    it.copy(
-                        measuringUnit = measuringUnit,
-                        mlIsChosen = false,
-                        gIsChosen = true,
-                        pcsIsChosen = false
-                    )
-                }
-
-                EnumMeasuringUnits.pcs -> {
-                    it.copy(
-                        measuringUnit = measuringUnit,
-                        mlIsChosen = false,
-                        gIsChosen = false,
-                        pcsIsChosen = true
-                    )
-                }
-            }
-        }
-    }
-
-    fun dailyDoseInsertTotalDose(totalDose: Int) {
-
-        dailyDoseViewState.update {
             it.copy(
-                totalDailyDose = totalDose
-            )
-        }
-    }
-
-    fun dailyDoseDisplayCollapsed() {
-
-        dailyDoseViewState.update {
-            it.copy(
-                targetHeightOfTheColumn = DailyDoseHeightOptions.displayUnactivatedComponent,
                 targetHeightOfTheSurface = DailyDoseHeightOptions.displayUnactivatedComponent,
 
                 displayFieldWithInsertedDose = false,
                 displayFieldWithMeasuringUnits = false,
                 displayFieldWithTextField = false,
-
-                hint = DailyDoseHintOptions.insertDailyDosage
+                hint = DailyDoseHintOptions.insertDailyDosage,
             )
         }
     }
 
-    fun dailyDoseDisplayInsertedValue() {
+    private fun dailyDoseDisplayMeasuringUnitsToChoose() {
 
         dailyDoseViewState.update {
             it.copy(
-                targetHeightOfTheColumn = DailyDoseHeightOptions.displayFieldWithInsertedDose,
-                targetHeightOfTheSurface = DailyDoseHeightOptions.displayFieldWithInsertedDose,
-
-                displayFieldWithInsertedDose = true,
-                displayFieldWithMeasuringUnits = false,
-                displayFieldWithTextField = false,
-
-                hint = DailyDoseHintOptions.editDailyDosage
-            )
-        }
-    }
-
-    fun dailyDoseDisplayMeasuringUnitsToChoose() {
-
-        dailyDoseViewState.update {
-            it.copy(
-                targetHeightOfTheColumn = DailyDoseHeightOptions.displayFieldWithAvailableMeasuringUnitsToChoose,
                 targetHeightOfTheSurface = DailyDoseHeightOptions.displayFieldWithAvailableMeasuringUnitsToChoose,
 
                 displayFieldWithInsertedDose = false,
@@ -549,11 +502,10 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun dailyDoseDisplayTextField() {
+    private fun dailyDoseDisplayTextField() {
 
         dailyDoseViewState.update {
             it.copy(
-                targetHeightOfTheColumn = DailyDoseHeightOptions.displayTextField,
                 targetHeightOfTheSurface = DailyDoseHeightOptions.displayTextField,
 
                 displayFieldWithInsertedDose = false,
@@ -565,8 +517,38 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
+    private fun dailyDoseDisplayInsertedValue() {
+
+        dailyDoseViewState.update {
+
+            it.copy(
+                targetHeightOfTheSurface = DailyDoseHeightOptions.displayFieldWithInsertedDose,
+
+                displayFieldWithInsertedDose = true,
+                displayFieldWithMeasuringUnits = false,
+                displayFieldWithTextField = false,
+                hint = DailyDoseHintOptions.editDailyDosage,
+            )
+        }
+    }
+
 
 //  'ScheduleDays' operators
+    fun scheduleDaysDisplayCollapsed() {
+
+    scheduleDaysViewState.update {
+        it.copy(
+            targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayUnactivatedComponent,
+            targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
+
+            displayFieldWithChosenDaysOfWeek = false,
+            displayFieldWithSelectableButtons = false,
+
+            hint = ScheduleDaysHintOptions.selectDaysOfWeek
+        )
+    }
+}
+
     fun scheduleDaysInsertDayOfWeek(dayOfWeek: String) {
 
         when(dayOfWeek) {
@@ -687,21 +669,6 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun scheduleDaysDisplayCollapsed() {
-
-        scheduleDaysViewState.update {
-            it.copy(
-                targetHeightOfTheColumn = ScheduleDaysHeightOptions.displayUnactivatedComponent,
-                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
-
-                displayFieldWithChosenDaysOfWeek = false,
-                displayFieldWithSelectableButtons = false,
-
-                hint = ScheduleDaysHintOptions.selectDaysOfWeek
-            )
-        }
-    }
-
     fun scheduleDaysDisplayScheduledDays() {
 
         scheduleDaysViewState.update {
@@ -731,6 +698,7 @@ class AddNewTrackieViewModel @Inject constructor(
             )
         }
     }
+
 
 //  'TimeOfIngestion' operators
     fun scheduleTimeDisplayUnactivated() {

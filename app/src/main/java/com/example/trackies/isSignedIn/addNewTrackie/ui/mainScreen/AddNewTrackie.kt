@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.scaffold.addNewTrackieBottomBar
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.EnumMeasuringUnits
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.ui.dailyDose
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.ui.dailyDoseLoading
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.ui.nameOfTrackie
@@ -47,13 +48,17 @@ import kotlinx.coroutines.launch
 fun addNewTrackie(
     sharedViewModelUiState: SharedViewModelViewState,
     addNewTrackieViewModel: AddNewTrackieViewModel,
+
     onReturn: () -> Unit,
 
     onUpdateName: (String) -> Unit,
+    onUpdateMeasuringUnit: (EnumMeasuringUnits) -> Unit,
+    onUpdateDose: (Int) -> Unit,
+    onScheduleTimeAndAssignDose: () -> Unit,
 
     onActivate: (AddNewTrackieSegments) -> Unit,
     onDeactivate: (AddNewTrackieSegments) -> Unit,
-    onScheduleTimeAndAssignDose: () -> Unit,
+
     onClearAll: () -> Unit,
     onAdd: (TrackieModel) -> Unit
 ) {
@@ -81,32 +86,7 @@ fun addNewTrackie(
                             onClearAll()
                         },
 
-                        onAdd = {
-
-                            CoroutineScope(Dispatchers.Main).launch {
-
-                                addNewTrackieViewModel.addNewTrackieModel.collect {
-
-                                    if (it.name != "" &&
-                                        it.totalDose != 0 &&
-                                        it.measuringUnit != "" &&
-                                        it.repeatOn.isNotEmpty()
-                                    ) {
-
-                                        onAdd(
-                                            TrackieModel(
-
-                                                name = it.name,
-                                                totalDose = it.totalDose,
-                                                measuringUnit = it.measuringUnit,
-                                                repeatOn = it.repeatOn,
-                                                ingestionTime = it.ingestionTime
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                        onAdd = {}
                     )
                 }
             )
@@ -162,10 +142,12 @@ fun addNewTrackie(
 
                                     nameOfTrackie(
                                         addNewTrackieViewModel = addNewTrackieViewModel,
+
                                         updateName = {
 
                                             onUpdateName(it)
                                         },
+
                                         activate = {
                                             onActivate(
                                                 AddNewTrackieSegments.NameOfTrackie
@@ -181,7 +163,25 @@ fun addNewTrackie(
                                     verticalSpacerS()
 
                                     dailyDose(
-                                        addNewTrackieViewModel = addNewTrackieViewModel
+                                        addNewTrackieViewModel = addNewTrackieViewModel,
+
+                                        updateMeasuringUnit = {
+                                            onUpdateMeasuringUnit(it)
+                                        },
+                                        updateDose = {
+                                            onUpdateDose(it)
+                                        },
+
+                                        activate = {
+                                            onActivate(
+                                                AddNewTrackieSegments.DailyDose
+                                            )
+                                        },
+                                        deactivate = {
+                                            onDeactivate(
+                                                AddNewTrackieSegments.DailyDose
+                                            )
+                                        }
                                     )
 
                                     verticalSpacerS()

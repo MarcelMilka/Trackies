@@ -465,7 +465,6 @@ class MainActivity : ComponentActivity() {
                             addNewTrackie(
 
                                 sharedViewModelUiState = sharedViewModelUiState,
-
                                 addNewTrackieViewModel = addNewTrackieViewModel,
 
                                 onReturn = {
@@ -479,40 +478,40 @@ class MainActivity : ComponentActivity() {
                                         name = it
                                     )
                                 },
+                                onUpdateMeasuringUnit = {
+
+                                    addNewTrackieViewModel.updateMeasuringUnit(
+                                        measuringUnit = it
+                                    )
+                                },
+                                onUpdateDose = {
+
+                                    addNewTrackieViewModel.updateDose(
+                                        dose = it
+                                    )
+                                },
+                                onScheduleTimeAndAssignDose = {
+                                    navigationController.navigate(route = Destinations.ScheduleIngestionTime)
+                                },
 
                                 onActivate = { segmentToActivate ->
 
-                                    addNewTrackieViewModel.updateUiState(
-                                        segment = segmentToActivate,
-                                        toActivate = true
+                                    addNewTrackieViewModel.activateSegment(
+                                        segmentToActivate = segmentToActivate
                                     )
                                 },
-
                                 onDeactivate = { segmentToDeactivate ->
 
-                                    addNewTrackieViewModel.updateUiState(
-                                        segment = segmentToDeactivate,
-                                        toActivate = false
+                                    addNewTrackieViewModel.deactivateSegment(
+                                        segmentToDeactivate = segmentToDeactivate
                                     )
-                                },
-
-                                onScheduleTimeAndAssignDose = {
-                                    navigationController.navigate(route = Destinations.ScheduleIngestionTime)
                                 },
 
                                 onClearAll = {
 
                                     addNewTrackieViewModel.clearAll()
                                 },
-
-                                onAdd = { trackieViewState ->
-
-                                    sharedViewModel.addNewTrackie(
-                                        trackieViewState = trackieViewState,
-                                        onFailure = {}
-                                    )
-                                    addNewTrackieViewModel.clearAll()
-                                }
+                                onAdd = {}
                             )
                         }
 

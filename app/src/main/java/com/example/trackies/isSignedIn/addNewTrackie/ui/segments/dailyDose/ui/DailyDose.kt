@@ -10,12 +10,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,13 +37,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.EnumMeasuringUnits
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.globalConstants.MeasuringUnits
 import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
+import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.Dimensions
@@ -56,38 +54,39 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun dailyDose(addNewTrackieViewModel: AddNewTrackieViewModel) {
+@Composable fun dailyDose(
+    addNewTrackieViewModel: AddNewTrackieViewModel,
 
-//  user's data
+    updateMeasuringUnit: (EnumMeasuringUnits) -> Unit,
+    updateDose: (Int) -> Unit,
+
+    activate: () -> Unit,
+    deactivate: () -> Unit,
+) {
+
+//  AddNewTrackieModel-data:
     var measuringUnit: EnumMeasuringUnits? by remember { mutableStateOf(null) }
-    var totalDailyDose by remember { mutableIntStateOf(0) }
+    var dose by remember { mutableIntStateOf(0) }
 
-    var mlIsChosen by remember { mutableStateOf(false) }
-    var gIsChosen by remember { mutableStateOf(false) }
-    var pcsIsChosen by remember { mutableStateOf(false) }
 
-    var targetHeightOfTheColumn by remember {
-        mutableIntStateOf(
-            DailyDoseHeightOptions.displayUnactivatedComponent
-        )
+//  DailyDoseViewState-data:
+    var mlIsChosen by remember {
+        mutableStateOf(false)
     }
-    val heightOfTheColumn by animateIntAsState(
-        targetValue = targetHeightOfTheColumn,
-        animationSpec = tween(
-            durationMillis = 1000,
-            delayMillis = 50,
-            easing = LinearOutSlowInEasing
-        ),
-        label = "",
-    )
+    var gIsChosen by remember {
+        mutableStateOf(false)
+    }
+    var pcsIsChosen by remember {
+        mutableStateOf(false)
+    }
 
     var targetHeightOfTheSurface by remember {
         mutableIntStateOf(
             DailyDoseHeightOptions.displayUnactivatedComponent
         )
     }
-    val heightOfTheSurface = animateIntAsState(
-        targetValue = targetHeightOfTheColumn,
+    val heightOfTheSurface by animateIntAsState(
+        targetValue = targetHeightOfTheSurface,
         animationSpec = tween(
             durationMillis = 1000,
             delayMillis = 50,
@@ -96,9 +95,15 @@ import kotlinx.coroutines.launch
         label = "",
     )
 
-    var displayFieldWithInsertedDose by remember { mutableStateOf(false) }
-    var displayFieldWithMeasuringUnits by remember { mutableStateOf(false) }
-    var displayFieldWithTextField by remember { mutableStateOf(false) }
+    var displayFieldWithInsertedDose by remember {
+        mutableStateOf(false)
+    }
+    var displayFieldWithMeasuringUnits by remember {
+        mutableStateOf(false)
+    }
+    var displayFieldWithTextField by remember {
+        mutableStateOf(false)
+    }
 
     var hint by remember {
         mutableStateOf(
@@ -106,124 +111,163 @@ import kotlinx.coroutines.launch
         )
     }
 
-    val focusRequester = remember { FocusRequester() }
+
+//  Segment-specific values
+    val focusRequester = remember {
+        FocusRequester()
+    }
+
 
 //  Control whether this segment is active
     var thisSegmentIsActive by remember {
 
         mutableStateOf(false)
     }
+
+
+//  'Collector' of changes
     CoroutineScope(Dispatchers.Default).launch {
 
-        addNewTrackieViewModel.activityStatesOfSegments.collect { statesOfSegments ->
-            thisSegmentIsActive = statesOfSegments.dailyDoseIsActive
+//      Collect changes from 'addNewTrackieModel'
+        this.launch {
 
-            when(thisSegmentIsActive) {
-                true -> {
-                    when(measuringUnit) {
-                        null -> addNewTrackieViewModel.dailyDoseDisplayMeasuringUnitsToChoose()
-                        else -> addNewTrackieViewModel.dailyDoseDisplayTextField()
+            addNewTrackieViewModel.addNewTrackieModel.collect { addNewTrackieModel ->
+
+                measuringUnit = addNewTrackieModel.measuringUnit.also {
+
+                    when (it) {
+
+                        EnumMeasuringUnits.ml -> {
+
+                            mlIsChosen = true
+                            gIsChosen = false
+                            pcsIsChosen = false
+                        }
+
+                        EnumMeasuringUnits.g -> {
+
+                            mlIsChosen = false
+                            gIsChosen = true
+                            pcsIsChosen = false
+                        }
+
+                        EnumMeasuringUnits.pcs -> {
+
+                            mlIsChosen = false
+                            gIsChosen = false
+                            pcsIsChosen = true
+                        }
+
+                        null -> {
+
+                            mlIsChosen = false
+                            gIsChosen = false
+                            pcsIsChosen = false
+                        }
                     }
                 }
-                false -> {
-                    when(measuringUnit) {
-                        null -> addNewTrackieViewModel.dailyDoseDisplayCollapsed()
-                        else -> addNewTrackieViewModel.dailyDoseDisplayInsertedValue()
+                dose = addNewTrackieModel.dose
+            }
+        }
+
+//      Collect changes from 'dailyDoseViewState'
+        this.launch {
+
+            addNewTrackieViewModel.dailyDoseViewState.collect { dailyDoseViewState ->
+
+                targetHeightOfTheSurface = dailyDoseViewState.targetHeightOfTheSurface
+
+                displayFieldWithInsertedDose = dailyDoseViewState.displayFieldWithInsertedDose
+                displayFieldWithMeasuringUnits = dailyDoseViewState.displayFieldWithMeasuringUnits
+                displayFieldWithTextField = dailyDoseViewState.displayFieldWithTextField
+                hint = dailyDoseViewState.hint
+            }
+        }
+
+//      Control whether this segment is active, or not
+        this.launch {
+
+            addNewTrackieViewModel.activityStatesOfSegments.collect {
+
+                when (it.dailyDoseIsActive) {
+
+                    true -> {
+                        thisSegmentIsActive = true
+                    }
+
+                    false -> {
+                        thisSegmentIsActive = false
                     }
                 }
             }
         }
     }
 
-//  Update values
-    CoroutineScope(Dispatchers.Default).launch {
 
-        addNewTrackieViewModel.dailyDoseViewState.collect {
-            measuringUnit = it.measuringUnit
-            totalDailyDose = it.totalDailyDose
-
-            mlIsChosen = it.mlIsChosen
-            gIsChosen = it.gIsChosen
-            pcsIsChosen = it.pcsIsChosen
-
-            targetHeightOfTheColumn = it.targetHeightOfTheColumn
-            targetHeightOfTheSurface = it.targetHeightOfTheSurface
-
-            displayFieldWithInsertedDose = it.displayFieldWithInsertedDose
-            displayFieldWithMeasuringUnits = it.displayFieldWithMeasuringUnits
-            displayFieldWithTextField = it.displayFieldWithTextField
-            hint = it.hint
-        }
-    }
-
-
-//  Holder of the surface and the supporting text
-    Column(
+//  Background of the composable, adjusts height of the whole composable and displays appropriate data
+    Surface(
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(heightOfTheColumn.dp),
+            .height(heightOfTheSurface.dp),
+
+        color = SecondaryColor,
+        shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
+
+        onClick = {
+
+            when (thisSegmentIsActive) {
+
+//              Collapse
+                true -> {
+
+                    deactivate()
+                }
+
+//              Expand
+                false -> {
+
+                    activate()
+                }
+            }
+        },
 
         content = {
 
-//          Background of the composable, adjusts height of the whole composable and displays appropriate data
-            Surface(
+//          Sets padding
+            Column(
 
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(heightOfTheSurface.value.dp),
-
-                color = SecondaryColor,
-                shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
-
-                onClick = {
-
-                    when (thisSegmentIsActive) {
-
-//                      Collapse this segment
-                        true -> {
-                            addNewTrackieViewModel.deactivateSegment(
-                                segmentToDeactivate = AddNewTrackieSegments.DailyDose
-                            )
-
-                            addNewTrackieViewModel.updateMeasuringUnitAndDose(
-                                totalDose = totalDailyDose,
-                                measuringUnit = measuringUnit.toString()
-                            )
-
-                            addNewTrackieViewModel.dailyDoseDisplayInsertedValue()
-                        }
-
-//                      Expand this segment
-                        false -> {
-
-                            addNewTrackieViewModel.activateSegment(
-                                segmentToActivate = AddNewTrackieSegments.DailyDose
-                            )
-
-                            if (measuringUnit == null) {
-                                addNewTrackieViewModel.dailyDoseDisplayMeasuringUnitsToChoose()
-                            }
-
-                            else {
-                                addNewTrackieViewModel.dailyDoseDisplayTextField()
-                            }
-                        }
-                    }
-                },
+                    .fillMaxSize()
+                    .padding(10.dp),
 
                 content = {
 
-//                  Sets padding
+//                  This column displays "Daily dose" and an appropriate hint
                     Column(
 
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(10.dp),
+                            .fillMaxWidth()
+                            .height(30.dp),
+
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.SpaceBetween,
+
+                        content = {
+                            textTitleMedium(content = "Daily dose")
+                            textTitleSmall(content = hint)
+                        }
+                    )
+
+//                  Display inserted dose and measuring unit
+                    AnimatedVisibility(
+
+                        visible = displayFieldWithInsertedDose,
+                        enter = fadeIn(animationSpec = tween(250)),
+                        exit = fadeOut(animationSpec = tween(250)),
 
                         content = {
 
-//                          Displays what takes, may also display the premium logo
                             Column(
 
                                 modifier = Modifier
@@ -231,185 +275,170 @@ import kotlinx.coroutines.launch
                                     .height(30.dp),
 
                                 horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center,
+
+                                content = {
+                                    textTitleMedium(content = "$dose $measuringUnit")
+                                }
+                            )
+                        }
+                    )
+
+//                  Display field with measuring units
+                    AnimatedVisibility(
+
+                        visible = displayFieldWithMeasuringUnits,
+                        enter = fadeIn(animationSpec = tween(250)),
+                        exit = fadeOut(animationSpec = tween(250)),
+
+                        content = {
+
+                            Column(
+
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(76.dp),
+
+                                horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.SpaceBetween,
 
                                 content = {
-                                    textTitleMedium(content = "Daily dose")
-                                    textTitleSmall(content = hint)
-                                }
-                            )
 
-//                          Display inserted dose and measuring unit
-                            AnimatedVisibility(
-
-                                visible = displayFieldWithInsertedDose,
-                                enter = fadeIn(animationSpec = tween(250)),
-                                exit = fadeOut(animationSpec = tween(250)),
-
-                                content = {
-
-                                    Column(
+                                    Row(
 
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(30.dp),
+                                            .height(20.dp),
 
-                                        horizontalAlignment = Alignment.Start,
-                                        verticalArrangement = Arrangement.Center,
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.Bottom,
 
                                         content = {
-                                            textTitleMedium(content = "$totalDailyDose $measuringUnit")
+                                            textTitleSmall(content = "choose the measuring unit")
+                                        }
+                                    )
+
+                                    Row(
+
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(56.dp),
+
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.CenterVertically,
+
+                                        content = {
+
+                                            mediumRadioTextButton(text = MeasuringUnits.ml, isSelected = mlIsChosen) {
+
+                                                mlIsChosen = true
+                                                gIsChosen = false
+                                                pcsIsChosen = false
+
+                                                updateMeasuringUnit(EnumMeasuringUnits.ml)
+                                            }
+
+                                            verticalSpacerS()
+
+                                            mediumRadioTextButton(text = MeasuringUnits.g, isSelected = gIsChosen) {
+
+                                                mlIsChosen = false
+                                                gIsChosen = true
+                                                pcsIsChosen = false
+
+                                                updateMeasuringUnit(EnumMeasuringUnits.g)
+                                            }
+
+                                            verticalSpacerS()
+
+                                            mediumRadioTextButton(text = MeasuringUnits.pcs, isSelected = pcsIsChosen) {
+
+                                                mlIsChosen = false
+                                                gIsChosen = false
+                                                pcsIsChosen = true
+
+                                                updateMeasuringUnit(EnumMeasuringUnits.pcs)
+                                            }
                                         }
                                     )
                                 }
                             )
+                        }
+                    )
 
-//                          Display field with measuring units
-                            AnimatedVisibility(
+//                  Display field with text field
+                    AnimatedVisibility(
 
-                                visible = displayFieldWithMeasuringUnits,
-                                enter = fadeIn(animationSpec = tween(250)),
-                                exit = fadeOut(animationSpec = tween(250)),
+                        visible = displayFieldWithTextField,
+                        enter = fadeIn(animationSpec = tween(250)),
+                        exit = fadeOut(animationSpec = tween(250)),
+
+                        content = {
+
+                            Column(
+
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(76.dp),
+
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.SpaceBetween,
 
                                 content = {
 
-                                    Column(
+                                    Row(
 
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(76.dp),
+                                            .height(20.dp),
 
-                                        horizontalAlignment = Alignment.Start,
-                                        verticalArrangement = Arrangement.SpaceBetween,
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.Bottom,
 
                                         content = {
-
-//                                            Divider()
-
-                                            Row(
-
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(20.dp),
-
-                                                horizontalArrangement = Arrangement.Start,
-                                                verticalAlignment = Alignment.Bottom,
-
-                                                content = {
-                                                    textTitleSmall(content = "choose the measuring unit")
-                                                }
-                                            )
-
-                                            Row(
-
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(56.dp),
-
-                                                horizontalArrangement = Arrangement.Start,
-                                                verticalAlignment = Alignment.CenterVertically,
-
-                                                content = {
-
-                                                    mediumRadioTextButton(text = MeasuringUnits.ml, isSelected = mlIsChosen) {
-
-                                                        addNewTrackieViewModel.dailyDoseInsertMeasuringUnit(measuringUnit = EnumMeasuringUnits.ml)
-                                                        addNewTrackieViewModel.dailyDoseDisplayTextField()
-                                                    }
-
-                                                    Spacer(Modifier.width(5.dp))
-
-                                                    mediumRadioTextButton(text = MeasuringUnits.g, isSelected = gIsChosen) {
-
-                                                        addNewTrackieViewModel.dailyDoseInsertMeasuringUnit(measuringUnit = EnumMeasuringUnits.g)
-                                                        addNewTrackieViewModel.dailyDoseDisplayTextField()
-                                                    }
-
-                                                    Spacer(Modifier.width(5.dp))
-
-                                                    mediumRadioTextButton(text = MeasuringUnits.pcs, isSelected = pcsIsChosen) {
-
-                                                        addNewTrackieViewModel.dailyDoseInsertMeasuringUnit(measuringUnit = EnumMeasuringUnits.pcs)
-                                                        addNewTrackieViewModel.dailyDoseDisplayTextField()
-                                                    }
-                                                }
-                                            )
+                                            textTitleSmall(content = "choose the total daily dose")
                                         }
                                     )
-                                }
-                            )
 
-//                          Display field with text field
-                            AnimatedVisibility(
+                                    TextField(
 
-                                visible = displayFieldWithTextField,
-                                enter = fadeIn(animationSpec = tween(250)),
-                                exit = fadeOut(animationSpec = tween(250)),
+                                        value = if (dose == 0) "" else "$dose $measuringUnit",
+                                        onValueChange = {
 
-                                content = {
+                                            val newValue = it.filter { char ->
+                                                char.isDigit()
+                                            }
 
-                                    Column(
+                                            updateDose(newValue.toIntOrNull() ?: 0)
+                                        },
+
+                                        singleLine = true,
+                                        enabled = true,
+
+                                        colors = TextFieldDefaults.textFieldColors(
+
+//                                          textColor = White,
+                                            cursorColor = White,
+                                            unfocusedLabelColor = Color.Transparent,
+                                            focusedLabelColor = Color.Transparent,
+
+                                            containerColor = Color.Transparent,
+
+                                            unfocusedIndicatorColor = Color.Transparent,
+                                            focusedIndicatorColor = Color.Transparent
+                                        ),
+
+                                        textStyle = TextStyle.Default.copy(fontSize = 20.sp),
+
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Number
+                                        ),
 
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(76.dp),
-
-                                        horizontalAlignment = Alignment.Start,
-                                        verticalArrangement = Arrangement.SpaceBetween,
-
-                                        content = {
-
-//                                            Divider()
-
-                                            Row(
-
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(20.dp),
-
-                                                horizontalArrangement = Arrangement.Start,
-                                                verticalAlignment = Alignment.Bottom,
-
-                                                content = {
-                                                    textTitleSmall(content = "choose the total daily dose")
-                                                }
-                                            )
-
-                                            TextField(
-
-                                                value = if (totalDailyDose == 0) "" else "$totalDailyDose $measuringUnit",
-                                                onValueChange = {
-                                                    val newValue = it.filter { char -> char.isDigit() }
-                                                    addNewTrackieViewModel.dailyDoseInsertTotalDose(totalDose = newValue.toIntOrNull() ?: 0 )
-                                                },
-
-                                                singleLine = true,
-                                                enabled = true,
-
-                                                colors = TextFieldDefaults.textFieldColors(
-
-//                                                    textColor = White,
-                                                    cursorColor = White,
-                                                    unfocusedLabelColor = Color.Transparent,
-                                                    focusedLabelColor = Color.Transparent,
-
-                                                    containerColor = Color.Transparent,
-
-                                                    unfocusedIndicatorColor = Color.Transparent,
-                                                    focusedIndicatorColor = Color.Transparent
-                                                ),
-
-                                                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
-
-                                                keyboardOptions = KeyboardOptions(
-                                                    keyboardType = KeyboardType.Number
-                                                ),
-
-                                                modifier = Modifier
-                                                    .focusRequester(focusRequester)
-                                                    .onGloballyPositioned { focusRequester.requestFocus() }
-                                            )
-                                        }
+                                            .focusRequester(focusRequester)
+                                            .onGloballyPositioned {
+                                                focusRequester.requestFocus()
+                                            }
                                     )
                                 }
                             )
