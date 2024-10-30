@@ -130,8 +130,7 @@ class SharedViewModel @Inject constructor(
     }
 
     fun addNewTrackie(
-        trackieViewState: TrackieModel,
-        onFailure: (String) -> Unit
+        trackieModel: TrackieModel,
     ) {
 
         if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
@@ -140,7 +139,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.addNewTrackie(
-                    trackieViewState = trackieViewState,
+                    trackieViewState = trackieModel,
                     onFailure = {
                         Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - $it")
                     }
@@ -168,9 +167,9 @@ class SharedViewModel @Inject constructor(
                 val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
                 var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
 
-                return if (trackieViewState.repeatOn.contains(element = currentDayOfWeek)) {
+                return if (trackieModel.repeatOn.contains(element = currentDayOfWeek)) {
 
-                    copyOfTrackiesForToday.add(element = trackieViewState)
+                    copyOfTrackiesForToday.add(element = trackieModel)
                     copyOfTrackiesForToday
                 }
 
@@ -187,7 +186,7 @@ class SharedViewModel @Inject constructor(
 
                     newStatesOfTrackiesForToday[it.key] = it.value
                 }
-                newStatesOfTrackiesForToday[trackieViewState.name] = false
+                newStatesOfTrackiesForToday[trackieModel.name] = false
 
                 return newStatesOfTrackiesForToday
             }
@@ -199,12 +198,12 @@ class SharedViewModel @Inject constructor(
 
                 return if (namesOfAllTrackies != null) {
 
-                    namesOfAllTrackies.add(trackieViewState.name)
+                    namesOfAllTrackies.add(trackieModel.name)
                     namesOfAllTrackies
                 }
 
                 else {
-                    mutableListOf(trackieViewState.name)
+                    mutableListOf(trackieModel.name)
                 }
             }
 
@@ -214,7 +213,7 @@ class SharedViewModel @Inject constructor(
                 return if (copyOfViewState.allTrackies != null) {
 
                     var listOfAllTrackies = copyOfViewState.allTrackies!!.toMutableList()
-                    listOfAllTrackies.add(element = trackieViewState)
+                    listOfAllTrackies.add(element = trackieModel)
 
                     listOfAllTrackies
                 }
@@ -230,7 +229,7 @@ class SharedViewModel @Inject constructor(
 
                 copyOfViewState.weeklyRegularity.forEach { array ->
 
-                    if (trackieViewState.repeatOn.contains(array.key)) {
+                    if (trackieModel.repeatOn.contains(array.key)) {
 
                         val total = array.value.keys.toIntArray()[0] + 1
                         val ingested = array.value.values.toIntArray()[0]
@@ -280,7 +279,7 @@ class SharedViewModel @Inject constructor(
         }
 
         else {
-            onFailure("Wrong UI state")
+            Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - wrong UI state")
         }
     }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.convertIntoTrackieModel
 import com.example.trackies.isSignedIn.addNewTrackie.ui.scaffold.addNewTrackieBottomBar
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.EnumMeasuringUnits
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.ui.dailyDose
@@ -87,7 +88,14 @@ fun addNewTrackie(
                             onClearAll()
                         },
 
-                        onAdd = {}
+                        onAdd = {
+
+                            val addNewTrackieModel =
+                                addNewTrackieViewModel.addNewTrackieModel.value
+                                .convertIntoTrackieModel()
+
+                            onAdd(addNewTrackieModel)
+                        }
                     )
                 }
             )

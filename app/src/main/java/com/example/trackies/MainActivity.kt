@@ -540,7 +540,14 @@ class MainActivity : ComponentActivity() {
 
                                     addNewTrackieViewModel.clearAll()
                                 },
-                                onAdd = {}
+
+                                onAdd = {
+
+                                    sharedViewModel.addNewTrackie(
+                                        trackieModel = it,
+                                    )
+                                    addNewTrackieViewModel.clearAll()
+                                }
                             )
                         }
 

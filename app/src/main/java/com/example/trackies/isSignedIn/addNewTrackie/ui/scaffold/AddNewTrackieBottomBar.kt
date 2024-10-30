@@ -67,7 +67,7 @@ fun addNewTrackieBottomBar(
                     mediumTextButton(
                         text = "clear all",
                         onClick = {
-                            onClearAll
+                            onClearAll()
                         }
                     )
 
