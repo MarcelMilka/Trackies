@@ -74,15 +74,23 @@ fun confirmDeletionOfTheAccount(
                                 Button(
 
                                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                                    content = { textTitleMedium(content = "Confirm") },
-                                    onClick = { onConfirm() }
+                                    content = {
+                                        textTitleMedium(content = "Confirm")
+                                    },
+                                    onClick = {
+                                        onConfirm()
+                                    }
                                 )
 
                                 Button(
 
                                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                                    content = { textTitleMedium(content = "Decline") },
-                                    onClick = { onDecline() }
+                                    content = {
+                                        textTitleMedium(content = "Decline")
+                                    },
+                                    onClick = {
+                                        onDecline()
+                                    }
                                 )
                             }
                         }

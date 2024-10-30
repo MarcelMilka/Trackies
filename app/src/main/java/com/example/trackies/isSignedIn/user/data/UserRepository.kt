@@ -5,7 +5,7 @@ import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 
 interface UserRepository {
 
-    fun firstTimeInTheApp(anErrorOccurred: () -> Unit)
+    suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean?
 
     fun addNewUser()
 
@@ -61,4 +61,6 @@ interface UserRepository {
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )
+
+    suspend fun deleteUsersData()
 }

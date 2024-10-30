@@ -100,21 +100,28 @@ class FirebaseUserRepository @Inject constructor(
 
 //  This method is responsible for checking if the user's unique identifier exists in the database.
 //  If the unique identifier does not exist - a new document named after the user's unique identifier will be created.
-    override fun firstTimeInTheApp(
-        anErrorOccurred: () -> Unit
-    ) {
+    override suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean? {
 
-        users.document(uniqueIdentifier)
-            .get()
-            .addOnSuccessListener { user ->
+        return suspendCoroutine { continuation ->
 
-                if (!(user.exists())) {
-                    addNewUser()
+            users.document(uniqueIdentifier)
+                .get()
+                .addOnSuccessListener { user ->
+
+                    if (!(user.exists())) {
+                        addNewUser()
+                        continuation.resume(value = true)
+                    }
+
+                    else {
+                        continuation.resume(value = false)
+                    }
                 }
-            }
-            .addOnFailureListener {
-                anErrorOccurred()
-            }
+                .addOnFailureListener {
+                    onFailure("$it")
+                    continuation.resume(value = null)
+                }
+        }
     }
 
 
@@ -240,9 +247,11 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
+
 //  This method is responsible for fetching all existing names of trackies created by the user.
     override suspend fun fetchNamesOfAllTrackies(): MutableList<String>? =
         fetchNamesOfTrackies(dayOfWeek = "whole week")?.toMutableList()
+
 
 //  This method is responsible for fetching all Trackies assigned to the current day of week.
     override suspend fun fetchTodayTrackies(): List<TrackieModel>? {
@@ -311,6 +320,7 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
+
 //  This method is responsible for adding new trackie to the user's database.
     override suspend fun addNewTrackie(
     trackieViewState: TrackieModel,
@@ -372,6 +382,7 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
+
 //  This method is responsible for fetching all the user's trackies assigned to the current day of week.
     override suspend fun fetchTrackiesForToday(
         onFailure: (String) -> Unit
@@ -432,6 +443,7 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
+
     override suspend fun fetchStatesOfTrackiesForToday(
         onFailure: (String) -> Unit
     ): Map<String, Boolean>? {
@@ -490,6 +502,7 @@ class FirebaseUserRepository @Inject constructor(
             }
         }
     }
+
 
     override suspend fun deleteTrackie(
         trackieViewState: TrackieModel,
@@ -650,6 +663,7 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
+
     override suspend fun fetchAllTrackies(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
@@ -713,6 +727,7 @@ class FirebaseUserRepository @Inject constructor(
             }
         }
     }
+
 
     override suspend fun fetchWeeklyRegularity(
         onSuccess: () -> Unit,
@@ -809,6 +824,7 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
+
     override suspend fun markTrackieAsIngested(
         trackieViewState: TrackieModel,
         onSuccess: () -> Unit,
@@ -831,5 +847,15 @@ class FirebaseUserRepository @Inject constructor(
                     }
             }
         }
+    }
+
+
+    override suspend fun deleteUsersData() {
+
+        usersLicense.delete()
+        usersTrackies.delete()
+        namesOfTrackies.delete()
+        usersWeeklyStatistics.delete()
+        user.delete()
     }
 }

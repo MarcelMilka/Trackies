@@ -32,79 +32,88 @@ class SharedViewModel @Inject constructor(
 
     init {
 
-        repository.firstTimeInTheApp {}
-
         viewModelScope.launch {
 
-            val needToResetPastWeekRegularity = repository.needToResetPastWeekActivity(
-                onSuccess = {
+//          Check if the user is first time in the app. When the user is first time in the app - create necessary collections and documents.
+            val isFirstTimeInTheApp = repository.isFirstTimeInTheApp {
 
-                    fetchData = true
-                },
-                onFailure = {
-
-                    fetchData = false
-                    Log.d("SharedViewModel-firebase", "init, resetPastWeekActivity - $it")
-                }
-            )
-
-            if (needToResetPastWeekRegularity !== null && needToResetPastWeekRegularity == true) {
-
-                repository.resetWeeklyRegularity(
-                    onSuccess = {},
-                    onFailure = {
-                        fetchData = false
-                        Log.d("SharedViewModel-firebase", "init, resetWeeklyRegularity - $it")
-                    }
-                )
+                Log.d("SharedViewModel-firebase", "init, firstTimeInTheApp - $it")
             }
 
-            if (fetchData) {
+            if (isFirstTimeInTheApp != null) {
 
-                val licenseInformation = repository.fetchUsersLicense()
-                val trackiesForToday = repository.fetchTrackiesForToday(
+                val needToResetPastWeekRegularity = repository.needToResetPastWeekActivity(
+                    onSuccess = {
+
+                        fetchData = true
+                    },
                     onFailure = {
-                        Log.d("SharedViewModel-firebase", "init, fetchTrackiesForToday - $it")
-                    }
-                )
-                val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
-                    onFailure = {
-                        Log.d("SharedViewModel-firebase", "init, fetchStatesOfTrackiesForToday - $it")
-                    }
-                )
-                val weeklyRegularity = repository.fetchWeeklyRegularity(
-                    onSuccess = {},
-                    onFailure = {
-                        Log.d("SharedViewModel-firebase", "init, fetchWeeklyRegularity - $it")
+
+                        fetchData = false
+                        Log.d("SharedViewModel-firebase", "init, resetPastWeekActivity - $it")
                     }
                 )
 
-                if (
-                    licenseInformation != null &&
-                    trackiesForToday != null &&
-                    statesOfTrackiesForToday != null &&
-                    weeklyRegularity != null
-                ) {
+                if (needToResetPastWeekRegularity !== null && needToResetPastWeekRegularity == true) {
 
-                    Log.d("Halla!", "licenseInformation = $licenseInformation")
-                    Log.d("Halla!", "trackiesForToday = $trackiesForToday")
-                    Log.d("Halla!", "statesOfTrackiesForToday = $statesOfTrackiesForToday")
-                    Log.d("Halla!", "weeklyRegularity = $weeklyRegularity")
+                    repository.resetWeeklyRegularity(
+                        onSuccess = {},
+                        onFailure = {
+                            fetchData = false
+                            Log.d("SharedViewModel-firebase", "init, resetWeeklyRegularity - $it")
+                        }
+                    )
+                }
 
-                    _uiState.update {
+                if (fetchData) {
 
-                        SharedViewModelViewState.LoadedSuccessfully(
-                            license = licenseInformation,
-                            trackiesForToday = trackiesForToday,
-                            statesOfTrackiesForToday = statesOfTrackiesForToday,
-                            weeklyRegularity = weeklyRegularity,
-                            namesOfAllTrackies = null,
-                            allTrackies = null
-                        )
+                    val licenseInformation = repository.fetchUsersLicense()
+                    val trackiesForToday = repository.fetchTrackiesForToday(
+                        onFailure = {
+                            Log.d("SharedViewModel-firebase", "init, fetchTrackiesForToday - $it")
+                        }
+                    )
+                    val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
+                        onFailure = {
+                            Log.d("SharedViewModel-firebase", "init, fetchStatesOfTrackiesForToday - $it")
+                        }
+                    )
+                    val weeklyRegularity = repository.fetchWeeklyRegularity(
+                        onSuccess = {},
+                        onFailure = {
+                            Log.d("SharedViewModel-firebase", "init, fetchWeeklyRegularity - $it")
+                        }
+                    )
+
+                    if (
+                        licenseInformation != null &&
+                        trackiesForToday != null &&
+                        statesOfTrackiesForToday != null &&
+                        weeklyRegularity != null
+                    ) {
+
+                        _uiState.update {
+
+                            SharedViewModelViewState.LoadedSuccessfully(
+                                license = licenseInformation,
+                                trackiesForToday = trackiesForToday,
+                                statesOfTrackiesForToday = statesOfTrackiesForToday,
+                                weeklyRegularity = weeklyRegularity,
+                                namesOfAllTrackies = null,
+                                allTrackies = null
+                            )
+                        }
+                    }
+
+                    else {
+                        _uiState.update {
+                            SharedViewModelViewState.FailedToLoadData
+                        }
                     }
                 }
 
                 else {
+
                     _uiState.update {
                         SharedViewModelViewState.FailedToLoadData
                     }
@@ -578,6 +587,14 @@ class SharedViewModel @Inject constructor(
                     allTrackies = copyOfViewState.allTrackies
                 )
             }
+        }
+    }
+
+    fun deleteUsersData() {
+
+        viewModelScope.launch {
+
+            repository.deleteUsersData()
         }
     }
 }

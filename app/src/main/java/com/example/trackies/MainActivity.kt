@@ -629,16 +629,20 @@ class MainActivity : ComponentActivity() {
 
                             confirmDeletionOfTheAccount(
                                 onConfirm = {
+
                                     navigationController.navigateUp()
                                     navigationController.navigate(route = Destinations.VerifyYourIdentity)
                                 },
                                 onDecline = {
+
                                     navigationController.navigateUp()
                                 }
                             )
                         }
 
                         dialog(route = Destinations.VerifyYourIdentity) {
+
+                            val sharedViewModel = lazySharedViewModel.get()
 
                             var anErrorOccurred by remember { mutableStateOf(false) }
                             var errorMessage by remember { mutableStateOf("") }
@@ -653,6 +657,9 @@ class MainActivity : ComponentActivity() {
                                     authenticationService.deleteAccount(
                                         password = it,
                                         onComplete = {
+
+                                            sharedViewModel.deleteUsersData()
+
                                             navigationController.navigate(route = Destinations.YourAccountGotDeleted) {
                                                 popUpTo(route = Destinations.YourAccountGotDeleted) {inclusive = true}
                                             }
