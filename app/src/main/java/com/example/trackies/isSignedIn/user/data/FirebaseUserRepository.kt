@@ -35,6 +35,69 @@ class FirebaseUserRepository @Inject constructor(
     private val namesOfTrackies = user.collection("names of trackies").document("names of trackies")
     private val usersWeeklyStatistics = user.collection("user's statistics").document("user's weekly statistics")
 
+    override suspend fun needToResetPastWeekActivity(onSuccess: () -> Unit, onFailure: (String) -> Unit): Boolean? {
+
+        val weeklyRegularity = fetchWeeklyRegularity(
+            onSuccess = {},
+            onFailure = {
+
+                onFailure(it)
+            }
+        )
+
+        return suspendCoroutine {
+
+            if (weeklyRegularity != null) {
+
+                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+                var resetPastWeekActivity = false
+                var passedCurrentDayOfWeek = false
+
+                weeklyRegularity.forEach {
+
+                    if (!resetPastWeekActivity) {
+
+                        if (passedCurrentDayOfWeek) {
+
+                            val totalIngestedRatio = it.value
+
+                            resetPastWeekActivity =
+                                ((totalIngestedRatio as MutableMap<Int, Int>).values.toIntArray()[0]) > 0
+                        }
+
+                        if (!passedCurrentDayOfWeek) {
+                            passedCurrentDayOfWeek = currentDayOfWeek == it.key
+                        }
+                    }
+                }
+
+                if (resetPastWeekActivity) {
+
+                    onSuccess()
+                    it.resume(value = true)
+                }
+
+                else {
+                    onSuccess()
+                    it.resume(value = false)
+                }
+            }
+
+            else {
+                onFailure("Weekly regularity is null.")
+                it.resume(value = null)
+            }
+        }
+    }
+
+    override suspend fun resetWeeklyRegularity(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+
+        Log.d("Halla!", "resetWeeklyRegularity: ")
+    }
+
 //  This method is responsible for checking if the user's unique identifier exists in the database.
 //  If the unique identifier does not exist - a new document named after the user's unique identifier will be created.
     override fun firstTimeInTheApp(

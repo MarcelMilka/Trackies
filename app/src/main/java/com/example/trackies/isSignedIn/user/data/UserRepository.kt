@@ -9,6 +9,16 @@ interface UserRepository {
 
     fun addNewUser()
 
+    suspend fun needToResetPastWeekActivity(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): Boolean?
+
+    suspend fun resetWeeklyRegularity(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    )
+
     suspend fun fetchUsersLicense(): LicenseModel?
 
     suspend fun fetchNamesOfTrackies(dayOfWeek: String): List<String>?

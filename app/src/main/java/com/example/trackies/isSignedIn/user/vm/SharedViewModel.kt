@@ -28,56 +28,91 @@ class SharedViewModel @Inject constructor(
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private var fetchData = false
+
     init {
 
         repository.firstTimeInTheApp {}
 
         viewModelScope.launch {
 
-            val licenseInformation = repository.fetchUsersLicense()
-            val trackiesForToday = repository.fetchTrackiesForToday(
+            val needToResetPastWeekRegularity = repository.needToResetPastWeekActivity(
+                onSuccess = {
+
+                    fetchData = true
+                },
                 onFailure = {
-                    Log.d("SharedViewModel-firebase", "init, fetchTrackiesForToday - $it")
-                }
-            )
-            val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
-                onFailure = {
-                    Log.d("SharedViewModel-firebase", "init, fetchStatesOfTrackiesForToday - $it")
-                }
-            )
-            val weeklyRegularity = repository.fetchWeeklyRegularity(
-                onSuccess = {},
-                onFailure = {
-                    Log.d("SharedViewModel-firebase", "init, fetchWeeklyRegularity - $it")
+
+                    fetchData = false
+                    Log.d("SharedViewModel-firebase", "init, resetPastWeekActivity - $it")
                 }
             )
 
-            if (
-                licenseInformation != null &&
-                trackiesForToday != null &&
-                statesOfTrackiesForToday != null &&
-                weeklyRegularity != null
-            ) {
+            if (needToResetPastWeekRegularity !== null && needToResetPastWeekRegularity == true) {
 
-                Log.d("Halla!", "licenseInformation = $licenseInformation")
-                Log.d("Halla!", "trackiesForToday = $trackiesForToday")
-                Log.d("Halla!", "statesOfTrackiesForToday = $statesOfTrackiesForToday")
-                Log.d("Halla!", "weeklyRegularity = $weeklyRegularity")
+                repository.resetWeeklyRegularity(
+                    onSuccess = {},
+                    onFailure = {
+                        fetchData = false
+                        Log.d("SharedViewModel-firebase", "init, resetWeeklyRegularity - $it")
+                    }
+                )
+            }
 
-                _uiState.update {
+            if (fetchData) {
 
-                    SharedViewModelViewState.LoadedSuccessfully(
-                        license = licenseInformation,
-                        trackiesForToday = trackiesForToday,
-                        statesOfTrackiesForToday = statesOfTrackiesForToday,
-                        weeklyRegularity = weeklyRegularity,
-                        namesOfAllTrackies = null,
-                        allTrackies = null
-                    )
+                val licenseInformation = repository.fetchUsersLicense()
+                val trackiesForToday = repository.fetchTrackiesForToday(
+                    onFailure = {
+                        Log.d("SharedViewModel-firebase", "init, fetchTrackiesForToday - $it")
+                    }
+                )
+                val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
+                    onFailure = {
+                        Log.d("SharedViewModel-firebase", "init, fetchStatesOfTrackiesForToday - $it")
+                    }
+                )
+                val weeklyRegularity = repository.fetchWeeklyRegularity(
+                    onSuccess = {},
+                    onFailure = {
+                        Log.d("SharedViewModel-firebase", "init, fetchWeeklyRegularity - $it")
+                    }
+                )
+
+                if (
+                    licenseInformation != null &&
+                    trackiesForToday != null &&
+                    statesOfTrackiesForToday != null &&
+                    weeklyRegularity != null
+                ) {
+
+                    Log.d("Halla!", "licenseInformation = $licenseInformation")
+                    Log.d("Halla!", "trackiesForToday = $trackiesForToday")
+                    Log.d("Halla!", "statesOfTrackiesForToday = $statesOfTrackiesForToday")
+                    Log.d("Halla!", "weeklyRegularity = $weeklyRegularity")
+
+                    _uiState.update {
+
+                        SharedViewModelViewState.LoadedSuccessfully(
+                            license = licenseInformation,
+                            trackiesForToday = trackiesForToday,
+                            statesOfTrackiesForToday = statesOfTrackiesForToday,
+                            weeklyRegularity = weeklyRegularity,
+                            namesOfAllTrackies = null,
+                            allTrackies = null
+                        )
+                    }
+                }
+
+                else {
+                    _uiState.update {
+                        SharedViewModelViewState.FailedToLoadData
+                    }
                 }
             }
 
             else {
+
                 _uiState.update {
                     SharedViewModelViewState.FailedToLoadData
                 }
