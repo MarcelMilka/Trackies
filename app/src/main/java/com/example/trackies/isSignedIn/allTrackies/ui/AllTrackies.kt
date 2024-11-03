@@ -146,11 +146,15 @@ fun displayAllTrackies(
                                 WhatToDisplay.TrackiesForToday -> {
 
                                     displayAllTrackiesForToday(
+
                                         listOfTrackies = sharedViewModelUiState.trackiesForToday,
+
                                         statesOfTrackiesForToday = sharedViewModelUiState.statesOfTrackiesForToday,
+
                                         onMarkAsIngested = {
                                             onMarkTrackieAsIngested(it)
                                         },
+
                                         onDisplayDetails = {
                                             onDisplayDetailedTrackie(it)
                                         }
@@ -185,7 +189,6 @@ fun displayAllTrackies(
                                                 onDisplayDetails = {
                                                     onDisplayDetailedTrackie(it)
                                                 }
-
                                             )
                                         }
                                     }

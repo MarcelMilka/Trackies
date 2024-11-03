@@ -502,7 +502,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun markTrackieAsIngested(trackieViewState: TrackieModel) {
+    fun markTrackieAsIngested(trackieModel: TrackieModel) {
 
         if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
 
@@ -511,7 +511,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.markTrackieAsIngested(
-                    trackieViewState = trackieViewState,
+                    trackieViewState = trackieModel,
                     onSuccess = {
 
                     },
@@ -528,7 +528,7 @@ class SharedViewModel @Inject constructor(
 
                 val updatedMap = copyOfViewState.statesOfTrackiesForToday.toMutableMap()
 
-                updatedMap[trackieViewState.name] = true
+                updatedMap[trackieModel.name] = true
 
                 return updatedMap
             }

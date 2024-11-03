@@ -326,14 +326,17 @@ class MainActivity : ComponentActivity() {
                             homeScreenUiState = homeScreenUiState,
 
                             onOpenSettings = {
+
                                 navigationController.navigate(route = Destinations.Settings)
                             },
 
                             onDisplayAllTrackies = {
+
                                 navigationController.navigate(route = Destinations.AllTrackies)
                             },
 
                             onAddNewTrackie = {
+
                                 navigationController.navigate(route = Destinations.AddNewTrackieRoute)
                             },
 
@@ -346,23 +349,25 @@ class MainActivity : ComponentActivity() {
                             },
 
                             onUpdateHeightOfLazyColumn = {
+
                                 homeScreenViewModel.updateHeightOfLazyColumn(
                                     totalAmountOfTrackiesForToday = it
                                 )
                             },
                             
                             onSwitchChart = {
+
                                 homeScreenViewModel.updateTypeOfHomeScreenChart(
                                     homeScreenChartToDisplay = it
                                 )
                             },
 
                             onMarkAsIngested = {
+
                                 sharedViewModel.markTrackieAsIngested(
-                                    trackieViewState = it
+                                    trackieModel = it
                                 )
                             }
-
                         )
                     }
 
@@ -422,22 +427,30 @@ class MainActivity : ComponentActivity() {
                             listToDisplay = listToDisplay,
 
                             onChangeListToDisplay = {
+
                                 allTrackiesViewModel.switchListToDisplay(it)
                             },
 
                             sharedViewModelUiState = sharedViewModelUiState,
 
                             fetchAllUsersTrackies = {
+
                                 sharedViewModel.fetchListOfAllTrackies(
                                     onFailure = {}
                                 )
                             },
 
                             onReturn = {
+
                                 navigationController.navigateUp()
                             },
 
-                            onMarkTrackieAsIngested = {},
+                            onMarkTrackieAsIngested = {
+
+                                sharedViewModel.markTrackieAsIngested(
+                                    trackieModel = it
+                                )
+                            },
 
                             onDisplayDetailedTrackie = {
 
