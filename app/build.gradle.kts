@@ -112,6 +112,14 @@ dependencies {
 
 //  Lifecycle-aware components
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
+
+//  Room
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    testImplementation("androidx.room:room-testing:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-guava:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 }
 
 kapt {

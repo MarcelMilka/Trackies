@@ -49,6 +49,9 @@ import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErro
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.signUp
 import com.example.trackies.isSignedOut.presentation.ui.welcomeScreen
+import com.google.firebase.auth.ActionCodeSettings
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.actionCodeSettings
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -378,20 +381,29 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         settings(
+
                             usersEmail = authenticationService.getEmailAddress() ?: "An error occurred.",
+
                             onReturnHomeScreen = {
                                 navigationController.navigateUp()
                             },
+
                             onChangeEmail = {},
+
                             onChangePassword = {
                                 navigationController.navigate(route = Destinations.ChangePassword)
                             },
+
                             onDeleteAccount = {
                                 navigationController.navigate(route = Destinations.DeleteAccount)
                             },
+
                             onChangeLanguage = {},
+
                             onReportInAppBug = {},
+
                             onDisplayInfoAboutThisApp = {},
+
                             onLogout = {
                                 authenticationService.signOut(
                                     onComplete = {
