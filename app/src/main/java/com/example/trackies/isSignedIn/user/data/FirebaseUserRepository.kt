@@ -95,7 +95,44 @@ class FirebaseUserRepository @Inject constructor(
         onFailure: (String) -> Unit
     ) {
 
-        Log.d("Halla!", "resetWeeklyRegularity: ")
+        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+        var passedCurrentDayOfWeek = false
+
+        setOf(
+            DaysOfWeek.monday,
+            DaysOfWeek.tuesday,
+            DaysOfWeek.wednesday,
+            DaysOfWeek.thursday,
+            DaysOfWeek.friday,
+            DaysOfWeek.saturday,
+            DaysOfWeek.sunday,
+        ).forEach { dayOfWeek ->
+
+            if (passedCurrentDayOfWeek) {
+
+                val namesOfTrackiesForThisDayOfWeek = fetchNamesOfTrackies(dayOfWeek)
+
+                if (namesOfTrackiesForThisDayOfWeek != null) {
+
+                    namesOfTrackiesForThisDayOfWeek.forEach { nameOfTrackie ->
+
+                        usersWeeklyStatistics
+                            .collection(dayOfWeek)
+                            .document(nameOfTrackie)
+                            .update("ingested", false)
+                    }
+                }
+
+                else {
+                    onFailure("namesOfTrackiesForThisDayOfWeek is null")
+                }
+            }
+
+            else {
+
+                passedCurrentDayOfWeek = currentDayOfWeek == dayOfWeek
+            }
+        }
     }
 
 //  This method is responsible for checking if the user's unique identifier exists in the database.
