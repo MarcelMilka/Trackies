@@ -160,6 +160,7 @@ fun guestModeInformation(
                                         },
                                         onClick = {
 
+
                                             onContinue()
                                         }
                                     )

@@ -1,25 +1,33 @@
 package com.example.trackies.auth.data
 
-import android.util.Patterns
 import com.example.globalConstants.Destinations
-import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.DeleteAccountHints
-import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrors
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 object RoomAuthenticationService: AuthenticationService {
 
-    override var initialDestination: String
-        get() = "Local database user"
-        set(value) {}
+    override var initialDestination: String = Destinations.IsSignedOut
+        get() {
 
-    override fun getSignedInUser(): String? = "Local database user"
+            return if (
+
+                this.getSignedInUser() == null ||
+                this.getSignedInUser() == "false"
+            ) {
+                Destinations.IsSignedOut
+            }
+
+            else {
+                Destinations.IsSignedIn
+            }
+        }
+
+    override fun getSignedInUser(): String? {
+
+        // TODO: implement code which fetches LicenseModel entity
+        // TODO: if LicenseModel license is active, then the user is signed in, else is signed out
+        return "false"
+    }
 
     override fun signUpWithEmailAndPassword(
         email: String,

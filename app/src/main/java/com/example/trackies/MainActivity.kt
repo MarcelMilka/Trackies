@@ -27,6 +27,7 @@ import com.example.trackies.isSignedIn.settings.dialogs.changePassword.verifyYou
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.yourPasswordGotChanged
 import com.example.globalConstants.Destinations
 import com.example.trackies.auth.data.AuthenticationService
+import com.example.trackies.auth.serviceOperator.AuthenticationServiceOperator
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.schedueTimeDialog
@@ -59,6 +60,8 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var authenticationService: AuthenticationService
+
+    val authenticationServiceOperator = AuthenticationServiceOperator
 
     @Inject
     lateinit var lazySharedViewModel: Lazy<SharedViewModel>
@@ -100,16 +103,19 @@ class MainActivity : ComponentActivity() {
 
                             onNavigateSignUp = {
 
+                                authenticationServiceOperator.setFirebaseAuthenticationService()
                                 navigationController.navigate(route = Destinations.SignUpRoute)
                             },
 
                             onNavigateSignIn = {
 
+                                authenticationServiceOperator.setFirebaseAuthenticationService()
                                 navigationController.navigate(route = Destinations.SignInRoute)
                             },
 
                             onContinueAsGuest = {
 
+                                authenticationServiceOperator.setRoomAuthenticationService()
                                 navigationController.navigate(route = Destinations.GuestModeInformation)
                             }
 
