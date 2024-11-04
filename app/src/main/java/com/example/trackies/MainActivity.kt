@@ -38,6 +38,7 @@ import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.vm.DetailedTrackieViewModel
 import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
+import com.example.trackies.isSignedOut.presentation.ui.guestMode.guestModeInformation
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
 import com.example.trackies.isSignedOut.presentation.ui.signIn.information
@@ -49,9 +50,6 @@ import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErro
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.signUp
 import com.example.trackies.isSignedOut.presentation.ui.welcomeScreen
-import com.google.firebase.auth.ActionCodeSettings
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.actionCodeSettings
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -99,12 +97,22 @@ class MainActivity : ComponentActivity() {
                         exitTransition = { ExitTransition.None }
                     ) {
                         welcomeScreen (
+
                             onNavigateSignUp = {
+
                                 navigationController.navigate(route = Destinations.SignUpRoute)
                             },
+
                             onNavigateSignIn = {
+
                                 navigationController.navigate(route = Destinations.SignInRoute)
+                            },
+
+                            onContinueAsGuest = {
+
+                                navigationController.navigate(route = Destinations.GuestModeInformation)
                             }
+
                         )
                     }
 
@@ -306,6 +314,27 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
+                    }
+
+                    composable(
+                        route = Destinations.GuestModeInformation,
+                        enterTransition = {
+                            EnterTransition.None
+                        },
+                        exitTransition = {
+                            ExitTransition.None
+                        }
+                    ) {
+
+                        guestModeInformation(
+
+                            onContinue = {},
+
+                            onMoveBack = {
+
+                                navigationController.navigateUp()
+                            }
+                        )
                     }
                 }
 
