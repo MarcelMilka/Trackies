@@ -85,6 +85,11 @@ class SharedViewModel @Inject constructor(
                         }
                     )
 
+                    Log.d("Hei!", "$licenseInformation")
+                    Log.d("Hei!", "$trackiesForToday")
+                    Log.d("Hei!", "$statesOfTrackiesForToday")
+                    Log.d("Hei!", "$weeklyRegularity")
+
                     if (
                         licenseInformation != null &&
                         trackiesForToday != null &&

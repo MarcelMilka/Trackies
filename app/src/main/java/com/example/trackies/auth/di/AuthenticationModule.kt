@@ -23,9 +23,10 @@ class AuthenticationModule {
     @Provides
     fun provideAuthenticationService(): AuthenticationService {
 
-        Log.d("Halla!", "required authentication service :)")
 
         if (File("RoomDatabase.db").exists() == true) {
+
+            Log.d("Halla!", "Hey there!")
 
             return when (AuthenticationServiceOperator.service.value) {
 

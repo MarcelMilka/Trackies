@@ -334,7 +334,12 @@ class MainActivity : ComponentActivity() {
 
                         guestModeInformation(
 
-                            onContinue = {},
+                            onContinue = {
+
+                                navigationController.navigate(Destinations.IsSignedIn) {
+                                    popUpTo(Destinations.IsSignedOut) { inclusive = true }
+                                }
+                            },
 
                             onMoveBack = {
 
