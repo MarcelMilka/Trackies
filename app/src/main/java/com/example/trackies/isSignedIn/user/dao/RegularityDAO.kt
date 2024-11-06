@@ -23,4 +23,7 @@ interface RegularityDAO {
 
     @Update
     suspend fun markTrackieAsIngested(rowToUpdate: Regularity)
+
+    @Query("UPDATE Regularity SET ingested = 0 WHERE dayOfWeek = :dayOfWeek")
+    suspend fun resetRegularity(dayOfWeek: String)
 }
