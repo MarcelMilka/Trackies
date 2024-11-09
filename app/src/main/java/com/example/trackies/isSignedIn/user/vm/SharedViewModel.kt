@@ -144,7 +144,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.addNewTrackie(
-                    trackieViewState = trackieModel,
+                    trackieModel = trackieModel,
                     onFailure = {
                         Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - $it")
                     }
@@ -299,7 +299,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.deleteTrackie(
-                    trackieViewState = trackieViewState,
+                    trackieModel = trackieViewState,
                     onSuccess = {},
                     onFailure = {
                         Log.d("SharedViewModel-firebase", "method 'deleteTrackie' - $it")
@@ -516,7 +516,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.markTrackieAsIngested(
-                    trackieViewState = trackieModel,
+                    trackieModel = trackieModel,
                     onSuccess = {
 
                     },

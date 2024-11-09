@@ -360,7 +360,7 @@ class FirebaseUserRepository @Inject constructor(
 
 //  This method is responsible for adding new trackie to the user's database.
     override suspend fun addNewTrackie(
-    trackieViewState: TrackieModel,
+    trackieModel: TrackieModel,
     onFailure: (String) -> Unit
     ) {
 
@@ -371,19 +371,19 @@ class FirebaseUserRepository @Inject constructor(
             licenseViewState.totalAmountOfTrackies
 
 //          add new trackie to 'user's trackies' -> 'trackies'
-            usersTrackies.collection(trackieViewState.name).document(trackieViewState.name).set(trackieViewState)
+            usersTrackies.collection(trackieModel.name).document(trackieModel.name).set(trackieModel)
 
 //          update total amount of trackies owned by the user 'user's information' -> 'license'
             val updatedTotalAmountOfTrackies = (licenseViewState.totalAmountOfTrackies + 1)
             usersLicense.update("totalAmountOfTrackies", updatedTotalAmountOfTrackies)
 
 //          add name of the trackie to 'names of trackies' -> 'names of trackies' -> 'whole week'
-            namesOfTrackies.update("whole week", FieldValue.arrayUnion(trackieViewState.name))
+            namesOfTrackies.update("whole week", FieldValue.arrayUnion(trackieModel.name))
 
 //          add name of the trackie to 'names of trackies' -> '(names of trackies)' -> *specific day of week*
-            trackieViewState.repeatOn.forEach { dayOfWeek ->
+            trackieModel.repeatOn.forEach { dayOfWeek ->
 
-                namesOfTrackies.update(dayOfWeek, FieldValue.arrayUnion(trackieViewState.name))
+                namesOfTrackies.update(dayOfWeek, FieldValue.arrayUnion(trackieModel.name))
             }
 
 //          add name of the trackies to 'user's statistics' -> 'user's weekly statistics' -> *specific day of week*
@@ -397,9 +397,9 @@ class FirebaseUserRepository @Inject constructor(
                 DaysOfWeek.sunday
             ).forEach { dayOfWeek ->
 
-                if (trackieViewState.ingestionTime == null) {
+                if (trackieModel.ingestionTime == null) {
 
-                    if (trackieViewState.repeatOn.contains(dayOfWeek)) {
+                    if (trackieModel.repeatOn.contains(dayOfWeek)) {
 
                         val fieldToSave = mutableMapOf<String, Boolean>()
 
@@ -407,7 +407,7 @@ class FirebaseUserRepository @Inject constructor(
 
                         usersWeeklyStatistics
                             .collection(dayOfWeek)
-                            .document(trackieViewState.name)
+                            .document(trackieModel.name)
                             .set(fieldToSave)
                     }
                 }
@@ -542,7 +542,7 @@ class FirebaseUserRepository @Inject constructor(
 
 
     override suspend fun deleteTrackie(
-        trackieViewState: TrackieModel,
+        trackieModel: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
@@ -561,8 +561,8 @@ class FirebaseUserRepository @Inject constructor(
             ) {
 
                 usersTrackies
-                    .collection(trackieViewState.name)
-                    .document(trackieViewState.name)
+                    .collection(trackieModel.name)
+                    .document(trackieModel.name)
                     .delete()
                     .addOnSuccessListener {
                         onSuccess()
@@ -598,7 +598,7 @@ class FirebaseUserRepository @Inject constructor(
                 onFailure: (String) -> Unit
             ) {
 
-                namesOfTrackies.update("whole week", FieldValue.arrayRemove(trackieViewState.name))
+                namesOfTrackies.update("whole week", FieldValue.arrayRemove(trackieModel.name))
                     .addOnSuccessListener {
                         onSuccess()
                     }
@@ -616,9 +616,9 @@ class FirebaseUserRepository @Inject constructor(
                 onFailure: (String) -> Unit
             ) {
 
-                trackieViewState.repeatOn.forEach { dayOfWeek ->
+                trackieModel.repeatOn.forEach { dayOfWeek ->
 
-                    namesOfTrackies.update(dayOfWeek, FieldValue.arrayRemove(trackieViewState.name))
+                    namesOfTrackies.update(dayOfWeek, FieldValue.arrayRemove(trackieModel.name))
                         .addOnSuccessListener {
                             onSuccess()
                         }
@@ -648,7 +648,7 @@ class FirebaseUserRepository @Inject constructor(
 
                     usersWeeklyStatistics
                         .collection(dayOfWeek)
-                        .document(trackieViewState.name)
+                        .document(trackieModel.name)
                         .delete()
                         .addOnSuccessListener {
                             onSuccess()
@@ -863,18 +863,18 @@ class FirebaseUserRepository @Inject constructor(
 
 
     override suspend fun markTrackieAsIngested(
-        trackieViewState: TrackieModel,
+        trackieModel: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
 
-        if (trackieViewState.ingestionTime == null) {
+        if (trackieModel.ingestionTime == null) {
 
-            trackieViewState.repeatOn.forEach { dayOfWeek ->
+            trackieModel.repeatOn.forEach { dayOfWeek ->
 
                 usersWeeklyStatistics
                     .collection(CurrentTime.getCurrentDayOfWeek()) // current day of week
-                    .document(trackieViewState.name)
+                    .document(trackieModel.name)
                     .update("ingested", true)
                     .addOnSuccessListener {
                         onSuccess()

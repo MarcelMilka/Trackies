@@ -1,6 +1,7 @@
 package com.example.trackies.isSignedIn.user.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import com.example.trackies.auth.buisness.AuthenticationServices
 import com.example.trackies.auth.data.FirebaseAuthenticationService

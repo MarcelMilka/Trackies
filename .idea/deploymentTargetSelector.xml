@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="addingTrackieWorksProperly()">
+      <SelectionState runConfigName="when_authServOperator_returns_RoomAuthenticationService_then_provideRoomUserRepository()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="deletingTrackieWorksProperly()">
+      <SelectionState runConfigName="UserRepositoryModuleTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="gettingTrackiesForTodayWorksProperly()">
+      <SelectionState runConfigName="repositoryKnowsWhenToAddNewUser()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="trackiesOfTheSameNameGetReplaced()">
+      <SelectionState runConfigName="repositoryProperlyAddsLicenseOfNewUsers()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="TrackieDaoTest">
+      <SelectionState runConfigName="trackieGetsAddedProperly()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

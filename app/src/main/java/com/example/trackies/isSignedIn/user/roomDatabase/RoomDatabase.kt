@@ -7,6 +7,7 @@ import com.example.trackies.isSignedIn.user.buisness.entities.Regularity
 import com.example.trackies.isSignedIn.user.buisness.entities.Trackie
 import com.example.trackies.isSignedIn.user.dao.LicenseDAO
 import com.example.trackies.isSignedIn.user.dao.RegularityDAO
+import com.example.trackies.isSignedIn.user.dao.TestHelperDAO
 import com.example.trackies.isSignedIn.user.dao.TrackiesDAO
 
 @Database(
@@ -20,4 +21,6 @@ abstract class RoomDatabase: RoomDatabase() {
     abstract fun regularityDAO(): RegularityDAO
 
     abstract fun trackiesDAO(): TrackiesDAO
+
+    abstract fun testHelperDAO(): TestHelperDAO
 }

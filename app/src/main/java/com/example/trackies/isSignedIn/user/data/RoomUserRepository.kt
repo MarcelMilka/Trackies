@@ -18,9 +18,12 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class RoomUserRepository @Inject constructor(
-    private var roomDatabase: RoomDatabase
+    var roomDatabase: RoomDatabase
 ): UserRepository {
 
+//  Fetches all rows from the table "License".
+//  Table "License" can have only one row, with @PrimaryKey 'first' equal to 1.
+//  If .firstTimeInTheApp() returns null, then a method addNewUserShould
     override suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean? {
 
         val license = roomDatabase.licenseDAO().isFirstTimeInTheApp()
@@ -37,14 +40,16 @@ class RoomUserRepository @Inject constructor(
 
         CoroutineScope(Dispatchers.Default).launch {
 
-            roomDatabase.licenseDAO().createLicenseTable(
+            roomDatabase
+                .licenseDAO()
+                .createLicense(
 
-                license = License(
-                    first = 1,
-                    isSignedIn = true,
-                    totalAmountOfTrackies = 0
+                    license = License(
+                        first = 1,
+                        isSignedIn = true,
+                        totalAmountOfTrackies = 0
+                    )
                 )
-            )
         }
     }
 
