@@ -8,6 +8,8 @@ import com.example.trackies.auth.buisness.AuthenticationServices
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.auth.data.FirebaseAuthenticationService
 import com.example.trackies.auth.data.RoomAuthenticationService
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.example.trackies.auth.serviceOperator.AuthenticationServiceOperator
 import dagger.Module
 import dagger.Provides
@@ -27,24 +29,6 @@ class AuthenticationModule {
         if (File("RoomDatabase.db").exists() == true) {
 
             Log.d("Halla!", "Hey there!")
-
-            return when (AuthenticationServiceOperator.service.value) {
-
-                AuthenticationServices.FirebaseAuthenticationService -> {
-
-                    Log.d("Halla!", "provide firebase")
-                    FirebaseAuthenticationService
-                }
-
-                AuthenticationServices.RoomAuthenticationService -> {
-
-                    Log.d("Halla!", "provide room")
-                    RoomAuthenticationService
-                }
-            }
-        }
-
-        else {
 
             return when (AuthenticationServiceOperator.service.value) {
 

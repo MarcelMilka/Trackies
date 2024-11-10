@@ -1,10 +1,14 @@
 package com.example.trackies.auth.data
 
 import com.example.globalConstants.Destinations
+import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
+import javax.inject.Inject
 
-object RoomAuthenticationService: AuthenticationService {
+class RoomAuthenticationService @Inject constructor(
+    var authenticator: RoomDatabase
+) : AuthenticationService {
 
     override var initialDestination: String = Destinations.IsSignedOut
         get() {
@@ -24,10 +28,21 @@ object RoomAuthenticationService: AuthenticationService {
 
     override fun getSignedInUser(): String? {
 
-        // TODO: implement code which fetches LicenseModel entity
-        // TODO: if LicenseModel license is active, then the user is signed in, else is signed out
         return "false"
     }
+
+
+    override fun signOut(onComplete: () -> Unit, onFailure: () -> Unit) {}
+
+    override fun deleteAccount(
+        password: String,
+        onComplete: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {}
+
+
+
+
 
     override fun signUpWithEmailAndPassword(
         email: String,
@@ -45,14 +60,6 @@ object RoomAuthenticationService: AuthenticationService {
 
     override fun getEmailAddress(): String? = "Local database user"
 
-    override fun signOut(onComplete: () -> Unit, onFailure: () -> Unit) {}
-
-    override fun deleteAccount(
-        password: String,
-        onComplete: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {}
-
     override fun recoverThePassword(
         email: String,
         successfullySentEmail: () -> Unit,
@@ -69,8 +76,6 @@ object RoomAuthenticationService: AuthenticationService {
         newPassword: String,
         onComplete: () -> Unit,
         onFailure: (String) -> Unit
-    ) {
-        TODO("Not yet implemented")
-    }
+    ) {}
 
 }

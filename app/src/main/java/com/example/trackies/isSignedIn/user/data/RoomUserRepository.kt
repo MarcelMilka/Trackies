@@ -1,6 +1,5 @@
 package com.example.trackies.isSignedIn.user.data
 
-import android.util.Log
 import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel

@@ -19,13 +19,13 @@
       <SelectionState runConfigName="UserRepositoryModuleTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="repositoryKnowsWhenToAddNewUser()">
+      <SelectionState runConfigName="whenUserSignsInEditLicenseToSignedIn()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="repositoryProperlyAddsLicenseOfNewUsers()">
+      <SelectionState runConfigName="whenUserSignsOutEditLicenseToSignedOut()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="trackieGetsAddedProperly()">
+      <SelectionState runConfigName="userCanBeSignedOutAndSignedInTwiceWithoutInterruption()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
