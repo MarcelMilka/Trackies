@@ -8,16 +8,14 @@ import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErro
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import javax.inject.Inject
 
 object FirebaseAuthenticationService: AuthenticationService {
 
-    private var authenticator = Firebase.auth
+    private var authentication = Firebase.auth
 
     override var initialDestination: String = Destinations.IsSignedOut
         get() {
@@ -30,7 +28,7 @@ object FirebaseAuthenticationService: AuthenticationService {
         }
 
 
-    override fun getSignedInUser(): String? = authenticator.currentUser?.run { this.uid }
+    override fun getSignedInUser(): String? = authentication.currentUser?.run { this.uid }
 
     override fun signUpWithEmailAndPassword(
         email: String,
@@ -43,7 +41,7 @@ object FirebaseAuthenticationService: AuthenticationService {
             signUpError(SignUpErrors.InvalidEmailFormat)
         }
 
-        authenticator.createUserWithEmailAndPassword(email, password)
+        authentication.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { process ->
 
                 if (process.isSuccessful) {
@@ -85,12 +83,12 @@ object FirebaseAuthenticationService: AuthenticationService {
         onSucceededToSignIn: (String) -> Unit
     ) {
 
-        authenticator.signInWithEmailAndPassword(email, password)
+        authentication.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { process ->
 
                 if (process.isSuccessful) {
 
-                    val user = authenticator.currentUser
+                    val user = authentication.currentUser
 
                     user?.isEmailVerified?.let { isVerified ->
 
@@ -142,13 +140,13 @@ object FirebaseAuthenticationService: AuthenticationService {
             }
     }
 
-    override fun getEmailAddress(): String? = authenticator.currentUser?.email
+    override fun getEmailAddress(): String? = authentication.currentUser?.email
 
     override fun signOut(onComplete: () -> Unit, onFailure: () -> Unit) {
 
-        authenticator.signOut()
+        authentication.signOut()
 
-        if (authenticator.currentUser == null) {onComplete()}
+        if (authentication.currentUser == null) {onComplete()}
 
         else {onFailure}
     }
@@ -159,7 +157,7 @@ object FirebaseAuthenticationService: AuthenticationService {
         onFailure: (String) -> Unit,
     ) {
 
-        val user = authenticator.currentUser
+        val user = authentication.currentUser
 
         // If the user is logged in
         if (user != null) {
@@ -220,7 +218,7 @@ object FirebaseAuthenticationService: AuthenticationService {
         successfullySentEmail: () -> Unit,
         failedToSendEmail: (String) -> Unit
     ) {
-        authenticator.sendPasswordResetEmail(email)
+        authentication.sendPasswordResetEmail(email)
             .addOnCompleteListener { process ->
 
                 if (process.isSuccessful) {
@@ -237,7 +235,7 @@ object FirebaseAuthenticationService: AuthenticationService {
         onFailure: (String) -> Unit
     ) {
 
-        val user = authenticator.currentUser
+        val user = authentication.currentUser
 
         if (user != null) {
 
@@ -272,7 +270,7 @@ object FirebaseAuthenticationService: AuthenticationService {
         onFailure: (String) -> Unit
     ) {
 
-        val user = authenticator.currentUser
+        val user = authentication.currentUser
 
         if (user != null) {
 
@@ -292,7 +290,7 @@ object FirebaseAuthenticationService: AuthenticationService {
 
     private fun sendEmailToVerifySigningUp(verificationEmailGotSent: (Boolean) -> Unit) {
 
-        authenticator.currentUser?.sendEmailVerification()
+        authentication.currentUser?.sendEmailVerification()
             ?.addOnCompleteListener { process ->
 
                 if (process.isSuccessful) {

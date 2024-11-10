@@ -1,4 +1,4 @@
-package com.example.trackies.aRoom.db
+package com.example.trackies.isSignedIn.user.roomDatabase
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

@@ -1,6 +1,8 @@
 package com.example.trackies.isSignedIn.user.data
 
+import android.util.Log
 import androidx.room.Room
+import androidx.sqlite.db.SupportSQLiteCompat.Api16Impl.deleteDatabase
 import androidx.test.core.app.ApplicationProvider
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.user.buisness.entities.License

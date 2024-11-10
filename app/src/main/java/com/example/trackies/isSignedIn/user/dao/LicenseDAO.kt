@@ -10,6 +10,7 @@ import com.example.trackies.isSignedIn.user.buisness.entities.License
 @Dao
 interface LicenseDAO {
 
+//  The method below is responsible for checking information if the user already has a created local database.
     @Query("SELECT * FROM License WHERE first == 1")
     suspend fun isFirstTimeInTheApp(): License?
 
@@ -19,15 +20,12 @@ interface LicenseDAO {
     @Query("SELECT * FROM License WHERE first == 1")
     suspend fun getLicense(): License?
 
-    @Query("UPDATE License SET isSignedIn = 1 WHERE first == 1")
-    suspend fun signInTheUser()
-
     @Query("UPDATE License SET totalAmountOfTrackies = :totalAmountOfTrackies WHERE first = 1")
     suspend fun increaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies: Int)
 
     @Query("UPDATE License SET totalAmountOfTrackies = :totalAmountOfTrackies WHERE first = 1")
     suspend fun decreaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies: Int)
 
-    @Query("UPDATE License SET isSignedIn = 0 WHERE first == 1")
-    suspend fun signOutTheUser()
+    @Query("SELECT * FROM License")
+    suspend fun testGetAllLicenses(): List<License>
 }
