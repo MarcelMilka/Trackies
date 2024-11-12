@@ -26,6 +26,10 @@ class FirebaseUserRepository @Inject constructor(
     var uniqueIdentifier: String
 ): UserRepository {
 
+    init {
+        Log.d("Magnetic Man", "$this is used as the user repository")
+    }
+
     val firebase: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     private val users = firebase.collection("users")
@@ -771,94 +775,15 @@ class FirebaseUserRepository @Inject constructor(
         onFailure: (String) -> Unit
     ): Map<String, Map<Int, Int>>? {
 
-        return suspendCoroutine { continuation ->
-
-            val mapWithCalculatedRegularity = mutableMapOf<String, Map<Int, Int>>()
-            val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
-            var foundCurrentDayOfWeek = false
-
-            val jobs =  setOf(
-                DaysOfWeek.monday,
-                DaysOfWeek.tuesday,
-                DaysOfWeek.wednesday,
-                DaysOfWeek.thursday,
-                DaysOfWeek.friday,
-                DaysOfWeek.saturday,
-                DaysOfWeek.sunday,
-            ).map { dayOfWeek ->
-
-                CoroutineScope(Dispatchers.Default).async {
-
-                    if (!foundCurrentDayOfWeek) {
-
-                        val namesOfTrackiesForThisDayOfWeek = fetchNamesOfTrackies(dayOfWeek)
-
-                        var totalAmount = 0
-                        var ingestedAmount = 0
-
-                        if (namesOfTrackiesForThisDayOfWeek != null) {
-
-                            if (namesOfTrackiesForThisDayOfWeek.isNotEmpty()) {
-
-                                for (nameOfTrackie in namesOfTrackiesForThisDayOfWeek) {
-                                    val documentSnapshot = usersWeeklyStatistics
-                                        .collection(dayOfWeek)
-                                        .document(nameOfTrackie)
-                                        .get()
-                                        .await()
-
-                                    documentSnapshot.getBoolean("ingested")?.let { ingested ->
-                                        totalAmount += 1
-                                        if (ingested) {
-                                            ingestedAmount += 1
-                                        }
-                                    }
-                                }
-
-                                mapWithCalculatedRegularity[dayOfWeek] = mapOf(totalAmount to ingestedAmount)
-                            }
-
-                            else {
-
-                                mapWithCalculatedRegularity[dayOfWeek] = mapOf(0 to 0)
-                            }
-
-                            if (dayOfWeek == currentDayOfWeek) {
-
-                                foundCurrentDayOfWeek = true
-                            }
-                        }
-
-                        else {
-
-                            continuation.resume(value = null)
-                        }
-                    }
-
-                    else {
-
-                        mapWithCalculatedRegularity[dayOfWeek] = mapOf(0 to 0)
-                    }
-                }
-            }
-
-            CoroutineScope(Dispatchers.Default).launch {
-
-                jobs.awaitAll()
-
-                val mapToReturn = mapOf(
-                    DaysOfWeek.monday to mapWithCalculatedRegularity[DaysOfWeek.monday]!!,
-                    DaysOfWeek.tuesday to mapWithCalculatedRegularity[DaysOfWeek.tuesday]!!,
-                    DaysOfWeek.wednesday to mapWithCalculatedRegularity[DaysOfWeek.wednesday]!!,
-                    DaysOfWeek.thursday to mapWithCalculatedRegularity[DaysOfWeek.thursday]!!,
-                    DaysOfWeek.friday to mapWithCalculatedRegularity[DaysOfWeek.friday]!!,
-                    DaysOfWeek.saturday to mapWithCalculatedRegularity[DaysOfWeek.saturday]!!,
-                    DaysOfWeek.sunday to mapWithCalculatedRegularity[DaysOfWeek.sunday]!!,
-                )
-
-                continuation.resume(value = mapToReturn)
-            }
-        }
+        return mapOf(
+            DaysOfWeek.monday to mapOf(0 to 0),
+            DaysOfWeek.tuesday to mapOf(0 to 0),
+            DaysOfWeek.wednesday to mapOf(0 to 0),
+            DaysOfWeek.thursday to mapOf(0 to 0),
+            DaysOfWeek.friday to mapOf(0 to 0),
+            DaysOfWeek.saturday to mapOf(0 to 0),
+            DaysOfWeek.sunday to mapOf(0 to 0),
+        )
     }
 
 

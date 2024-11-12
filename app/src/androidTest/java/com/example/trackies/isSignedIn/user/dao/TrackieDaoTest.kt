@@ -4,9 +4,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.entities.Trackie
-import com.example.trackies.isSignedIn.user.roomDatabase.RoomDatabase
-import com.example.trackies.isSignedIn.xTrackie.ui.trackies.trackie
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

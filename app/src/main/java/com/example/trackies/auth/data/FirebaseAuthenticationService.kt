@@ -1,8 +1,10 @@
 package com.example.trackies.auth.data
 
+import android.util.Log
 import android.util.Patterns
 import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.DeleteAccountHints
 import com.example.globalConstants.Destinations
+import com.example.trackies.di.FirebaseAuthenticator
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrors
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
@@ -13,7 +15,12 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+@FirebaseAuthenticator
 object FirebaseAuthenticationService: AuthenticationService {
+
+    init {
+        Log.d("Magnetic Man", "$this")
+    }
 
     private var authentication = Firebase.auth
 

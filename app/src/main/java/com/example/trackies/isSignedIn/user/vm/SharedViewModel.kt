@@ -9,6 +9,7 @@ import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
+import dagger.Reusable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +32,8 @@ class SharedViewModel @Inject constructor(
     private var fetchData = false
 
     init {
+
+        Log.d("Magnetic Man", "$this is used as shared view model")
 
         viewModelScope.launch {
 

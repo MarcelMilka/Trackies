@@ -26,8 +26,9 @@ import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.yourAccoun
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.verifyYourIdentityToChangePassword
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.yourPasswordGotChanged
 import com.example.globalConstants.Destinations
+import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.AuthenticationService
-import com.example.trackies.auth.serviceOperator.AuthenticationServiceOperator
+import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.schedueTimeDialog
@@ -59,9 +60,10 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var authenticationService: AuthenticationService
+    lateinit var authenticationMethodProvider: AuthenticationMethodProvider
 
-    val authenticationServiceOperator = AuthenticationServiceOperator
+    @Inject
+    lateinit var lazyAuthenticationService: Lazy<AuthenticationService>
 
     @Inject
     lateinit var lazySharedViewModel: Lazy<SharedViewModel>
@@ -90,7 +92,7 @@ class MainActivity : ComponentActivity() {
 
             val navigationController = rememberNavController()
 
-            NavHost(navController = navigationController, startDestination = authenticationService.initialDestination) {
+            NavHost(navController = navigationController, startDestination = lazyAuthenticationService.get().initialDestination) {
 
                 navigation(route = Destinations.IsSignedOut, startDestination = Destinations.WelcomeScreen) {
 
@@ -103,19 +105,30 @@ class MainActivity : ComponentActivity() {
 
                             onNavigateSignUp = {
 
-                                authenticationServiceOperator.setFirebaseAuthenticationService()
+                                authenticationMethodProvider.setAuthenticationMethod(
+                                    mode = AuthenticationMethod.Firebase
+                                )
+
                                 navigationController.navigate(route = Destinations.SignUpRoute)
                             },
 
                             onNavigateSignIn = {
 
-                                authenticationServiceOperator.setFirebaseAuthenticationService()
+                                authenticationMethodProvider.setAuthenticationMethod(
+                                    mode = AuthenticationMethod.Firebase
+                                )
+
                                 navigationController.navigate(route = Destinations.SignInRoute)
                             },
 
                             onContinueAsGuest = {
 
-                                authenticationServiceOperator.setRoomAuthenticationService()
+                                authenticationMethodProvider.setAuthenticationMethod(
+                                    mode = AuthenticationMethod.Room
+                                )
+
+                                Log.d("Chuj", "$lazyAuthenticationService")
+
                                 navigationController.navigate(route = Destinations.GuestModeInformation)
                             }
 
@@ -141,7 +154,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onSignUp = { credentials ->
 
-                                    authenticationService.signUpWithEmailAndPassword(
+                                    lazyAuthenticationService.get().signUpWithEmailAndPassword(
                                         email = credentials.email,
                                         password = credentials.password,
                                         signUpError = {
@@ -244,7 +257,7 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onSignIn = {
-                                    authenticationService.signInWithEmailAndPassword(
+                                    lazyAuthenticationService.get().signInWithEmailAndPassword(
 
                                         email = it.email,
                                         password = it.password,
@@ -296,7 +309,7 @@ class MainActivity : ComponentActivity() {
                             exitTransition = { ExitTransition.None }
                         ) {
                             recoverPassword { email ->
-                                authenticationService.recoverThePassword(
+                                lazyAuthenticationService.get().recoverThePassword(
                                     email = email,
                                     successfullySentEmail = {
                                         navigationController.navigate(route = Destinations.Information) {
@@ -422,7 +435,7 @@ class MainActivity : ComponentActivity() {
 
                         settings(
 
-                            usersEmail = authenticationService.getEmailAddress() ?: "An error occurred.",
+                            usersEmail = lazyAuthenticationService.get().getEmailAddress() ?: "An error occurred.",
 
                             onReturnHomeScreen = {
                                 navigationController.navigateUp()
@@ -445,7 +458,7 @@ class MainActivity : ComponentActivity() {
                             onDisplayInfoAboutThisApp = {},
 
                             onLogout = {
-                                authenticationService.signOut(
+                                lazyAuthenticationService.get().signOut(
                                     onComplete = {
                                         navigationController.navigate(route = Destinations.IsSignedOut) {
                                             popUpTo(route = Destinations.IsSignedIn) {inclusive = false}
@@ -726,7 +739,7 @@ class MainActivity : ComponentActivity() {
 
                                 onConfirm = {
 
-                                    authenticationService.deleteAccount(
+                                    lazyAuthenticationService.get().deleteAccount(
                                         password = it,
                                         onComplete = {
 
@@ -776,7 +789,7 @@ class MainActivity : ComponentActivity() {
                                 passwordIsIncorrect = passwordIsIncorrect,
 
                                 onConfirm = {
-                                    authenticationService.authenticateViaPassword(
+                                    lazyAuthenticationService.get().authenticateViaPassword(
                                         password = it,
                                         onComplete = {
                                             navigationController.navigate(route = Destinations.InsertNewPassword)
@@ -806,7 +819,7 @@ class MainActivity : ComponentActivity() {
                             insertNewPassword(
                                 passwordIsIncorrect = passwordIsIncorrect,
                                 onConfirm = {
-                                    authenticationService.changeThePassword(
+                                    lazyAuthenticationService.get().changeThePassword(
                                         newPassword = it,
                                         onComplete = {
                                             navigationController.navigate(route = Destinations.YourPasswordGotChanged)

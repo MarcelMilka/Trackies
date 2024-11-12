@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="when_authServOperator_returns_RoomAuthenticationService_then_provideRoomUserRepository()">
+      <SelectionState runConfigName="AuthenticationModuleTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="UserRepositoryModuleTest">
+      <SelectionState runConfigName="RoomDatabaseProviderTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="repositoryKnowsWhenToAddNewUser()">
+      <SelectionState runConfigName="roomDatabaseGetsProvidedCorrectly()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="repositoryProperlyAddsLicenseOfNewUsers()">
+      <SelectionState runConfigName="roomDatabase_RoomAuthenticationService__areProvided()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="trackieGetsAddedProperly()">
+      <SelectionState runConfigName="authenticationMethodProvider_getsProvidedCorrectly()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

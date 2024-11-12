@@ -3,11 +3,11 @@ package com.example.trackies.isSignedIn.user.data
 import android.util.Log
 import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
+import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 import com.example.trackies.isSignedIn.user.buisness.entities.Regularity
 import com.example.trackies.isSignedIn.user.buisness.entities.convertLicenseToLicenseModel
-import com.example.trackies.isSignedIn.user.roomDatabase.RoomDatabase
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.convertTrackieModelToTrackieEntity
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +20,10 @@ import kotlin.coroutines.suspendCoroutine
 class RoomUserRepository @Inject constructor(
     var roomDatabase: RoomDatabase
 ): UserRepository {
+
+    init {
+        Log.d("Magnetic Man", "$this is used as the user repository")
+    }
 
 //  Fetches all rows from the table "License".
 //  Table "License" can have only one row, with @PrimaryKey 'first' equal to 1.

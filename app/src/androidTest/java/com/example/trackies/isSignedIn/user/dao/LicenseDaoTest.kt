@@ -2,8 +2,8 @@ package com.example.trackies.isSignedIn.user.dao
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.entities.License
-import com.example.trackies.isSignedIn.user.roomDatabase.RoomDatabase
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.After

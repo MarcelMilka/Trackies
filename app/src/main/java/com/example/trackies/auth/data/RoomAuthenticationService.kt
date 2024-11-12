@@ -1,10 +1,21 @@
 package com.example.trackies.auth.data
 
+import android.util.Log
 import com.example.globalConstants.Destinations
+import com.example.trackies.aRoom.db.RoomDatabase
+import com.example.trackies.di.RoomAuthenticator
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
+import javax.inject.Inject
 
-object RoomAuthenticationService: AuthenticationService {
+@RoomAuthenticator
+class RoomAuthenticationService @Inject constructor(
+    val roomDatabase: RoomDatabase
+): AuthenticationService {
+
+    init {
+        Log.d("Magnetic Man", "$this")
+    }
 
     override var initialDestination: String = Destinations.IsSignedOut
         get() {
@@ -41,7 +52,10 @@ object RoomAuthenticationService: AuthenticationService {
         password: String,
         onFailedToSignIn: (SignInErrorsToReturn) -> Unit,
         onSucceededToSignIn: (String) -> Unit
-    ) {}
+    ) {
+
+        Log.d("Philodendron", email)
+    }
 
     override fun getEmailAddress(): String? = "Local database user"
 
