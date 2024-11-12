@@ -1,5 +1,6 @@
 package com.example.trackies.isSignedIn.user.di
 
+import android.util.Log
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.FirebaseAuthenticationService
@@ -11,7 +12,6 @@ import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
@@ -25,12 +25,13 @@ class UserRepositoryModule {
         FirebaseAuthenticationService.getSignedInUser()
 
     @Provides
-    @Reusable
     fun provideUserRepository(
         authenticationMethodProvider: AuthenticationMethodProvider,
         @Named("uniqueIdentifier") lazyUniqueIdentifier: Lazy<String>,
         lazyRoomDatabase: Lazy<RoomDatabase>
     ): UserRepository {
+
+        Log.d("Magnetic Man", "$this provides user repository")
 
         val authenticationMethod =
             authenticationMethodProvider.getAuthenticationMethod()

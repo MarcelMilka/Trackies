@@ -9,7 +9,6 @@ import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
-import dagger.Reusable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +22,7 @@ import kotlin.collections.Map
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(
-    private var repository: UserRepository
+    val repository: UserRepository
 ): ViewModel() {
 
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)

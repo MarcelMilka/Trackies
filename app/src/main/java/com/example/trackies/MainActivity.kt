@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -64,12 +65,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var lazyAuthenticationService: Lazy<AuthenticationService>
-
-    @Inject
-    lateinit var lazySharedViewModel: Lazy<SharedViewModel>
-
-    @Inject
-    lateinit var lazyAddNewTrackieViewModel: Lazy<AddNewTrackieViewModel>
 
     private val homeScreenViewModel by lazy {
         HomeScreenViewModel()
@@ -126,8 +121,6 @@ class MainActivity : ComponentActivity() {
                                 authenticationMethodProvider.setAuthenticationMethod(
                                     mode = AuthenticationMethod.Room
                                 )
-
-                                Log.d("Chuj", "$lazyAuthenticationService")
 
                                 navigationController.navigate(route = Destinations.GuestModeInformation)
                             }
@@ -370,7 +363,9 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-                        val sharedViewModel = lazySharedViewModel.get()
+//                      val sharedViewModel = lazySharedViewModel.get()
+                        var sharedViewModel: SharedViewModel = hiltViewModel<SharedViewModel>(it)
+
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         val homeScreenUiState by homeScreenViewModel.uiState.collectAsState()
@@ -484,7 +479,8 @@ class MainActivity : ComponentActivity() {
                         val allTrackiesViewModel = lazyAllTrackiesViewModel
                         val listToDisplay by allTrackiesViewModel.listToDisplay.collectAsState()
 
-                        val sharedViewModel = lazySharedViewModel.get()
+//                      val sharedViewModel = lazySharedViewModel.get()
+                        var sharedViewModel: SharedViewModel = hiltViewModel(it)
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         displayAllTrackies(
@@ -536,10 +532,14 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-                            val sharedViewModel = lazySharedViewModel.get()
+//                          val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel =
+                                hiltViewModel(it)
+
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
-                            val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
+                            var addNewTrackieViewModel: AddNewTrackieViewModel =
+                                hiltViewModel(it)
 
                             addNewTrackie(
 
@@ -631,7 +631,8 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.ScheduleIngestionTime) {
 
-                            val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
+                            var addNewTrackieViewModel: AddNewTrackieViewModel =
+                                hiltViewModel(it)
 
                             schedueTimeDialog(
 
@@ -660,7 +661,8 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-                            val sharedViewModel = lazySharedViewModel.get()
+//                          val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
@@ -680,7 +682,9 @@ class MainActivity : ComponentActivity() {
                         dialog(route = Destinations.ConfirmDeletionOfTheTrackie) {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
-                            val sharedViewModel = lazySharedViewModel.get()
+
+//                          val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
 
                             confirmDeletionOfTheTrackie(
                                 onConfirm = {
@@ -727,7 +731,8 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.VerifyYourIdentity) {
 
-                            val sharedViewModel = lazySharedViewModel.get()
+//                            val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
 
                             var anErrorOccurred by remember { mutableStateOf(false) }
                             var errorMessage by remember { mutableStateOf("") }

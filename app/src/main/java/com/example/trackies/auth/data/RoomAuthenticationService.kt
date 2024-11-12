@@ -14,7 +14,7 @@ class RoomAuthenticationService @Inject constructor(
 ): AuthenticationService {
 
     init {
-        Log.d("Magnetic Man", "$this")
+        Log.d("Magnetic Man", "$this provides authentication service repository")
     }
 
     override var initialDestination: String = Destinations.IsSignedOut

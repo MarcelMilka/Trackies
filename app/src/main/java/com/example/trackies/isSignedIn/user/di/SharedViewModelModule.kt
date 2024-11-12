@@ -13,6 +13,6 @@ import javax.inject.Singleton
 class SharedViewModelModule {
 
     @Provides
-    @Singleton
+//    @Singleton
     fun provideSharedViewModel(repository: UserRepository): SharedViewModel = SharedViewModel(repository)
 }
