@@ -1,5 +1,6 @@
 package com.example.trackies.auth.di
 
+import android.util.Log
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
 import dagger.Module
@@ -13,10 +14,11 @@ import dagger.hilt.components.SingletonComponent
 class AuthenticationModule {
 
     @Provides
-    @Reusable
     fun provideAuthenticationService(
         authenticationMethodProvider: AuthenticationMethodProvider
     ): AuthenticationService {
+
+        Log.d("Halla!", "Authentication service is requested.")
 
         val authenticationService =
             authenticationMethodProvider.getAuthenticationService()

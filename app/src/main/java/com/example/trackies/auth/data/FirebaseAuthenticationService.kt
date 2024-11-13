@@ -29,7 +29,8 @@ object FirebaseAuthenticationService: AuthenticationService {
 
             return if (getSignedInUser() == null) {
                 Destinations.IsSignedOut
-            } else {
+            }
+            else {
                 Destinations.IsSignedIn
             }
         }
@@ -43,6 +44,8 @@ object FirebaseAuthenticationService: AuthenticationService {
         signUpError: (SignUpErrors) -> Unit,
         verificationEmailGotSent: (Boolean) -> Unit
     ) {
+
+        Log.d("oye oye aye!", "firebase")
 
         if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             signUpError(SignUpErrors.InvalidEmailFormat)

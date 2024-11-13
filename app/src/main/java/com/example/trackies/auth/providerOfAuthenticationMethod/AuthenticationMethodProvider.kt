@@ -1,5 +1,6 @@
 package com.example.trackies.auth.providerOfAuthenticationMethod
 
+import com.example.globalConstants.Destinations
 import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.di.FirebaseAuthenticator
@@ -34,8 +35,30 @@ class AuthenticationMethodProvider @Inject constructor(
     fun getAuthenticationMethod(): AuthenticationMethod =
         currentMode
 
-    fun forceInjection() {
+    fun getInitialDestination(): String {
 
+        val firebaseInitialDestination = firebaseAuthService.initialDestination // ( Destinations.IsSignedOut / Destinations.IsSignedIn )
 
+        val roomInitialDestination = roomAuthService.initialDestination // ( true / false )
+
+        return if (firebaseInitialDestination == Destinations.IsSignedIn) {
+
+            Destinations.IsSignedIn
+        }
+
+        else {
+
+            if (roomInitialDestination == Destinations.IsSignedIn) {
+
+                setAuthenticationMethod(mode = AuthenticationMethod.Room)
+                Destinations.IsSignedIn
+            }
+
+            else {
+
+                Destinations.IsSignedOut
+            }
+        }
     }
+
 }

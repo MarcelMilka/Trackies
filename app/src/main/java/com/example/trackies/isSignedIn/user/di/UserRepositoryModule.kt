@@ -21,8 +21,15 @@ class UserRepositoryModule {
 
     @Provides
     @Named("uniqueIdentifier")
-    fun provideUniqueIdentifier(): String? =
-        FirebaseAuthenticationService.getSignedInUser()
+    fun provideUniqueIdentifier(): String? {
+
+        val uid =
+            FirebaseAuthenticationService.getSignedInUser()
+
+        Log.d("MSxxx", "$uid")
+
+        return uid
+    }
 
     @Provides
     fun provideUserRepository(
@@ -40,8 +47,19 @@ class UserRepositoryModule {
 
             AuthenticationMethod.Firebase -> {
 
-                val uniqueIdentifier = lazyUniqueIdentifier.get()
-                return FirebaseUserRepository(uniqueIdentifier = uniqueIdentifier)
+                val puid = this.provideUniqueIdentifier()
+                Log.d("MSxxx", "uid = $puid")
+
+                try {
+                    val uniqueIdentifier = lazyUniqueIdentifier.get()
+                    return FirebaseUserRepository(uniqueIdentifier = uniqueIdentifier)
+                }
+
+                catch (e: Exception) {
+
+                    Log.d("MSxxx", "$e")
+                    return FirebaseUserRepository(uniqueIdentifier = "null")
+                }
             }
 
             AuthenticationMethod.Room -> {

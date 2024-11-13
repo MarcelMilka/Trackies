@@ -29,6 +29,7 @@ import com.example.trackies.isSignedIn.settings.dialogs.changePassword.yourPassw
 import com.example.globalConstants.Destinations
 import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.AuthenticationService
+import com.example.trackies.auth.data.FirebaseAuthenticationService
 import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
@@ -64,7 +65,27 @@ class MainActivity : ComponentActivity() {
     lateinit var authenticationMethodProvider: AuthenticationMethodProvider
 
     @Inject
-    lateinit var lazyAuthenticationService: Lazy<AuthenticationService>
+    lateinit var lazyAuthenticationService: Lazy<AuthenticationService> // dependency does not get changed properly
+
+    private val initialDestination by lazy {
+
+        authenticationMethodProvider.getInitialDestination()
+
+        val authenticationService =
+            lazyAuthenticationService.get()
+
+        val initialDestination = authenticationService.initialDestination
+
+        if (authenticationService::class == FirebaseAuthenticationService::class &&
+            initialDestination == Destinations.IsSignedOut) {
+
+            authenticationMethodProvider.setAuthenticationMethod(
+                mode = AuthenticationMethod.Firebase
+            )
+        }
+
+        initialDestination
+    }
 
     private val homeScreenViewModel by lazy {
         HomeScreenViewModel()
@@ -87,7 +108,7 @@ class MainActivity : ComponentActivity() {
 
             val navigationController = rememberNavController()
 
-            NavHost(navController = navigationController, startDestination = lazyAuthenticationService.get().initialDestination) {
+            NavHost(navController = navigationController, startDestination = initialDestination) {
 
                 navigation(route = Destinations.IsSignedOut, startDestination = Destinations.WelcomeScreen) {
 
@@ -250,6 +271,7 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onSignIn = {
+
                                     lazyAuthenticationService.get().signInWithEmailAndPassword(
 
                                         email = it.email,
@@ -283,6 +305,8 @@ class MainActivity : ComponentActivity() {
                                             }
                                         },
                                         onSucceededToSignIn = { uid ->
+
+                                            Log.d("MSxxx", "succeede to signin uid: $uid")
 
                                             navigationController.navigate(Destinations.IsSignedIn) {
                                                 popUpTo(Destinations.IsSignedOut) { inclusive = true }
@@ -341,6 +365,15 @@ class MainActivity : ComponentActivity() {
                         guestModeInformation(
 
                             onContinue = {
+
+                                lazyAuthenticationService
+                                    .get()
+                                    .signInWithEmailAndPassword(
+                                        email = "_",
+                                        password = "_",
+                                        onFailedToSignIn = {},
+                                        onSucceededToSignIn = {}
+                                    )
 
                                 navigationController.navigate(Destinations.IsSignedIn) {
                                     popUpTo(Destinations.IsSignedOut) { inclusive = true }

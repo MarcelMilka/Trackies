@@ -22,7 +22,21 @@ class RoomUserRepository @Inject constructor(
 ): UserRepository {
 
     init {
-        Log.d("Magnetic Man", "$this is used as the user repository")
+
+        CoroutineScope(Dispatchers.Default).launch {
+
+            val license =
+                roomDatabase
+                .licenseDAO()
+                .getLicense()
+
+            if (license != null && license.isSignedIn == false) {
+
+                roomDatabase
+                    .licenseDAO()
+                    .signIn()
+            }
+        }
     }
 
 //  Fetches all rows from the table "License".
@@ -47,7 +61,6 @@ class RoomUserRepository @Inject constructor(
             roomDatabase
                 .licenseDAO()
                 .createLicense(
-
                     license = License(
                         first = 1,
                         isSignedIn = true,

@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 
 @Dao
@@ -19,6 +20,12 @@ interface LicenseDAO {
 
     @Query("SELECT * FROM License WHERE first == 1")
     suspend fun getLicense(): License?
+
+    @Query("UPDATE License SET isSignedIn = 1 WHERE first = 1")
+    suspend fun signIn()
+
+    @Query("UPDATE License SET isSignedIn = 0 WHERE first = 1")
+    suspend fun signOut()
 
     @Query("UPDATE License SET totalAmountOfTrackies = :totalAmountOfTrackies WHERE first = 1")
     suspend fun increaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies: Int)

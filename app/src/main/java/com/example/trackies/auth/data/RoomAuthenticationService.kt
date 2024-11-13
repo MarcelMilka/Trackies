@@ -4,8 +4,11 @@ import android.util.Log
 import com.example.globalConstants.Destinations
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.di.RoomAuthenticator
+import com.example.trackies.isSignedIn.user.buisness.entities.License
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @RoomAuthenticator
@@ -20,11 +23,8 @@ class RoomAuthenticationService @Inject constructor(
     override var initialDestination: String = Destinations.IsSignedOut
         get() {
 
-            return if (
+            return if (this.getSignedInUser() == null || this.getSignedInUser() == "false") {
 
-                this.getSignedInUser() == null ||
-                this.getSignedInUser() == "false"
-            ) {
                 Destinations.IsSignedOut
             }
 
@@ -33,11 +33,27 @@ class RoomAuthenticationService @Inject constructor(
             }
         }
 
-    override fun getSignedInUser(): String? {
+    override fun getSignedInUser(): String? = runBlocking {
 
-        // TODO: implement code which fetches LicenseModel entity
-        // TODO: if LicenseModel license is active, then the user is signed in, else is signed out
-        return "false"
+        val license =
+            roomDatabase
+                .licenseDAO()
+                .getLicense()
+
+        if (license != null) {
+
+            if (license.isSignedIn) {
+                "true"
+            }
+
+            else {
+                "false"
+            }
+        }
+
+        else {
+            null
+        }
     }
 
     override fun signUpWithEmailAndPassword(
@@ -54,12 +70,28 @@ class RoomAuthenticationService @Inject constructor(
         onSucceededToSignIn: (String) -> Unit
     ) {
 
-        Log.d("Philodendron", email)
+        runBlocking {
+
+            roomDatabase
+                .licenseDAO()
+                .signIn()
+        }
+
+        onSucceededToSignIn("succeeded to sign in the user")
     }
 
     override fun getEmailAddress(): String? = "Local database user"
 
-    override fun signOut(onComplete: () -> Unit, onFailure: () -> Unit) {}
+    override fun signOut(onComplete: () -> Unit, onFailure: () -> Unit) {
+
+        runBlocking {
+            roomDatabase
+                .licenseDAO()
+                .signOut()
+        }
+
+        onComplete()
+    }
 
     override fun deleteAccount(
         password: String,
@@ -83,8 +115,6 @@ class RoomAuthenticationService @Inject constructor(
         newPassword: String,
         onComplete: () -> Unit,
         onFailure: (String) -> Unit
-    ) {
-        TODO("Not yet implemented")
-    }
+    ) {}
 
 }
