@@ -17,7 +17,6 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
-import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.Dimensions.heightOfUpperFragment
@@ -26,6 +25,7 @@ import com.example.trackies.ui.theme.Dimensions.heightOfUpperFragment
 fun welcomeScreen(
     onNavigateSignUp:() -> Unit,
     onNavigateSignIn:() -> Unit,
+    onContinueAsGuest:() -> Unit
 ) {
 
 //  Holds everything
@@ -83,7 +83,7 @@ fun welcomeScreen(
                             verticalSpacerM()
 
                             smallStaticSecondaryButton(textToDisplay = "continue as guest") {
-
+                                onContinueAsGuest()
                             }
 
                         }

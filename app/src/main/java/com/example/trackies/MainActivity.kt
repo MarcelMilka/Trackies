@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -26,7 +27,10 @@ import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.yourAccoun
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.verifyYourIdentityToChangePassword
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.yourPasswordGotChanged
 import com.example.globalConstants.Destinations
+import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.AuthenticationService
+import com.example.trackies.auth.data.FirebaseAuthenticationService
+import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.schedueTimeDialog
@@ -38,6 +42,7 @@ import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.vm.DetailedTrackieViewModel
 import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
+import com.example.trackies.isSignedOut.presentation.ui.guestMode.guestModeInformation
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
 import com.example.trackies.isSignedOut.presentation.ui.signIn.information
@@ -49,9 +54,6 @@ import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErro
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.signUp
 import com.example.trackies.isSignedOut.presentation.ui.welcomeScreen
-import com.google.firebase.auth.ActionCodeSettings
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.actionCodeSettings
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -60,13 +62,30 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var authenticationService: AuthenticationService
+    lateinit var authenticationMethodProvider: AuthenticationMethodProvider
 
     @Inject
-    lateinit var lazySharedViewModel: Lazy<SharedViewModel>
+    lateinit var lazyAuthenticationService: Lazy<AuthenticationService> // dependency does not get changed properly
 
-    @Inject
-    lateinit var lazyAddNewTrackieViewModel: Lazy<AddNewTrackieViewModel>
+    private val initialDestination by lazy {
+
+        authenticationMethodProvider.getInitialDestination()
+
+        val authenticationService =
+            lazyAuthenticationService.get()
+
+        val initialDestination = authenticationService.initialDestination
+
+        if (authenticationService::class == FirebaseAuthenticationService::class &&
+            initialDestination == Destinations.IsSignedOut) {
+
+            authenticationMethodProvider.setAuthenticationMethod(
+                mode = AuthenticationMethod.Firebase
+            )
+        }
+
+        initialDestination
+    }
 
     private val homeScreenViewModel by lazy {
         HomeScreenViewModel()
@@ -89,7 +108,7 @@ class MainActivity : ComponentActivity() {
 
             val navigationController = rememberNavController()
 
-            NavHost(navController = navigationController, startDestination = authenticationService.initialDestination) {
+            NavHost(navController = navigationController, startDestination = initialDestination) {
 
                 navigation(route = Destinations.IsSignedOut, startDestination = Destinations.WelcomeScreen) {
 
@@ -99,12 +118,34 @@ class MainActivity : ComponentActivity() {
                         exitTransition = { ExitTransition.None }
                     ) {
                         welcomeScreen (
+
                             onNavigateSignUp = {
+
+                                authenticationMethodProvider.setAuthenticationMethod(
+                                    mode = AuthenticationMethod.Firebase
+                                )
+
                                 navigationController.navigate(route = Destinations.SignUpRoute)
                             },
+
                             onNavigateSignIn = {
+
+                                authenticationMethodProvider.setAuthenticationMethod(
+                                    mode = AuthenticationMethod.Firebase
+                                )
+
                                 navigationController.navigate(route = Destinations.SignInRoute)
+                            },
+
+                            onContinueAsGuest = {
+
+                                authenticationMethodProvider.setAuthenticationMethod(
+                                    mode = AuthenticationMethod.Room
+                                )
+
+                                navigationController.navigate(route = Destinations.GuestModeInformation)
                             }
+
                         )
                     }
 
@@ -127,7 +168,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onSignUp = { credentials ->
 
-                                    authenticationService.signUpWithEmailAndPassword(
+                                    lazyAuthenticationService.get().signUpWithEmailAndPassword(
                                         email = credentials.email,
                                         password = credentials.password,
                                         signUpError = {
@@ -230,7 +271,8 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onSignIn = {
-                                    authenticationService.signInWithEmailAndPassword(
+
+                                    lazyAuthenticationService.get().signInWithEmailAndPassword(
 
                                         email = it.email,
                                         password = it.password,
@@ -282,7 +324,7 @@ class MainActivity : ComponentActivity() {
                             exitTransition = { ExitTransition.None }
                         ) {
                             recoverPassword { email ->
-                                authenticationService.recoverThePassword(
+                                lazyAuthenticationService.get().recoverThePassword(
                                     email = email,
                                     successfullySentEmail = {
                                         navigationController.navigate(route = Destinations.Information) {
@@ -307,6 +349,41 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
+
+                    composable(
+                        route = Destinations.GuestModeInformation,
+                        enterTransition = {
+                            EnterTransition.None
+                        },
+                        exitTransition = {
+                            ExitTransition.None
+                        }
+                    ) {
+
+                        guestModeInformation(
+
+                            onContinue = {
+
+                                lazyAuthenticationService
+                                    .get()
+                                    .signInWithEmailAndPassword(
+                                        email = "_",
+                                        password = "_",
+                                        onFailedToSignIn = {},
+                                        onSucceededToSignIn = {}
+                                    )
+
+                                navigationController.navigate(Destinations.IsSignedIn) {
+                                    popUpTo(Destinations.IsSignedOut) { inclusive = true }
+                                }
+                            },
+
+                            onMoveBack = {
+
+                                navigationController.navigateUp()
+                            }
+                        )
+                    }
                 }
 
                 navigation(route = Destinations.IsSignedIn, startDestination = Destinations.HomeScreen) {
@@ -317,7 +394,9 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-                        val sharedViewModel = lazySharedViewModel.get()
+//                      val sharedViewModel = lazySharedViewModel.get()
+                        var sharedViewModel: SharedViewModel = hiltViewModel<SharedViewModel>(it)
+
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         val homeScreenUiState by homeScreenViewModel.uiState.collectAsState()
@@ -382,7 +461,7 @@ class MainActivity : ComponentActivity() {
 
                         settings(
 
-                            usersEmail = authenticationService.getEmailAddress() ?: "An error occurred.",
+                            usersEmail = lazyAuthenticationService.get().getEmailAddress() ?: "An error occurred.",
 
                             onReturnHomeScreen = {
                                 navigationController.navigateUp()
@@ -405,7 +484,7 @@ class MainActivity : ComponentActivity() {
                             onDisplayInfoAboutThisApp = {},
 
                             onLogout = {
-                                authenticationService.signOut(
+                                lazyAuthenticationService.get().signOut(
                                     onComplete = {
                                         navigationController.navigate(route = Destinations.IsSignedOut) {
                                             popUpTo(route = Destinations.IsSignedIn) {inclusive = false}
@@ -431,7 +510,8 @@ class MainActivity : ComponentActivity() {
                         val allTrackiesViewModel = lazyAllTrackiesViewModel
                         val listToDisplay by allTrackiesViewModel.listToDisplay.collectAsState()
 
-                        val sharedViewModel = lazySharedViewModel.get()
+//                      val sharedViewModel = lazySharedViewModel.get()
+                        var sharedViewModel: SharedViewModel = hiltViewModel(it)
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         displayAllTrackies(
@@ -483,10 +563,14 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-                            val sharedViewModel = lazySharedViewModel.get()
+//                          val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel =
+                                hiltViewModel(it)
+
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
-                            val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
+                            var addNewTrackieViewModel: AddNewTrackieViewModel =
+                                hiltViewModel(it)
 
                             addNewTrackie(
 
@@ -578,7 +662,8 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.ScheduleIngestionTime) {
 
-                            val addNewTrackieViewModel = lazyAddNewTrackieViewModel.get()
+                            var addNewTrackieViewModel: AddNewTrackieViewModel =
+                                hiltViewModel(it)
 
                             schedueTimeDialog(
 
@@ -607,7 +692,8 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-                            val sharedViewModel = lazySharedViewModel.get()
+//                          val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
@@ -627,7 +713,9 @@ class MainActivity : ComponentActivity() {
                         dialog(route = Destinations.ConfirmDeletionOfTheTrackie) {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
-                            val sharedViewModel = lazySharedViewModel.get()
+
+//                          val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
 
                             confirmDeletionOfTheTrackie(
                                 onConfirm = {
@@ -674,7 +762,8 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.VerifyYourIdentity) {
 
-                            val sharedViewModel = lazySharedViewModel.get()
+//                            val sharedViewModel = lazySharedViewModel.get()
+                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
 
                             var anErrorOccurred by remember { mutableStateOf(false) }
                             var errorMessage by remember { mutableStateOf("") }
@@ -686,7 +775,7 @@ class MainActivity : ComponentActivity() {
 
                                 onConfirm = {
 
-                                    authenticationService.deleteAccount(
+                                    lazyAuthenticationService.get().deleteAccount(
                                         password = it,
                                         onComplete = {
 
@@ -736,7 +825,7 @@ class MainActivity : ComponentActivity() {
                                 passwordIsIncorrect = passwordIsIncorrect,
 
                                 onConfirm = {
-                                    authenticationService.authenticateViaPassword(
+                                    lazyAuthenticationService.get().authenticateViaPassword(
                                         password = it,
                                         onComplete = {
                                             navigationController.navigate(route = Destinations.InsertNewPassword)
@@ -766,7 +855,7 @@ class MainActivity : ComponentActivity() {
                             insertNewPassword(
                                 passwordIsIncorrect = passwordIsIncorrect,
                                 onConfirm = {
-                                    authenticationService.changeThePassword(
+                                    lazyAuthenticationService.get().changeThePassword(
                                         newPassword = it,
                                         onComplete = {
                                             navigationController.navigate(route = Destinations.YourPasswordGotChanged)

@@ -6,6 +6,8 @@ object Destinations {
     val IsSignedOut = "SignedOut"
         val WelcomeScreen = "WelcomeScreen"
 
+        val GuestModeInformation = "GuestModeInformation"
+
         val SignUpRoute = "SignUpRoute"
             val SignUp = "SignUp"
             val Authenticate = "Authenticate"

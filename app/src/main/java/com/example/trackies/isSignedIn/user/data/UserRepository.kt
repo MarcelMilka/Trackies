@@ -28,7 +28,7 @@ interface UserRepository {
     suspend fun fetchTodayTrackies(): List<TrackieModel>?
 
     suspend fun addNewTrackie(
-        trackieViewState: TrackieModel,
+        trackieModel: TrackieModel,
         onFailure: (String) -> Unit
     )
 
@@ -41,7 +41,7 @@ interface UserRepository {
     ): Map<String, Boolean>?
 
     suspend fun deleteTrackie(
-        trackieViewState: TrackieModel,
+        trackieModel: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )
@@ -57,7 +57,7 @@ interface UserRepository {
     ): Map<String, Map<Int, Int>>?
 
     suspend fun markTrackieAsIngested(
-        trackieViewState: TrackieModel,
+        trackieModel: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     )

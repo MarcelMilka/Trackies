@@ -22,7 +22,7 @@ import kotlin.collections.Map
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(
-    private var repository: UserRepository
+    val repository: UserRepository
 ): ViewModel() {
 
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
@@ -31,6 +31,8 @@ class SharedViewModel @Inject constructor(
     private var fetchData = false
 
     init {
+
+        Log.d("Magnetic Man", "$this is used as shared view model")
 
         viewModelScope.launch {
 
@@ -84,6 +86,11 @@ class SharedViewModel @Inject constructor(
                             Log.d("SharedViewModel-firebase", "init, fetchWeeklyRegularity - $it")
                         }
                     )
+
+                    Log.d("Hei!", "$licenseInformation")
+                    Log.d("Hei!", "$trackiesForToday")
+                    Log.d("Hei!", "$statesOfTrackiesForToday")
+                    Log.d("Hei!", "$weeklyRegularity")
 
                     if (
                         licenseInformation != null &&
@@ -139,7 +146,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.addNewTrackie(
-                    trackieViewState = trackieModel,
+                    trackieModel = trackieModel,
                     onFailure = {
                         Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - $it")
                     }
@@ -294,7 +301,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.deleteTrackie(
-                    trackieViewState = trackieViewState,
+                    trackieModel = trackieViewState,
                     onSuccess = {},
                     onFailure = {
                         Log.d("SharedViewModel-firebase", "method 'deleteTrackie' - $it")
@@ -511,7 +518,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.markTrackieAsIngested(
-                    trackieViewState = trackieModel,
+                    trackieModel = trackieModel,
                     onSuccess = {
 
                     },
