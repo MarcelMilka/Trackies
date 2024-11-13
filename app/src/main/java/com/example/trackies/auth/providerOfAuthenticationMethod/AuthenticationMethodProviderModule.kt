@@ -18,14 +18,12 @@ import javax.inject.Singleton
 class AuthenticationMethodProviderModule {
 
     @Provides
-//    @Singleton
     @FirebaseAuthenticator
     fun provideFirebaseAuthenticationService(): AuthenticationService =
         FirebaseAuthenticationService
 
 
     @Provides
-//    @Singleton
     @RoomAuthenticator
     fun provideRoomAuthenticationService(
         lazyRoomDatabase: Lazy<RoomDatabase>

@@ -61,4 +61,6 @@ class AuthenticationMethodProvider @Inject constructor(
         }
     }
 
+    fun getFirebaseUniqueID(): String? = firebaseAuthService.getSignedInUser()
+
 }

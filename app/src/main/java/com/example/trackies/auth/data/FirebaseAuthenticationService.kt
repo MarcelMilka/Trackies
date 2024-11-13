@@ -36,7 +36,9 @@ object FirebaseAuthenticationService: AuthenticationService {
         }
 
 
-    override fun getSignedInUser(): String? = authentication.currentUser?.run { this.uid }
+    override fun getSignedInUser(): String? = authentication.currentUser?.run {
+        this.uid
+    }
 
     override fun signUpWithEmailAndPassword(
         email: String,

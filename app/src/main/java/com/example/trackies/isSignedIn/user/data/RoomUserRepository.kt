@@ -23,6 +23,8 @@ class RoomUserRepository @Inject constructor(
 
     init {
 
+        Log.d("Halla! ma'am", "initialized as fuck")
+
         CoroutineScope(Dispatchers.Default).launch {
 
             val license =

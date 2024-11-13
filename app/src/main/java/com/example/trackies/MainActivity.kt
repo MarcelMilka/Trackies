@@ -306,8 +306,6 @@ class MainActivity : ComponentActivity() {
                                         },
                                         onSucceededToSignIn = { uid ->
 
-                                            Log.d("MSxxx", "succeede to signin uid: $uid")
-
                                             navigationController.navigate(Destinations.IsSignedIn) {
                                                 popUpTo(Destinations.IsSignedOut) { inclusive = true }
                                             }
