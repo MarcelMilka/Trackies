@@ -97,7 +97,23 @@ class RoomAuthenticationService @Inject constructor(
         password: String,
         onComplete: () -> Unit,
         onFailure: (String) -> Unit
-    ) {}
+    ) {
+
+        roomDatabase
+            .licenseDAO()
+            .deleteLicense()
+
+        roomDatabase
+            .trackiesDAO()
+            .deleteAllTrackies()
+
+
+        roomDatabase
+            .regularityDAO()
+            .deleteRegularity()
+
+        onComplete()
+    }
 
     override fun recoverThePassword(
         email: String,

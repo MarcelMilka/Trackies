@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
@@ -39,6 +40,7 @@ import com.example.trackies.ui.theme.BackgroundColor
 
 @Composable
 fun settings(
+    authenticationMethod: AuthenticationMethod,
     usersEmail: String,
     onReturnHomeScreen: () -> Unit,
     onChangeEmail: () -> Unit,
@@ -79,32 +81,52 @@ fun settings(
 
                         content = {
 
-                            iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Home) { onReturnHomeScreen() }
+                            iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Home) {
+                                onReturnHomeScreen()
+                            }
 
                             verticalSpacerL()
+
                             textHeadlineMedium(content = "Settings")
 
                             verticalSpacerL()
 
                             textHeadlineMedium(content = "Account")
 
-                            elementOfSettings(enabled = false, icon = Icons.Rounded.Email, header = "E-mail", detail = usersEmail) { onChangeEmail() }
+                            if (authenticationMethod == AuthenticationMethod.Firebase) {
 
-                            elementOfSettings(enabled = true, icon = Icons.Rounded.Password, header = "Change password", detail = null) { onChangePassword() }
+                                elementOfSettings(enabled = false, icon = Icons.Rounded.Email, header = "E-mail", detail = usersEmail) {
+                                    onChangeEmail()
+                                }
 
-                            elementOfSettings(enabled = true, icon = Icons.Rounded.Delete, header = "Delete account", detail = null) { onDeleteAccount() }
+                                elementOfSettings(enabled = true, icon = Icons.Rounded.Password, header = "Change password", detail = null) {
+                                    onChangePassword()
+                                }
+                            }
+
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.Delete, header = "Delete account", detail = null) {
+                                onDeleteAccount()
+                            }
 
                             verticalSpacerL()
 
                             textHeadlineMedium(content = "Application")
 
-                            elementOfSettings(enabled = false, icon = Icons.Rounded.Language, header = "Language", detail = "English") { onChangeLanguage() }
+                            elementOfSettings(enabled = false, icon = Icons.Rounded.Language, header = "Language", detail = "English") {
+                                onChangeLanguage()
+                            }
 
-                            elementOfSettings(enabled = true, icon = Icons.Rounded.BugReport, header = "Report in-app bug", detail = null) { onReportInAppBug() }
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.BugReport, header = "Report in-app bug", detail = null) {
+                                onReportInAppBug()
+                            }
 
-                            elementOfSettings(enabled = true, icon = Icons.Rounded.Info, header = "About this app", detail = null) { onDisplayInfoAboutThisApp() }
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.Info, header = "About this app", detail = null) {
+                                onDisplayInfoAboutThisApp()
+                            }
 
-                            elementOfSettings(enabled = true, icon = Icons.Rounded.Logout, header = "Logout", detail = null) { onLogout() }
+                            elementOfSettings(enabled = true, icon = Icons.Rounded.Logout, header = "Logout", detail = null) {
+                                onLogout()
+                            }
                         }
                     )
                 }

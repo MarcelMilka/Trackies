@@ -461,6 +461,8 @@ class MainActivity : ComponentActivity() {
 
                         settings(
 
+                            authenticationMethod = authenticationMethodProvider.getAuthenticationMethod(),
+
                             usersEmail = lazyAuthenticationService.get().getEmailAddress() ?: "An error occurred.",
 
                             onReturnHomeScreen = {
@@ -563,7 +565,6 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-//                          val sharedViewModel = lazySharedViewModel.get()
                             var sharedViewModel: SharedViewModel =
                                 hiltViewModel(it)
 
@@ -692,7 +693,6 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-//                          val sharedViewModel = lazySharedViewModel.get()
                             var sharedViewModel: SharedViewModel = hiltViewModel(it)
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
@@ -714,7 +714,6 @@ class MainActivity : ComponentActivity() {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
-//                          val sharedViewModel = lazySharedViewModel.get()
                             var sharedViewModel: SharedViewModel = hiltViewModel(it)
 
                             confirmDeletionOfTheTrackie(
@@ -748,10 +747,33 @@ class MainActivity : ComponentActivity() {
                         dialog(route = Destinations.ConfirmDeletionOfTheAccount) {
 
                             confirmDeletionOfTheAccount(
+
                                 onConfirm = {
 
-                                    navigationController.navigateUp()
-                                    navigationController.navigate(route = Destinations.VerifyYourIdentity)
+                                    when (authenticationMethodProvider.getAuthenticationMethod()) {
+
+                                        AuthenticationMethod.Firebase -> {
+
+                                            navigationController.navigateUp()
+                                            navigationController.navigate(route = Destinations.VerifyYourIdentity)
+                                        }
+
+                                        AuthenticationMethod.Room -> {
+
+                                            lazyAuthenticationService.get().deleteAccount(
+                                                password = "_",
+                                                onComplete = {
+
+                                                    navigationController.navigate(route = Destinations.YourAccountGotDeleted) {
+                                                        popUpTo(route = Destinations.YourAccountGotDeleted) {
+                                                            inclusive = true
+                                                        }
+                                                    }
+                                                },
+                                                onFailure = {}
+                                            )
+                                        }
+                                    }
                                 },
                                 onDecline = {
 
@@ -762,7 +784,6 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.VerifyYourIdentity) {
 
-//                            val sharedViewModel = lazySharedViewModel.get()
                             var sharedViewModel: SharedViewModel = hiltViewModel(it)
 
                             var anErrorOccurred by remember { mutableStateOf(false) }
@@ -782,7 +803,9 @@ class MainActivity : ComponentActivity() {
                                             sharedViewModel.deleteUsersData()
 
                                             navigationController.navigate(route = Destinations.YourAccountGotDeleted) {
-                                                popUpTo(route = Destinations.YourAccountGotDeleted) {inclusive = true}
+                                                popUpTo(route = Destinations.YourAccountGotDeleted) {
+                                                    inclusive = true
+                                                }
                                             }
                                         },
                                         onFailure = {
@@ -808,7 +831,9 @@ class MainActivity : ComponentActivity() {
 
                             yourAccountGotDeleted {
                                 navigationController.navigate(route = Destinations.IsSignedOut) {
-                                    popUpTo(0) { inclusive = true }
+                                    popUpTo(0) {
+                                        inclusive = true
+                                    }
                                 }
                             }
                         }

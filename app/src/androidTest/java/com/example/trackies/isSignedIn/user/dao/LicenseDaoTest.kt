@@ -6,8 +6,8 @@ import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
-import junit.framework.TestCase.assertSame
-import kotlinx.coroutines.delay
+import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -16,7 +16,7 @@ import org.junit.Test
 
 class LicenseDaoTest {
 
-    private val license = License(
+    private val theLicense = License(
         first = 1,
         isSignedIn = true,
         totalAmountOfTrackies = 0
@@ -73,14 +73,14 @@ class LicenseDaoTest {
     fun isFirstTimeInTheApp_licenseGetsReturned() = runTest {
 
         licenseDAO
-            .createLicense(license = license)
+            .createLicense(license = theLicense)
 
         val fetchedLicenses =
             licenseDAO
             .isFirstTimeInTheApp()
 
         assertEquals(
-            license,
+            theLicense,
             fetchedLicenses
         )
     }
@@ -89,17 +89,17 @@ class LicenseDaoTest {
     fun isFirstTimeInTheApp_onConflictStrategyReplacesEntities() = runTest {
 
         licenseDAO
-            .createLicense(license = license)
+            .createLicense(license = theLicense)
 
         licenseDAO
-            .createLicense(license = license)
+            .createLicense(license = theLicense)
 
         val fetchedLicenses =
             licenseDAO
                 .isFirstTimeInTheApp()
 
         assertEquals(
-            license,
+            theLicense,
             fetchedLicenses
         )
     }
@@ -107,7 +107,7 @@ class LicenseDaoTest {
     @Test
     fun increasingAndDecreasingWorksProperly() = runTest {
 
-        licenseDAO.createLicense(license = license)
+        licenseDAO.createLicense(license = theLicense)
 
 //      Increase by one
         licenseDAO.increaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies = 1)
@@ -129,26 +129,32 @@ class LicenseDaoTest {
         assertEquals(license1, lastLicense)
     }
 
-//    @Test
-//    fun signInWorksProperly() = runBlocking {
-//
-//        licenseDAO.signIn()
-//
-//        delay(1000)
-//
-//        val expectedLicense = License(
-//            first = 1,
-//            isSignedIn = true,
-//            totalAmountOfTrackies = 0
-//        )
-//
-//        val actualLicense =
-//            licenseDAO
-//                .getLicense()
-//
-//        assertEquals(
-//            expectedLicense,
-//            actualLicense
-//        )
-//    }
+    @Test
+    fun deleteLicense_worksProperly() = runBlocking {
+
+        var license: License? = null
+
+        launch {
+
+            licenseDAO
+                .createLicense(license = theLicense)
+
+            license =
+                licenseDAO.getLicense()
+        }.join()
+
+        assertNotNull(license)
+
+        launch {
+
+            licenseDAO
+                .deleteLicense()
+
+            license =
+                licenseDAO.getLicense()
+
+        }.join()
+
+        assertNull(license)
+    }
 }

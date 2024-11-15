@@ -1,6 +1,7 @@
 package com.example.trackies.isSignedIn.user.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -42,4 +43,7 @@ interface TrackiesDAO {
 //  This method gets all rows from the column "Trackies".
     @Query("SELECT * FROM Trackies")
     suspend fun getAllTrackies(): List<Trackie>
+
+    @Query("DELETE FROM trackies")
+    fun deleteAllTrackies()
 }

@@ -33,6 +33,9 @@ interface LicenseDAO {
     @Query("UPDATE License SET totalAmountOfTrackies = :totalAmountOfTrackies WHERE first = 1")
     suspend fun decreaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies: Int)
 
+    @Query("DELETE FROM License")
+    fun deleteLicense()
+
     @Query("SELECT * FROM License")
     suspend fun testGetAllLicenses(): List<License>
 }

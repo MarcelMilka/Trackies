@@ -1,6 +1,7 @@
 package com.example.trackies.isSignedIn.user.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -26,4 +27,7 @@ interface RegularityDAO {
 
     @Query("UPDATE Regularity SET ingested = 0 WHERE dayOfWeek = :dayOfWeek")
     suspend fun resetRegularity(dayOfWeek: String)
+
+    @Query("DELETE FROM Regularity")
+    fun deleteRegularity()
 }
