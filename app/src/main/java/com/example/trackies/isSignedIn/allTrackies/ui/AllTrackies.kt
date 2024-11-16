@@ -12,14 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardReturn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.trackies.isSignedIn.allTrackies.buisness.WhatToDisplay
+import com.example.trackies.isSignedIn.allTrackies.buisness.ListOfTrackiesToDisplay
 import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrackies
 import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrackiesForToday
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
@@ -34,38 +30,14 @@ import com.example.trackies.ui.theme.BackgroundColor
 
 @Composable
 fun displayAllTrackies(
-    listToDisplay: WhatToDisplay,
-    onChangeListToDisplay: (WhatToDisplay) -> Unit,
+    listToDisplay: ListOfTrackiesToDisplay,
+    onChangeListToDisplay: (ListOfTrackiesToDisplay) -> Unit,
     sharedViewModelUiState: SharedViewModelViewState,
     fetchAllUsersTrackies: () -> Unit,
     onReturn: () -> Unit,
     onMarkTrackieAsIngested: (TrackieModel) -> Unit,
     onDisplayDetailedTrackie: (TrackieModel) -> Unit
 ) {
-
-    var whatToDisplay by remember { mutableStateOf(listToDisplay) }
-
-    var wholeWeekIsSelected by remember {
-
-        mutableStateOf(
-
-            when (whatToDisplay) {
-                WhatToDisplay.TrackiesForTheWholeWeek -> true
-                WhatToDisplay.TrackiesForToday -> false
-            }
-        )
-    }
-
-    var todayIsSelected by remember {
-
-        mutableStateOf(
-
-            when (whatToDisplay) {
-                WhatToDisplay.TrackiesForTheWholeWeek -> false
-                WhatToDisplay.TrackiesForToday -> true
-            }
-        )
-    }
 
     Box(
 
@@ -109,24 +81,18 @@ fun displayAllTrackies(
 
                             mediumRadioTextButton(
                                 text = "whole week",
-                                isSelected = wholeWeekIsSelected
+                                isSelected = listToDisplay == ListOfTrackiesToDisplay.WholeWeek
                             ) {
 
-                                wholeWeekIsSelected = true
-                                todayIsSelected = false
-
-                                onChangeListToDisplay(WhatToDisplay.TrackiesForTheWholeWeek)
+                                onChangeListToDisplay(ListOfTrackiesToDisplay.WholeWeek)
                             }
 
                             mediumRadioTextButton(
                                 text = "today",
-                                isSelected = todayIsSelected
+                                isSelected = listToDisplay == ListOfTrackiesToDisplay.Today
                             ) {
 
-                                wholeWeekIsSelected = false
-                                todayIsSelected = true
-
-                                onChangeListToDisplay(WhatToDisplay.TrackiesForToday)
+                                onChangeListToDisplay(ListOfTrackiesToDisplay.Today)
                             }
                         }
                     )
@@ -137,13 +103,14 @@ fun displayAllTrackies(
 
                         SharedViewModelViewState.Loading -> {
 
+                            previewOfListOfTrackiesLoading()
                         }
 
                         is SharedViewModelViewState.LoadedSuccessfully -> {
 
-                            when(whatToDisplay) {
+                            when(listToDisplay) {
 
-                                WhatToDisplay.TrackiesForToday -> {
+                                ListOfTrackiesToDisplay.Today -> {
 
                                     displayAllTrackiesForToday(
 
@@ -152,16 +119,18 @@ fun displayAllTrackies(
                                         statesOfTrackiesForToday = sharedViewModelUiState.statesOfTrackiesForToday,
 
                                         onMarkAsIngested = {
+
                                             onMarkTrackieAsIngested(it)
                                         },
 
                                         onDisplayDetails = {
+
                                             onDisplayDetailedTrackie(it)
                                         }
                                     )
                                 }
 
-                                WhatToDisplay.TrackiesForTheWholeWeek -> {
+                                ListOfTrackiesToDisplay.WholeWeek -> {
 
                                     when(sharedViewModelUiState.allTrackies) {
 
@@ -183,10 +152,12 @@ fun displayAllTrackies(
                                                 statesOfTrackiesForToday = sharedViewModelUiState.statesOfTrackiesForToday,
 
                                                 onMarkAsIngested = {
+
                                                     onMarkTrackieAsIngested(it)
                                                 },
 
                                                 onDisplayDetails = {
+
                                                     onDisplayDetailedTrackie(it)
                                                 }
                                             )
@@ -196,9 +167,7 @@ fun displayAllTrackies(
                             }
                         }
 
-                        SharedViewModelViewState.FailedToLoadData -> {
-
-                        }
+                        SharedViewModelViewState.FailedToLoadData -> {}
 
                     }
                 }

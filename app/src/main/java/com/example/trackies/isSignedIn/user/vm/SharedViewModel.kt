@@ -22,7 +22,7 @@ import kotlin.collections.Map
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(
-    val repository: UserRepository
+    var repository: UserRepository
 ): ViewModel() {
 
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
@@ -32,7 +32,7 @@ class SharedViewModel @Inject constructor(
 
     init {
 
-        Log.d("Magnetic Man", "$this is used as shared view model")
+        Log.d("Magnetic Man", "$repository is used as repository in $this")
 
         viewModelScope.launch {
 
@@ -481,6 +481,8 @@ class SharedViewModel @Inject constructor(
 
     fun fetchListOfAllTrackies(onFailure: (String) -> Unit) {
 
+        Log.d("They do not really care about us...", "fetchListOfAllTrackies: ")
+
         viewModelScope.launch {
 
             val allTrackies = repository.fetchAllTrackies(
@@ -601,6 +603,19 @@ class SharedViewModel @Inject constructor(
         viewModelScope.launch {
 
             repository.deleteUsersData()
+        }
+    }
+
+    fun resetViewModel() {
+
+        Log.d("They do not really care about us...", "RESETTING VM")
+
+        viewModelScope.launch {
+
+            _uiState.update {
+
+                SharedViewModelViewState.Loading
+            }
         }
     }
 }

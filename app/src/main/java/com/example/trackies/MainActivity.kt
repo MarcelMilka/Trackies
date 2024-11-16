@@ -394,7 +394,6 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-//                      val sharedViewModel = lazySharedViewModel.get()
                         var sharedViewModel: SharedViewModel = hiltViewModel<SharedViewModel>(it)
 
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
@@ -484,10 +483,16 @@ class MainActivity : ComponentActivity() {
                             onDisplayInfoAboutThisApp = {},
 
                             onLogout = {
+
                                 lazyAuthenticationService.get().signOut(
+
                                     onComplete = {
+
                                         navigationController.navigate(route = Destinations.IsSignedOut) {
-                                            popUpTo(route = Destinations.IsSignedIn) {inclusive = false}
+
+                                            popUpTo(route = Destinations.IsSignedIn) {
+                                                inclusive = true
+                                            }
                                         }
                                     },
 
@@ -510,7 +515,6 @@ class MainActivity : ComponentActivity() {
                         val allTrackiesViewModel = lazyAllTrackiesViewModel
                         val listToDisplay by allTrackiesViewModel.listToDisplay.collectAsState()
 
-//                      val sharedViewModel = lazySharedViewModel.get()
                         var sharedViewModel: SharedViewModel = hiltViewModel(it)
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
@@ -692,7 +696,6 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-//                          val sharedViewModel = lazySharedViewModel.get()
                             var sharedViewModel: SharedViewModel = hiltViewModel(it)
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
@@ -714,7 +717,6 @@ class MainActivity : ComponentActivity() {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
-//                          val sharedViewModel = lazySharedViewModel.get()
                             var sharedViewModel: SharedViewModel = hiltViewModel(it)
 
                             confirmDeletionOfTheTrackie(
@@ -779,6 +781,7 @@ class MainActivity : ComponentActivity() {
                                         password = it,
                                         onComplete = {
 
+                                            sharedViewModel.resetViewModel()
                                             sharedViewModel.deleteUsersData()
 
                                             navigationController.navigate(route = Destinations.YourAccountGotDeleted) {
