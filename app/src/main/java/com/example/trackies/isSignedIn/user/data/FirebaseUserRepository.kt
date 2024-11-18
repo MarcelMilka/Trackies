@@ -1,6 +1,7 @@
 package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
+import androidx.compose.runtime.key
 import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
@@ -12,7 +13,18 @@ import com.example.trackies.isSignedIn.user.buisness.convertEntityToLicenseModel
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.contracts.contract
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -769,15 +781,149 @@ class FirebaseUserRepository @Inject constructor(
         onFailure: (String) -> Unit
     ): Map<String, Map<Int, Int>>? {
 
-        return mapOf(
-            DaysOfWeek.monday to mapOf(0 to 0),
-            DaysOfWeek.tuesday to mapOf(0 to 0),
-            DaysOfWeek.wednesday to mapOf(0 to 0),
-            DaysOfWeek.thursday to mapOf(0 to 0),
-            DaysOfWeek.friday to mapOf(0 to 0),
-            DaysOfWeek.saturday to mapOf(0 to 0),
-            DaysOfWeek.sunday to mapOf(0 to 0),
+        var weeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
+
+        val daysOfWeek = listOf(
+            DaysOfWeek.monday,
+            DaysOfWeek.tuesday,
+            DaysOfWeek.wednesday,
+            DaysOfWeek.thursday,
+            DaysOfWeek.friday,
+            DaysOfWeek.saturday,
+            DaysOfWeek.sunday
         )
+
+        return try {
+
+            withContext(Dispatchers.Default) {
+
+                val weeklyRegularityAsList = daysOfWeek.map {
+
+                    async {
+
+                        val dailyRegularity =
+                            fetchDailyRegularity(dayOfWeek = it)
+
+                        if (dailyRegularity != null) {
+
+                            mapOf(
+                                it to dailyRegularity
+                            )
+                        }
+
+                        else {
+
+                            return@async null
+                        }
+                    }
+                }.awaitAll()
+
+                val weeklyRegularity = weeklyRegularityAsList
+                    .filterNotNull() // removing null values
+                    .flatMap {
+
+                        it.entries
+                    }
+                    .associate {
+
+                        it.toPair()
+                    }
+
+                if (weeklyRegularity.keys.containsAll(daysOfWeek)) {
+
+                    return@withContext weeklyRegularity
+                }
+
+                else {
+
+                    return@withContext null
+                }
+            }
+        }
+
+        catch (e: Exception) {
+
+            return null
+        }
+    }
+
+
+
+    private suspend fun fetchDailyRegularity(dayOfWeek: String): Map<Int, Int>? {
+
+        return try {
+
+            withContext(Dispatchers.Default) {
+
+                val namesOfTrackies =
+                    fetchNamesOfTrackies(dayOfWeek = dayOfWeek)
+
+                if (namesOfTrackies != null) {
+
+                    var totalAmountOfTrackies = 0
+                    var ingestedAmountOfTrackies = 0
+
+                    for (nameOfTrackie in namesOfTrackies) {
+                        val task = usersWeeklyStatistics
+                            .collection(dayOfWeek)
+                            .document(nameOfTrackie)
+                            .get()
+                            .await() // Using kotlinx-coroutines-play-services for Firebase compatibility
+
+                        val ingested = task.getBoolean("ingested")
+
+                        if (ingested != null) {
+
+                            totalAmountOfTrackies++
+
+                            if (ingested) {
+
+                                ingestedAmountOfTrackies++
+                            }
+                        }
+                    }
+
+                    for (nameOfTrackie in namesOfTrackies) {
+
+                        usersWeeklyStatistics
+                            .collection(dayOfWeek)
+                            .document(nameOfTrackie)
+                            .get()
+                            .addOnSuccessListener {
+
+                                val ingested: Boolean? =
+                                    it.getBoolean("ingested")
+
+                                ingested?.let {
+
+                                    totalAmountOfTrackies = totalAmountOfTrackies + 1
+
+                                    if (it) {
+
+                                        ingestedAmountOfTrackies = ingestedAmountOfTrackies + 1
+                                    }
+                                }
+                            }
+                            .addOnFailureListener {
+
+                                return@addOnFailureListener
+                            }
+                    }
+
+                    return@withContext mapOf(totalAmountOfTrackies to ingestedAmountOfTrackies)
+                }
+
+                else {
+
+                    return@withContext null
+                }
+            }
+        }
+
+        catch (e: Exception) {
+
+            return null
+        }
     }
 
 
