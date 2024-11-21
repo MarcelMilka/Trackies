@@ -7,12 +7,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -394,10 +397,16 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-                        var sharedViewModel: SharedViewModel = hiltViewModel<SharedViewModel>(it)
+//                      SharedViewModel:
+                        val sharedViewModelEntry = navigationController.sharedViewModelEntry(
+                            navBackStackEntry = it
+                        )
+
+                        var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
 
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
+//                      HomeScreen
                         val homeScreenUiState by homeScreenViewModel.uiState.collectAsState()
 
                         homeScreen(
@@ -515,7 +524,13 @@ class MainActivity : ComponentActivity() {
                         val allTrackiesViewModel = lazyAllTrackiesViewModel
                         val listToDisplay by allTrackiesViewModel.listToDisplay.collectAsState()
 
-                        var sharedViewModel: SharedViewModel = hiltViewModel(it)
+//                      SharedViewModel:
+                        val sharedViewModelEntry = navigationController.sharedViewModelEntry(
+                            navBackStackEntry = it
+                        )
+
+                        var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
+
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         displayAllTrackies(
@@ -567,9 +582,12 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-//                          val sharedViewModel = lazySharedViewModel.get()
-                            var sharedViewModel: SharedViewModel =
-                                hiltViewModel(it)
+//                          SharedViewModel:
+                            val sharedViewModelEntry = navigationController.sharedViewModelEntry(
+                                navBackStackEntry = it
+                            )
+
+                            var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
 
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
@@ -696,7 +714,13 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
+//                          SharedViewModel:
+                            val sharedViewModelEntry = navigationController.sharedViewModelEntry(
+                                navBackStackEntry = it
+                            )
+
+                            var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
+
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
@@ -717,7 +741,12 @@ class MainActivity : ComponentActivity() {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
-                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
+//                          SharedViewModel:
+                            val sharedViewModelEntry = navigationController.sharedViewModelEntry(
+                                navBackStackEntry = it
+                            )
+
+                            var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
 
                             confirmDeletionOfTheTrackie(
                                 onConfirm = {
@@ -764,8 +793,12 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.VerifyYourIdentity) {
 
-//                            val sharedViewModel = lazySharedViewModel.get()
-                            var sharedViewModel: SharedViewModel = hiltViewModel(it)
+//                          SharedViewModel:
+                            val sharedViewModelEntry = navigationController.sharedViewModelEntry(
+                                navBackStackEntry = it
+                            )
+
+                            var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
 
                             var anErrorOccurred by remember { mutableStateOf(false) }
                             var errorMessage by remember { mutableStateOf("") }
@@ -895,3 +928,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+@Composable
+fun NavController.sharedViewModelEntry(navBackStackEntry: NavBackStackEntry): NavBackStackEntry =
+    remember(navBackStackEntry) {
+        this.getBackStackEntry("HomeScreen")
+    }
