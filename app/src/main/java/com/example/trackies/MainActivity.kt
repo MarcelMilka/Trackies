@@ -470,6 +470,9 @@ class MainActivity : ComponentActivity() {
 
                         settings(
 
+                            authenticationMethod = authenticationMethodProvider
+                                .getAuthenticationMethod(),
+
                             usersEmail = authenticationMethodProvider
                                 .getAuthenticationService()
                                 .getEmailAddress() ?: "An error occurred.",
@@ -784,11 +787,40 @@ class MainActivity : ComponentActivity() {
                         dialog(route = Destinations.ConfirmDeletionOfTheAccount) {
 
                             confirmDeletionOfTheAccount(
+
                                 onConfirm = {
 
-                                    navigationController.navigateUp()
-                                    navigationController.navigate(route = Destinations.VerifyYourIdentity)
+                                    when (authenticationMethodProvider.getAuthenticationMethod()) {
+
+                                        AuthenticationMethod.Firebase -> {
+
+                                            navigationController.navigate(
+                                                route = Destinations.VerifyYourIdentity
+                                            )
+                                        }
+
+                                        AuthenticationMethod.Room -> {
+
+                                            authenticationMethodProvider
+                                                .getAuthenticationService()
+                                                .deleteAccount(
+                                                    password = "_",
+                                                    onComplete = {
+
+                                                        navigationController.navigate(route = Destinations.YourAccountGotDeleted) {
+                                                            popUpTo(route = Destinations.YourAccountGotDeleted) {
+                                                                inclusive = true
+                                                            }
+                                                        }
+                                                    },
+                                                    onFailure = {
+                                                        Log.d("Halla!", it)
+                                                    }
+                                                )
+                                        }
+                                    }
                                 },
+
                                 onDecline = {
 
                                     navigationController.navigateUp()

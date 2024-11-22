@@ -42,4 +42,7 @@ interface TrackiesDAO {
 //  This method gets all rows from the column "Trackies".
     @Query("SELECT * FROM Trackies")
     suspend fun getAllTrackies(): List<Trackie>
+
+    @Query("DELETE FROM Trackies")
+    suspend fun deleteUsersTrackies()
 }

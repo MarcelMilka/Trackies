@@ -26,4 +26,7 @@ interface RegularityDAO {
 
     @Query("UPDATE Regularity SET ingested = 0 WHERE dayOfWeek = :dayOfWeek")
     suspend fun resetRegularity(dayOfWeek: String)
+
+    @Query("DELETE FROM Regularity")
+    suspend fun deleteUsersRegularity()
 }

@@ -1,11 +1,9 @@
 package com.example.trackies.isSignedIn.user.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 
 @Dao
@@ -32,6 +30,9 @@ interface LicenseDAO {
 
     @Query("UPDATE License SET totalAmountOfTrackies = :totalAmountOfTrackies WHERE first = 1")
     suspend fun decreaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies: Int)
+
+    @Query("DELETE FROM License")
+    suspend fun deleteUsersLicense()
 
     @Query("SELECT * FROM License")
     suspend fun testGetAllLicenses(): List<License>

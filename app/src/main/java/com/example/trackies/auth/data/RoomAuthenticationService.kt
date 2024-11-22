@@ -4,10 +4,8 @@ import android.util.Log
 import com.example.globalConstants.Destinations
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.di.RoomAuthenticator
-import com.example.trackies.isSignedIn.user.buisness.entities.License
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
 import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErrors
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -97,7 +95,33 @@ class RoomAuthenticationService @Inject constructor(
         password: String,
         onComplete: () -> Unit,
         onFailure: (String) -> Unit
-    ) {}
+    ) {
+
+        runBlocking {
+
+            try {
+
+                roomDatabase
+                    .licenseDAO()
+                    .deleteUsersLicense()
+
+                roomDatabase
+                    .regularityDAO()
+                    .deleteUsersRegularity()
+
+                roomDatabase
+                    .trackiesDAO()
+                    .deleteUsersTrackies()
+
+                onComplete()
+            }
+
+            catch (e: Exception) {
+
+                onFailure("$e")
+            }
+        }
+    }
 
     override fun recoverThePassword(
         email: String,
