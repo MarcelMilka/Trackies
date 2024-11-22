@@ -210,7 +210,23 @@ class RoomUserRepository @Inject constructor(
     override suspend fun fetchAllTrackies(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
-    ): List<TrackieModel>? = null
+    ): List<TrackieModel>? {
+
+        return try {
+
+            roomDatabase
+                .trackiesDAO()
+                .getAllTrackies()
+                    .map {
+                        it.convertLicenseToLicenseModel()
+                    }
+        }
+
+        catch (e: Exception) {
+
+            null
+        }
+    }
 
     override suspend fun fetchStatesOfTrackiesForToday(onFailure: (String) -> Unit): Map<String, Boolean>? {
 
@@ -467,8 +483,6 @@ class RoomUserRepository @Inject constructor(
     }
 
     override suspend fun deleteUsersData() {}
-
-
 
     override suspend fun fetchNamesOfTrackies(dayOfWeek: String): List<String>? = null
 
