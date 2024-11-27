@@ -57,6 +57,7 @@ interface UserRepository {
     ): Map<String, Map<Int, Int>>?
 
     suspend fun markTrackieAsIngested(
+        currentDayOfWeek: String,
         trackieModel: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit

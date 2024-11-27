@@ -3,7 +3,6 @@ package com.example.trackies.aRoom.di
 import android.content.Context
 import androidx.room.Room
 import com.example.trackies.aRoom.db.RoomDatabase
-import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,6 +19,7 @@ class RoomDatabaseProvider {
     fun provideRoomDatabase(@ApplicationContext appContext: Context): RoomDatabase =
         Room.databaseBuilder(
             appContext,
-            RoomDatabase::class.java, com.example.globalConstants.Room.databaseName,
+            RoomDatabase::class.java,
+            com.example.globalConstants.Room.databaseName,
         ).build()
 }

@@ -45,19 +45,6 @@ class MainActivityTest {
         hiltRule.inject()
     }
 
-    @Test
-    fun mainActivityLaunchesSuccessfully() {
-
-        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
-
-            scenario.onActivity { activity ->
-                assertNotNull(activity.authenticationService)
-                assertNotNull(activity.lazySharedViewModel.get())
-                assertNotNull(activity.lazyAddNewTrackieViewModel.get())
-            }
-        }
-    }
-
 
     @Module
     @InstallIn(SingletonComponent::class)

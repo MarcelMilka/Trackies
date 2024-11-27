@@ -3,11 +3,13 @@ package com.example.trackies.isSignedIn.user.data
 import android.util.Log
 import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
+import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 import com.example.trackies.isSignedIn.user.buisness.entities.Regularity
 import com.example.trackies.isSignedIn.user.buisness.entities.convertLicenseToLicenseModel
+import com.example.trackies.isSignedIn.user.buisness.entities.convertTrackieToTrackieModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.convertTrackieModelToTrackieEntity
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +25,7 @@ class RoomUserRepository @Inject constructor(
 
     init {
 
-        Log.d("Halla! ma'am", "initialized as fuck")
+        Log.d("Halla!", "init")
 
         CoroutineScope(Dispatchers.Default).launch {
 
@@ -44,6 +46,7 @@ class RoomUserRepository @Inject constructor(
 //  Fetches all rows from the table "License".
 //  Table "License" can have only one row, with @PrimaryKey 'first' equal to 1.
 //  If .firstTimeInTheApp() returns null, then a method addNewUserShould
+    @Tested
     override suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean? {
 
         val license = roomDatabase.licenseDAO().isFirstTimeInTheApp()
@@ -56,6 +59,7 @@ class RoomUserRepository @Inject constructor(
         return true
     }
 
+    @Tested
     override fun addNewUser() {
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -72,6 +76,7 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+    @Tested
     override suspend fun needToResetPastWeekActivity(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
@@ -138,40 +143,23 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+    @Tested
     override suspend fun resetWeeklyRegularity(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
 
-        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+        try {
 
-        var passedCurrentDayOfWeek = false
-        var daysOfWeekToReset = mutableSetOf<String>()
-
-        setOf(
-            DaysOfWeek.monday,
-            DaysOfWeek.tuesday,
-            DaysOfWeek.wednesday,
-            DaysOfWeek.thursday,
-            DaysOfWeek.friday,
-            DaysOfWeek.saturday,
-            DaysOfWeek.sunday,
-        ).forEach { dayOfWeek ->
-
-            if (passedCurrentDayOfWeek) {
-
-                daysOfWeekToReset.add(element = dayOfWeek)
-            }
-
-            else {
-
-                passedCurrentDayOfWeek =
-                    currentDayOfWeek == dayOfWeek
-            }
-        }
-
-        daysOfWeekToReset
-            .forEach { dayOfWeek ->
+            setOf(
+                DaysOfWeek.monday,
+                DaysOfWeek.tuesday,
+                DaysOfWeek.wednesday,
+                DaysOfWeek.thursday,
+                DaysOfWeek.friday,
+                DaysOfWeek.saturday,
+                DaysOfWeek.sunday,
+            ).forEach { dayOfWeek ->
 
                 roomDatabase
                     .regularityDAO()
@@ -179,8 +167,17 @@ class RoomUserRepository @Inject constructor(
                         dayOfWeek = dayOfWeek
                     )
             }
+
+            onSuccess()
+        }
+
+        catch (e: Exception) {
+
+            onFailure("$e")
+        }
     }
 
+    @Tested
     override suspend fun fetchUsersLicense(): LicenseModel? {
 
         val licenseEntity = roomDatabase.licenseDAO().getLicense()
@@ -190,23 +187,25 @@ class RoomUserRepository @Inject constructor(
         return nullableLicenseModel
     }
 
+    @Tested
     override suspend fun fetchTrackiesForToday(onFailure: (String) -> Unit): List<TrackieModel>? {
 
         val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
-        val entitiesOfTrackiesForToday= roomDatabase
+        val entitiesOfTrackiesForToday = roomDatabase
             .trackiesDAO()
             .getTrackiesForToday(currentDayOfWeek)
 
         val nullableListOfTrackiesForToday =
             entitiesOfTrackiesForToday
                 ?.map { trackie ->
-                    trackie.convertLicenseToLicenseModel()
+                    trackie.convertTrackieToTrackieModel()
                 }
 
         return nullableListOfTrackiesForToday
     }
 
+    @Tested
     override suspend fun fetchAllTrackies(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
@@ -218,16 +217,17 @@ class RoomUserRepository @Inject constructor(
                 .trackiesDAO()
                 .getAllTrackies()
                     .map {
-                        it.convertLicenseToLicenseModel()
+                        it.convertTrackieToTrackieModel()
                     }
         }
 
         catch (e: Exception) {
-
+            onFailure("$e")
             null
         }
     }
 
+    @Tested
     override suspend fun fetchStatesOfTrackiesForToday(onFailure: (String) -> Unit): Map<String, Boolean>? {
 
         val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
@@ -257,6 +257,7 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+    @Tested
     override suspend fun fetchWeeklyRegularity(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
@@ -368,6 +369,7 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+    @Tested
     override suspend fun addNewTrackie(
         trackieModel: TrackieModel,
         onFailure: (String) -> Unit
@@ -413,6 +415,7 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+    @Tested
     override suspend fun deleteTrackie(
         trackieModel: TrackieModel,
         onSuccess: () -> Unit,
@@ -455,13 +458,13 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+    @Tested
     override suspend fun markTrackieAsIngested(
+        currentDayOfWeek: String,
         trackieModel: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
-
-        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
         try {
 

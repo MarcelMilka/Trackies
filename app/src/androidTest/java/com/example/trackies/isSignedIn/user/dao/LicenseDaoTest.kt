@@ -2,43 +2,31 @@ package com.example.trackies.isSignedIn.user.dao
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
-import junit.framework.TestCase.assertSame
-import kotlinx.coroutines.delay
+import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import java.util.concurrent.CountDownLatch
 
+@ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
+@SmallTest
 class LicenseDaoTest {
 
-    private val license = License(
-        first = 1,
-        isSignedIn = true,
-        totalAmountOfTrackies = 0
-    )
-
-    private val license1 = License(
-        first = 1,
-        isSignedIn = true,
-        totalAmountOfTrackies = 1
-    )
-
-    private val license2 = License(
-        first = 1,
-        isSignedIn = true,
-        totalAmountOfTrackies = 2
-    )
-
     private lateinit var roomDatabase: RoomDatabase
-    private lateinit var licenseDAO: LicenseDAO
+    private lateinit var licenseDao: LicenseDAO
 
     @Before
-    fun setup() {
+    fun setUp() {
 
         roomDatabase = Room.inMemoryDatabaseBuilder(
             context = ApplicationProvider.getApplicationContext(),
@@ -47,7 +35,7 @@ class LicenseDaoTest {
             .allowMainThreadQueries()
             .build()
 
-        licenseDAO = roomDatabase.licenseDAO()
+        licenseDao = roomDatabase.licenseDAO()
     }
 
     @After
@@ -56,99 +44,272 @@ class LicenseDaoTest {
         roomDatabase.close()
     }
 
+    private val license = License(
+        first = 1,
+        isSignedIn = true,
+        totalAmountOfTrackies = 0
+    )
+
+//  isFirstTimeInTheApp unit tests:
+    @Test
+    fun isFirstTimeInTheApp_returnsNullProperly() = runBlocking {
+
+        CountDownLatch(1)
+
+        val retrievedData = async {
+
+            licenseDao.isFirstTimeInTheApp()
+
+        }.await()
+
+        assertNull(retrievedData)
+    }
 
     @Test
-    fun isFirstTimeInTheApp_nullGetsReturned() = runTest {
+    fun isFirstTimeInTheApp_returnsLicenseProperly() = runBlocking {
 
-        val fetchedLicenses = licenseDAO
-            .isFirstTimeInTheApp()
+        CountDownLatch(1)
+
+        val retrievedData = async {
+
+            licenseDao
+                .createLicense(license = license)
+
+            licenseDao.isFirstTimeInTheApp()
+        }.await()
 
         assertEquals(
-            null,
-            fetchedLicenses
+            retrievedData,
+            license
+        )
+    }
+
+
+
+
+//  createLicense unit tests:
+    @Test
+    fun createLicense_createsLicenseProperly() = runBlocking {
+
+        CountDownLatch(1)
+
+        val retrievedData = async {
+
+            licenseDao.createLicense(license = license)
+
+            licenseDao.getLicense()
+        }.await()
+
+        assertEquals(
+            retrievedData,
+            license
         )
     }
 
     @Test
-    fun isFirstTimeInTheApp_licenseGetsReturned() = runTest {
+    fun createLicense_replacesLicensesProperly() = runBlocking {
 
-        licenseDAO
-            .createLicense(license = license)
+        CountDownLatch(1)
 
-        val fetchedLicenses =
-            licenseDAO
-            .isFirstTimeInTheApp()
+        val replacingLicense = License(
+            first = 1,
+            isSignedIn = false,
+            totalAmountOfTrackies = 10
+        )
+
+        val retrievedData = async {
+
+            licenseDao.createLicense(license = license)
+
+            licenseDao.createLicense(license = replacingLicense)
+
+            licenseDao.getLicense()
+        }.await()
 
         assertEquals(
-            license,
-            fetchedLicenses
+            retrievedData,
+            replacingLicense
+        )
+    }
+
+
+
+//  getLicense unit tests:
+    @Test
+    fun getLicense_returnsNullProperly() = runBlocking {
+
+    CountDownLatch(1)
+
+    val retrievedData = async {
+
+        licenseDao.getLicense()
+    }.await()
+
+        assertNull(retrievedData)
+    }
+
+    @Test
+    fun getLicense_returnsLicenseProperly() = runBlocking {
+
+        CountDownLatch(1)
+
+        val retrievedData = async {
+
+            licenseDao
+                .createLicense(license = license)
+
+
+            licenseDao.getLicense()
+        }.await()
+
+        assertEquals(
+            retrievedData,
+            license
+        )
+    }
+
+
+
+
+//  signIn/signOut unit tests:
+    @Test
+    fun signIn_properlySignsInTheUser() = runBlocking {
+
+        CountDownLatch(1)
+
+        val expectedLicense = License(
+            first = 1,
+            isSignedIn = true,
+            totalAmountOfTrackies = 0
+        )
+
+        val retrievedData = async {
+
+            licenseDao
+                .createLicense(license = license)
+
+            licenseDao.signOut()
+
+            licenseDao.signIn()
+
+            licenseDao.getLicense()
+        }.await()
+
+        assertEquals(
+            expectedLicense,
+            retrievedData
         )
     }
 
     @Test
-    fun isFirstTimeInTheApp_onConflictStrategyReplacesEntities() = runTest {
+    fun signOut_properlySignsOutTheUser() = runBlocking {
 
-        licenseDAO
-            .createLicense(license = license)
+        CountDownLatch(1)
 
-        licenseDAO
-            .createLicense(license = license)
+        val expectedLicense = License(
+            first = 1,
+            isSignedIn = false,
+            totalAmountOfTrackies = 0
+        )
 
-        val fetchedLicenses =
-            licenseDAO
-                .isFirstTimeInTheApp()
+        val retrievedData = async {
+
+            licenseDao
+                .createLicense(license = license)
+
+            licenseDao.signOut()
+
+            licenseDao.getLicense()
+        }.await()
 
         assertEquals(
-            license,
-            fetchedLicenses
+            expectedLicense,
+            retrievedData
+        )
+    }
+
+
+
+
+//  increaseTotalAmountOfTrackiesByOne/decreaseTotalAmountOfTrackiesByOne unit tests:
+    @Test
+    fun increaseTotalAmountOfTrackiesByOne_properlyIncreasesAmountOfTrackiesByOne_v1() = runBlocking {
+
+        CountDownLatch(1)
+
+        val expectedLicense = License(
+            first = 1,
+            isSignedIn = true,
+            totalAmountOfTrackies = 1
+        )
+
+        val retrievedData = async {
+
+            licenseDao.createLicense(license = license)
+
+            licenseDao.increaseTotalAmountOfTrackiesByOne(
+                totalAmountOfTrackies = 1
+            )
+
+            licenseDao.getLicense()
+        }.await()
+
+        assertEquals(
+            expectedLicense,
+            retrievedData
         )
     }
 
     @Test
-    fun increasingAndDecreasingWorksProperly() = runTest {
+    fun increaseTotalAmountOfTrackiesByOne_properlyIncreasesAndDecreasesAmountOfTrackiesByOne() = runBlocking {
 
-        licenseDAO.createLicense(license = license)
+        CountDownLatch(1)
 
-//      Increase by one
-        licenseDAO.increaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies = 1)
+        val expectedLicense = License(
+            first = 1,
+            isSignedIn = true,
+            totalAmountOfTrackies = 0
+        )
 
-        val _license1 = licenseDAO.getLicense()
+        val retrievedData = async {
 
-        assertEquals(license1, _license1)
+            licenseDao.createLicense(license = license)
 
-        licenseDAO.increaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies = 2)
+            licenseDao.increaseTotalAmountOfTrackiesByOne(
+                totalAmountOfTrackies = 1
+            )
 
-        val _license2 = licenseDAO.getLicense()
+            licenseDao.decreaseTotalAmountOfTrackiesByOne(
+                totalAmountOfTrackies = 0
+            )
 
-        assertEquals(license2, _license2)
+            licenseDao.getLicense()
+        }.await()
 
-        licenseDAO.decreaseTotalAmountOfTrackiesByOne(totalAmountOfTrackies = 1)
-
-        val lastLicense = licenseDAO.getLicense()
-
-        assertEquals(license1, lastLicense)
+        assertEquals(
+            expectedLicense,
+            retrievedData
+        )
     }
 
-//    @Test
-//    fun signInWorksProperly() = runBlocking {
-//
-//        licenseDAO.signIn()
-//
-//        delay(1000)
-//
-//        val expectedLicense = License(
-//            first = 1,
-//            isSignedIn = true,
-//            totalAmountOfTrackies = 0
-//        )
-//
-//        val actualLicense =
-//            licenseDAO
-//                .getLicense()
-//
-//        assertEquals(
-//            expectedLicense,
-//            actualLicense
-//        )
-//    }
+
+
+
+//  deleteUsersLicense unit tests:
+    @Test
+    fun deleteUsersLicense_properlyDeletesUsersLicense() = runBlocking {
+
+        CountDownLatch(1)
+
+        val retrievedData = async {
+
+            licenseDao.createLicense(license = license)
+
+            licenseDao.deleteUsersLicense()
+
+            licenseDao.getLicense()
+        }.await()
+
+        assertNull(retrievedData)
+    }
 }

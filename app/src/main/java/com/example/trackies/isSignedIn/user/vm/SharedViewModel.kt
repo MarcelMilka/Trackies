@@ -520,6 +520,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.markTrackieAsIngested(
+                    currentDayOfWeek = CurrentTime.getCurrentDayOfWeek(),
                     trackieModel = trackieModel,
                     onSuccess = {
 

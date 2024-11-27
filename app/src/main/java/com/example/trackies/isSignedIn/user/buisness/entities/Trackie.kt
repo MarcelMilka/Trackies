@@ -19,7 +19,7 @@ data class Trackie(
     val sunday: Boolean,
 )
 
-fun Trackie.convertLicenseToLicenseModel(): TrackieModel {
+fun Trackie.convertTrackieToTrackieModel(): TrackieModel {
 
     var repeatOn = mutableListOf<String>()
 

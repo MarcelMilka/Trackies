@@ -928,6 +928,7 @@ class FirebaseUserRepository @Inject constructor(
 
 
     override suspend fun markTrackieAsIngested(
+        currentDayOfWeek: String,
         trackieModel: TrackieModel,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
@@ -938,7 +939,7 @@ class FirebaseUserRepository @Inject constructor(
             trackieModel.repeatOn.forEach { dayOfWeek ->
 
                 usersWeeklyStatistics
-                    .collection(CurrentTime.getCurrentDayOfWeek()) // current day of week
+                    .collection(currentDayOfWeek) // current day of week
                     .document(trackieModel.name)
                     .update("ingested", true)
                     .addOnSuccessListener {
