@@ -45,17 +45,14 @@ class FirebaseUserRepository @Inject constructor(
     private val namesOfTrackies = user.collection("names of trackies").document("names of trackies")
     private val usersWeeklyStatistics = user.collection("user's statistics").document("user's weekly statistics")
 
-    override suspend fun needToResetPastWeekActivity(onSuccess: () -> Unit, onFailure: (String) -> Unit): Boolean? {
+    override suspend fun needToResetPastWeekActivity(): Boolean? {
 
         val weeklyRegularity = fetchWeeklyRegularity(
             onSuccess = {},
-            onFailure = {
-
-                onFailure(it)
-            }
+            onFailure = {}
         )
 
-        return suspendCoroutine {
+        return try {
 
             if (weeklyRegularity != null) {
 
@@ -81,22 +78,18 @@ class FirebaseUserRepository @Inject constructor(
                     }
                 }
 
-                if (resetPastWeekActivity) {
-
-                    onSuccess()
-                    it.resume(value = true)
-                }
-
-                else {
-                    onSuccess()
-                    it.resume(value = false)
-                }
+                resetPastWeekActivity
             }
 
             else {
-                onFailure("Weekly regularity is null.")
-                it.resume(value = null)
+
+                null
             }
+        }
+
+        catch (e: Exception) {
+
+            null
         }
     }
 
@@ -147,7 +140,7 @@ class FirebaseUserRepository @Inject constructor(
 
 //  This method is responsible for checking if the user's unique identifier exists in the database.
 //  If the unique identifier does not exist - a new document named after the user's unique identifier will be created.
-    override suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean? {
+    override suspend fun isFirstTimeInTheApp(): Boolean? {
 
         return suspendCoroutine { continuation ->
 
@@ -156,17 +149,26 @@ class FirebaseUserRepository @Inject constructor(
                 .addOnSuccessListener { user ->
 
                     if (!(user.exists())) {
+
                         addNewUser()
-                        continuation.resume(value = true)
+
+                        continuation.resume(
+                            value = true
+                        )
                     }
 
                     else {
-                        continuation.resume(value = false)
+
+                        continuation.resume(
+                            value = false
+                        )
                     }
                 }
                 .addOnFailureListener {
-                    onFailure("$it")
-                    continuation.resume(value = null)
+
+                    continuation.resume(
+                        value = null
+                    )
                 }
         }
     }

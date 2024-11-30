@@ -50,7 +50,6 @@ class LicenseDaoTest {
         totalAmountOfTrackies = 0
     )
 
-//  isFirstTimeInTheApp unit tests:
     @Test
     fun isFirstTimeInTheApp_returnsNullProperly() = runBlocking {
 
@@ -84,10 +83,6 @@ class LicenseDaoTest {
         )
     }
 
-
-
-
-//  createLicense unit tests:
     @Test
     fun createLicense_createsLicenseProperly() = runBlocking {
 
@@ -132,9 +127,6 @@ class LicenseDaoTest {
         )
     }
 
-
-
-//  getLicense unit tests:
     @Test
     fun getLicense_returnsNullProperly() = runBlocking {
 
@@ -168,10 +160,6 @@ class LicenseDaoTest {
         )
     }
 
-
-
-
-//  signIn/signOut unit tests:
     @Test
     fun signIn_properlySignsInTheUser() = runBlocking {
 
@@ -228,10 +216,6 @@ class LicenseDaoTest {
         )
     }
 
-
-
-
-//  increaseTotalAmountOfTrackiesByOne/decreaseTotalAmountOfTrackiesByOne unit tests:
     @Test
     fun increaseTotalAmountOfTrackiesByOne_properlyIncreasesAmountOfTrackiesByOne_v1() = runBlocking {
 
@@ -292,10 +276,6 @@ class LicenseDaoTest {
         )
     }
 
-
-
-
-//  deleteUsersLicense unit tests:
     @Test
     fun deleteUsersLicense_properlyDeletesUsersLicense() = runBlocking {
 

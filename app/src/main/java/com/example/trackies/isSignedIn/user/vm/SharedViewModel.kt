@@ -18,8 +18,6 @@ import javax.inject.Inject
 import kotlin.String
 import kotlin.collections.Map
 
-// To check any errors which occur while fetching/saving/deleting data type "SharedViewModel-firebase"
-
 @HiltViewModel
 class SharedViewModel @Inject constructor(
     var repository: UserRepository
@@ -28,46 +26,30 @@ class SharedViewModel @Inject constructor(
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private var fetchData = false
+    private var enabledToFetchData = false
 
     init {
 
-        Log.d("Magnetic Man", "$repository is used as repository in $this")
-
         viewModelScope.launch {
 
-//          Check if the user is first time in the app. When the user is first time in the app - create necessary collections and documents.
-            val isFirstTimeInTheApp = repository.isFirstTimeInTheApp {
-
-                Log.d("SharedViewModel-firebase", "init, firstTimeInTheApp - $it")
-            }
+            val isFirstTimeInTheApp = repository.isFirstTimeInTheApp()
 
             if (isFirstTimeInTheApp != null) {
 
-                val needToResetPastWeekRegularity = repository.needToResetPastWeekActivity(
-                    onSuccess = {
-
-                        fetchData = true
-                    },
-                    onFailure = {
-
-                        fetchData = false
-                        Log.d("SharedViewModel-firebase", "init, resetPastWeekActivity - $it")
-                    }
-                )
+                val needToResetPastWeekRegularity = repository.needToResetPastWeekActivity()
 
                 if (needToResetPastWeekRegularity !== null && needToResetPastWeekRegularity == true) {
 
                     repository.resetWeeklyRegularity(
                         onSuccess = {},
                         onFailure = {
-                            fetchData = false
+                            enabledToFetchData = false
                             Log.d("SharedViewModel-firebase", "init, resetWeeklyRegularity - $it")
                         }
                     )
                 }
 
-                if (fetchData) {
+                if (enabledToFetchData) {
 
                     val licenseInformation = repository.fetchUsersLicense()
                     val trackiesForToday = repository.fetchTrackiesForToday(
@@ -87,11 +69,7 @@ class SharedViewModel @Inject constructor(
                         }
                     )
 
-                    Log.d("Hei!", "$licenseInformation")
-                    Log.d("Hei!", "$trackiesForToday")
-                    Log.d("Hei!", "$statesOfTrackiesForToday")
-                    Log.d("Hei!", "$weeklyRegularity")
-
+//                  succeeded
                     if (
                         licenseInformation != null &&
                         trackiesForToday != null &&
@@ -112,6 +90,7 @@ class SharedViewModel @Inject constructor(
                         }
                     }
 
+//                  failed
                     else {
                         _uiState.update {
                             SharedViewModelViewState.FailedToLoadData
@@ -119,6 +98,7 @@ class SharedViewModel @Inject constructor(
                     }
                 }
 
+//              failed
                 else {
 
                     _uiState.update {
@@ -127,6 +107,7 @@ class SharedViewModel @Inject constructor(
                 }
             }
 
+//          failed
             else {
 
                 _uiState.update {
