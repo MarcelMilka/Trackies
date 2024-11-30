@@ -5,11 +5,14 @@ import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 
 interface UserRepository {
 
-    suspend fun isFirstTimeInTheApp(): Boolean?
+    suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean?
 
     fun addNewUser()
 
-    suspend fun needToResetPastWeekActivity(): Boolean?
+    suspend fun needToResetPastWeekActivity(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): Boolean?
 
     suspend fun resetWeeklyRegularity(
         onSuccess: () -> Unit,

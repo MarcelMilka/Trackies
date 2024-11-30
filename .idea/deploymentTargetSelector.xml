@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="init_whenIsFirstTimeInTheAppNull_setFailedToLoadData()">
+      <SelectionState runConfigName="weeklyRegularityGetsResetProperly()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="init_whenNeedToResetPastWeekActivityNull_setFailedToLoadData()">
+      <SelectionState runConfigName="ResetWeeklyRegularity">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="LicenseDaoTest">
+      <SelectionState runConfigName="fetchTrackiesForToday_properlyReturnsListOfTrackies()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RegularityDaoTest">
+      <SelectionState runConfigName="addNewUser_licenseGetsAddedProperly()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="playground()">
+      <SelectionState runConfigName="RoomUserRepositoryTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

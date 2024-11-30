@@ -43,8 +43,11 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+//  Fetches all rows from the table "License".
+//  Table "License" can have only one row, with @PrimaryKey 'first' equal to 1.
+//  If .firstTimeInTheApp() returns null, then a method addNewUserShould
     @Tested
-    override suspend fun isFirstTimeInTheApp(): Boolean? {
+    override suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean? {
 
         val license = roomDatabase.licenseDAO().isFirstTimeInTheApp()
 
@@ -74,14 +77,17 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun needToResetPastWeekActivity(): Boolean? {
+    override suspend fun needToResetPastWeekActivity(
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ): Boolean? {
 
         val weeklyRegularity =
             roomDatabase
                 .regularityDAO()
                 .fetchWeeklyRegularity()
 
-        return try {
+        return suspendCoroutine { continuation ->
 
             if (weeklyRegularity != null) {
 
@@ -125,19 +131,15 @@ class RoomUserRepository @Inject constructor(
                         }
                     }
 
-                resetPastWeekRegularity
+                onSuccess()
+                continuation.resume(value = resetPastWeekRegularity)
             }
 
             else {
 
-                null
+                onFailure("Weekly regularity is null")
+                continuation.resume(value = null)
             }
-
-        }
-
-        catch (e: Exception) {
-
-            null
         }
     }
 
