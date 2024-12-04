@@ -554,9 +554,7 @@ class MainActivity : ComponentActivity() {
 
                             fetchAllUsersTrackies = {
 
-                                sharedViewModel.fetchListOfAllTrackies(
-                                    onFailure = {}
-                                )
+                                sharedViewModel.fetchListOfAllTrackies()
                             },
 
                             onReturn = {
@@ -761,7 +759,7 @@ class MainActivity : ComponentActivity() {
 
                                     if (detailedTrackieUiState != null) {
 
-                                        sharedViewModel.deleteTrackie(detailedTrackieUiState!!) {}
+                                        sharedViewModel.deleteTrackie(detailedTrackieUiState!!)
 
                                         homeScreenViewModel.onDeleteTrackie()
 

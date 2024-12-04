@@ -47,7 +47,7 @@ class RoomUserRepository @Inject constructor(
 //  Table "License" can have only one row, with @PrimaryKey 'first' equal to 1.
 //  If .firstTimeInTheApp() returns null, then a method addNewUserShould
     @Tested
-    override suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean? {
+    override suspend fun isFirstTimeInTheApp(): Boolean? {
 
         val license = roomDatabase.licenseDAO().isFirstTimeInTheApp()
 
@@ -77,10 +77,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun needToResetPastWeekActivity(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ): Boolean? {
+    override suspend fun needToResetPastWeekRegularity(): Boolean? {
 
         val weeklyRegularity =
             roomDatabase
@@ -126,30 +123,32 @@ class RoomUserRepository @Inject constructor(
                         if (daysOfWeekToCheck.contains(regularity.dayOfWeek)) {
 
                             if (regularity.ingested) {
+
                                 resetPastWeekRegularity = true
                             }
                         }
                     }
 
-                onSuccess()
-                continuation.resume(value = resetPastWeekRegularity)
+                continuation.resume(
+                    value = resetPastWeekRegularity
+                )
             }
 
             else {
 
-                onFailure("Weekly regularity is null")
-                continuation.resume(value = null)
+                continuation.resume(
+                    value = null
+                )
             }
         }
     }
 
     @Tested
-    override suspend fun resetWeeklyRegularity(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
+    override suspend fun resetWeeklyRegularity(): Boolean {
 
-        try {
+        return try {
+
+            var resetIsSuccessful = true
 
             setOf(
                 DaysOfWeek.monday,
@@ -161,19 +160,27 @@ class RoomUserRepository @Inject constructor(
                 DaysOfWeek.sunday,
             ).forEach { dayOfWeek ->
 
-                roomDatabase
-                    .regularityDAO()
-                    .resetRegularity(
-                        dayOfWeek = dayOfWeek
-                    )
+                try {
+
+                    roomDatabase
+                        .regularityDAO()
+                        .resetRegularity(
+                            dayOfWeek = dayOfWeek
+                        )
+                }
+
+                catch (e: Exception) {
+
+                    resetIsSuccessful = false
+                }
             }
 
-            onSuccess()
+            resetIsSuccessful
         }
 
         catch (e: Exception) {
 
-            onFailure("$e")
+            false
         }
     }
 
@@ -188,7 +195,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun fetchTrackiesForToday(onFailure: (String) -> Unit): List<TrackieModel>? {
+    override suspend fun fetchTrackiesForToday(): List<TrackieModel>? {
 
         val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
@@ -228,7 +235,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun fetchStatesOfTrackiesForToday(onFailure: (String) -> Unit): Map<String, Boolean>? {
+    override suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>? {
 
         val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
@@ -258,10 +265,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun fetchWeeklyRegularity(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ): Map<String, Map<Int, Int>>? {
+    override suspend fun fetchWeeklyRegularity(): Map<String, Map<Int, Int>>? {
 
         val regularity = roomDatabase
             .regularityDAO()
@@ -370,10 +374,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun addNewTrackie(
-        trackieModel: TrackieModel,
-        onFailure: (String) -> Unit
-    ) {
+    override suspend fun addNewTrackie(trackieModel: TrackieModel) {
 
         val license = roomDatabase
             .licenseDAO()
@@ -408,19 +409,10 @@ class RoomUserRepository @Inject constructor(
                     )
             }
         }
-
-        else {
-
-            onFailure("License is null")
-        }
     }
 
     @Tested
-    override suspend fun deleteTrackie(
-        trackieModel: TrackieModel,
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
+    override suspend fun deleteTrackie(trackieModel: TrackieModel) {
 
         val license = roomDatabase
             .licenseDAO()
@@ -450,11 +442,6 @@ class RoomUserRepository @Inject constructor(
                     nameOfTrackie = trackieModel.name
                 )
 
-        }
-
-        else {
-
-            onFailure("License is null")
         }
     }
 

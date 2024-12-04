@@ -45,15 +45,9 @@ class FirebaseUserRepository @Inject constructor(
     private val namesOfTrackies = user.collection("names of trackies").document("names of trackies")
     private val usersWeeklyStatistics = user.collection("user's statistics").document("user's weekly statistics")
 
-    override suspend fun needToResetPastWeekActivity(onSuccess: () -> Unit, onFailure: (String) -> Unit): Boolean? {
+    override suspend fun needToResetPastWeekRegularity(): Boolean? {
 
-        val weeklyRegularity = fetchWeeklyRegularity(
-            onSuccess = {},
-            onFailure = {
-
-                onFailure(it)
-            }
-        )
+        val weeklyRegularity = fetchWeeklyRegularity()
 
         return suspendCoroutine {
 
@@ -83,71 +77,86 @@ class FirebaseUserRepository @Inject constructor(
 
                 if (resetPastWeekActivity) {
 
-                    onSuccess()
-                    it.resume(value = true)
+                    it.resume(
+                        value = true
+                    )
                 }
 
                 else {
-                    onSuccess()
-                    it.resume(value = false)
+
+                    it.resume(
+                        value = false
+                    )
                 }
             }
 
             else {
-                onFailure("Weekly regularity is null.")
-                it.resume(value = null)
+
+                it.resume(
+                    value = null
+                )
             }
         }
     }
 
-    override suspend fun resetWeeklyRegularity(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
+    override suspend fun resetWeeklyRegularity(): Boolean {
 
         val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
         var passedCurrentDayOfWeek = false
 
-        setOf(
-            DaysOfWeek.monday,
-            DaysOfWeek.tuesday,
-            DaysOfWeek.wednesday,
-            DaysOfWeek.thursday,
-            DaysOfWeek.friday,
-            DaysOfWeek.saturday,
-            DaysOfWeek.sunday,
-        ).forEach { dayOfWeek ->
+        var resetIsSuccessful = true
 
-            if (passedCurrentDayOfWeek) {
+        return try {
 
-                val namesOfTrackiesForThisDayOfWeek = fetchNamesOfTrackies(dayOfWeek)
+            setOf(
+                DaysOfWeek.monday,
+                DaysOfWeek.tuesday,
+                DaysOfWeek.wednesday,
+                DaysOfWeek.thursday,
+                DaysOfWeek.friday,
+                DaysOfWeek.saturday,
+                DaysOfWeek.sunday,
+            ).forEach { dayOfWeek ->
 
-                if (namesOfTrackiesForThisDayOfWeek != null) {
+                if (passedCurrentDayOfWeek) {
 
-                    namesOfTrackiesForThisDayOfWeek.forEach { nameOfTrackie ->
+                    val namesOfTrackiesForThisDayOfWeek = fetchNamesOfTrackies(dayOfWeek)
 
-                        usersWeeklyStatistics
-                            .collection(dayOfWeek)
-                            .document(nameOfTrackie)
-                            .update("ingested", false)
+                    if (namesOfTrackiesForThisDayOfWeek != null) {
+
+                        namesOfTrackiesForThisDayOfWeek.forEach { nameOfTrackie ->
+
+                            usersWeeklyStatistics
+                                .collection(dayOfWeek)
+                                .document(nameOfTrackie)
+                                .update("ingested", false)
+                        }
+                    }
+
+                    else {
+
+                        resetIsSuccessful = false
                     }
                 }
 
                 else {
-                    onFailure("namesOfTrackiesForThisDayOfWeek is null")
+
+                    passedCurrentDayOfWeek = currentDayOfWeek == dayOfWeek
                 }
             }
 
-            else {
+            resetIsSuccessful
+        }
 
-                passedCurrentDayOfWeek = currentDayOfWeek == dayOfWeek
-            }
+        catch (e: Exception) {
+
+            false
         }
     }
 
 //  This method is responsible for checking if the user's unique identifier exists in the database.
 //  If the unique identifier does not exist - a new document named after the user's unique identifier will be created.
-    override suspend fun isFirstTimeInTheApp(onFailure: (String) -> Unit): Boolean? {
+    override suspend fun isFirstTimeInTheApp(): Boolean? {
 
         return suspendCoroutine { continuation ->
 
@@ -156,17 +165,25 @@ class FirebaseUserRepository @Inject constructor(
                 .addOnSuccessListener { user ->
 
                     if (!(user.exists())) {
+
                         addNewUser()
-                        continuation.resume(value = true)
+                        continuation.resume(
+                            value = true
+                        )
                     }
 
                     else {
-                        continuation.resume(value = false)
+
+                        continuation.resume(
+                            value = false
+                        )
                     }
                 }
                 .addOnFailureListener {
-                    onFailure("$it")
-                    continuation.resume(value = null)
+
+                    continuation.resume(
+                        value = null
+                    )
                 }
         }
     }
@@ -369,10 +386,7 @@ class FirebaseUserRepository @Inject constructor(
 
 
 //  This method is responsible for adding new trackie to the user's database.
-    override suspend fun addNewTrackie(
-    trackieModel: TrackieModel,
-    onFailure: (String) -> Unit
-    ) {
+    override suspend fun addNewTrackie(trackieModel: TrackieModel) {
 
         val licenseViewState = fetchUsersLicense()
 
@@ -423,17 +437,11 @@ class FirebaseUserRepository @Inject constructor(
                 }
             }
         }
-
-        else {
-            onFailure("License view state is null")
-        }
     }
 
 
 //  This method is responsible for fetching all the user's trackies assigned to the current day of week.
-    override suspend fun fetchTrackiesForToday(
-        onFailure: (String) -> Unit
-    ): List<TrackieModel>? {
+    override suspend fun fetchTrackiesForToday(): List<TrackieModel>? {
 
         val namesOfTrackiesForToday: List<String>? =
             fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
@@ -463,14 +471,19 @@ class FirebaseUserRepository @Inject constructor(
                                     }
 
                                     catch (e: Exception) {
-                                        continuation.resume(value = null)
-                                        onFailure(e.toString())
+
+                                        continuation.resume(
+                                            value = null
+                                        )
                                     }
                                 }
                             }
 
                             .addOnFailureListener { exception ->
-                                onFailure(exception.toString())
+
+                                continuation.resume(
+                                    value = null
+                                )
                             }
                     }
 
@@ -491,9 +504,7 @@ class FirebaseUserRepository @Inject constructor(
     }
 
 
-    override suspend fun fetchStatesOfTrackiesForToday(
-        onFailure: (String) -> Unit
-    ): Map<String, Boolean>? {
+    override suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>? {
 
         val namesOfTrackiesForToday: List<String>? =
             fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
@@ -522,40 +533,49 @@ class FirebaseUserRepository @Inject constructor(
 
                                         if (namesAndStatesOfTrackies.size == namesOfTrackiesForToday.size) {
 
-                                            continuation.resume(value = namesAndStatesOfTrackies)
+                                            continuation.resume(
+                                                value = namesAndStatesOfTrackies
+                                            )
                                         }
                                     }
 
                                     else {
-                                        continuation.resume(value = null)
+
+                                        continuation.resume(
+                                            value = null
+                                        )
                                     }
                                 }
                             }
 
                             .addOnFailureListener {
 
-                                continuation.resume(value = null)
+                                continuation.resume(
+                                    value = null
+                                )
                             }
                     }
                 }
 
                 else {
-                    continuation.resume(value = emptyMap())
+
+                    continuation.resume(
+                        value = emptyMap()
+                    )
                 }
             }
 
             else {
-                continuation.resume(value = null)
+
+                continuation.resume(
+                    value = null
+                )
             }
         }
     }
 
 
-    override suspend fun deleteTrackie(
-        trackieModel: TrackieModel,
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
+    override suspend fun deleteTrackie(trackieModel: TrackieModel) {
 
         val licenseViewState = fetchUsersLicense()
 
@@ -671,42 +691,28 @@ class FirebaseUserRepository @Inject constructor(
 
             deleteTrackieFromUsersTrackies(
                 onSuccess = {},
-                onFailure = {
-                    onFailure(it)
-                }
+                onFailure = {}
             )
 
             decreaseTotalAmountOfTrackies(
                 onSuccess = {},
-                onFailure = {
-                    onFailure(it)
-                }
+                onFailure = {}
             )
 
             deleteNameOfTrackieFromWholeWeek(
                 onSuccess = {},
-                onFailure = {
-                    onFailure(it)
-                }
+                onFailure = {}
             )
 
             deleteNameOfTrackieFromDaysOfWeek(
                 onSuccess = {},
-                onFailure = {
-                    onFailure(it)
-                }
+                onFailure = {}
             )
 
             deleteTrackieFromWeeklyStatistics(
                 onSuccess = {},
-                onFailure = {
-                    onFailure(it)
-                }
+                onFailure = {}
             )
-        }
-
-        else {
-            onFailure("licenseViewState is null")
         }
     }
 
@@ -776,10 +782,7 @@ class FirebaseUserRepository @Inject constructor(
     }
 
 
-    override suspend fun fetchWeeklyRegularity(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ): Map<String, Map<Int, Int>>? {
+    override suspend fun fetchWeeklyRegularity(): Map<String, Map<Int, Int>>? {
 
         var weeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
 

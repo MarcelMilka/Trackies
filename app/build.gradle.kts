@@ -129,6 +129,9 @@ dependencies {
     testImplementation(libs.mockk.agent)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
+    //noinspection UseTomlInstead
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.0.0")
+
 }
 
 kapt {

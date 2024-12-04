@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
+import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
@@ -18,8 +19,6 @@ import javax.inject.Inject
 import kotlin.String
 import kotlin.collections.Map
 
-// To check any errors which occur while fetching/saving/deleting data type "SharedViewModel-firebase"
-
 @HiltViewModel
 class SharedViewModel @Inject constructor(
     var repository: UserRepository
@@ -28,99 +27,107 @@ class SharedViewModel @Inject constructor(
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private var fetchData = false
-
     init {
-
-        Log.d("Magnetic Man", "$repository is used as repository in $this")
 
         viewModelScope.launch {
 
-//          Check if the user is first time in the app. When the user is first time in the app - create necessary collections and documents.
-            val isFirstTimeInTheApp = repository.isFirstTimeInTheApp {
+//          1: Checking if the user is first time in the app. If so, the method automatically adds new user to the database:
+            if (repository.isFirstTimeInTheApp() != null) {
 
-                Log.d("SharedViewModel-firebase", "init, firstTimeInTheApp - $it")
-            }
+//              2: Checking if it's required to reset weekly regularity: (true == it's required to reset regularity)
+                val needToResetPastWeekRegularity = repository.needToResetPastWeekRegularity()
 
-            if (isFirstTimeInTheApp != null) {
+                if (needToResetPastWeekRegularity != null) {
 
-                val needToResetPastWeekRegularity = repository.needToResetPastWeekActivity(
-                    onSuccess = {
+//                  3.1: Reset of the regularity from the past week: and fetching user's data:
+                    if (needToResetPastWeekRegularity) {
 
-                        fetchData = true
-                    },
-                    onFailure = {
+                        val resetOfRegularityIsSuccessful = repository.resetWeeklyRegularity()
 
-                        fetchData = false
-                        Log.d("SharedViewModel-firebase", "init, resetPastWeekActivity - $it")
-                    }
-                )
+                        when (resetOfRegularityIsSuccessful) {
 
-                if (needToResetPastWeekRegularity !== null && needToResetPastWeekRegularity == true) {
+                            true -> {
 
-                    repository.resetWeeklyRegularity(
-                        onSuccess = {},
-                        onFailure = {
-                            fetchData = false
-                            Log.d("SharedViewModel-firebase", "init, resetWeeklyRegularity - $it")
-                        }
-                    )
-                }
+                                val licenseInformation = repository.fetchUsersLicense()
+                                val trackiesForToday = repository.fetchTrackiesForToday()
+                                val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday()
+                                val weeklyRegularity = repository.fetchWeeklyRegularity()
 
-                if (fetchData) {
+                                if (
+                                    licenseInformation != null &&
+                                    trackiesForToday != null &&
+                                    statesOfTrackiesForToday != null &&
+                                    weeklyRegularity != null
+                                ) {
 
-                    val licenseInformation = repository.fetchUsersLicense()
-                    val trackiesForToday = repository.fetchTrackiesForToday(
-                        onFailure = {
-                            Log.d("SharedViewModel-firebase", "init, fetchTrackiesForToday - $it")
-                        }
-                    )
-                    val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
-                        onFailure = {
-                            Log.d("SharedViewModel-firebase", "init, fetchStatesOfTrackiesForToday - $it")
-                        }
-                    )
-                    val weeklyRegularity = repository.fetchWeeklyRegularity(
-                        onSuccess = {},
-                        onFailure = {
-                            Log.d("SharedViewModel-firebase", "init, fetchWeeklyRegularity - $it")
-                        }
-                    )
+                                    _uiState.update {
 
-                    Log.d("Hei!", "$licenseInformation")
-                    Log.d("Hei!", "$trackiesForToday")
-                    Log.d("Hei!", "$statesOfTrackiesForToday")
-                    Log.d("Hei!", "$weeklyRegularity")
+                                        SharedViewModelViewState.LoadedSuccessfully(
+                                            license = licenseInformation,
+                                            trackiesForToday = trackiesForToday,
+                                            statesOfTrackiesForToday = statesOfTrackiesForToday,
+                                            weeklyRegularity = weeklyRegularity,
+                                            namesOfAllTrackies = null,
+                                            allTrackies = null
+                                        )
+                                    }
+                                }
 
-                    if (
-                        licenseInformation != null &&
-                        trackiesForToday != null &&
-                        statesOfTrackiesForToday != null &&
-                        weeklyRegularity != null
-                    ) {
+                                else {
 
-                        _uiState.update {
+                                    _uiState.update {
+                                        SharedViewModelViewState.FailedToLoadData
+                                    }
+                                }
+                            }
 
-                            SharedViewModelViewState.LoadedSuccessfully(
-                                license = licenseInformation,
-                                trackiesForToday = trackiesForToday,
-                                statesOfTrackiesForToday = statesOfTrackiesForToday,
-                                weeklyRegularity = weeklyRegularity,
-                                namesOfAllTrackies = null,
-                                allTrackies = null
-                            )
+                            false -> {
+
+                                _uiState.update {
+                                    SharedViewModelViewState.FailedToLoadData
+                                }
+                            }
                         }
                     }
 
+//                  3.2: Fetching user's data:
                     else {
-                        _uiState.update {
-                            SharedViewModelViewState.FailedToLoadData
+
+                        val licenseInformation = repository.fetchUsersLicense()
+                        val trackiesForToday = repository.fetchTrackiesForToday()
+                        val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday()
+                        val weeklyRegularity = repository.fetchWeeklyRegularity()
+
+                        if (
+                            licenseInformation != null &&
+                            trackiesForToday != null &&
+                            statesOfTrackiesForToday != null &&
+                            weeklyRegularity != null
+                        ) {
+
+                            _uiState.update {
+
+                                SharedViewModelViewState.LoadedSuccessfully(
+                                    license = licenseInformation,
+                                    trackiesForToday = trackiesForToday,
+                                    statesOfTrackiesForToday = statesOfTrackiesForToday,
+                                    weeklyRegularity = weeklyRegularity,
+                                    namesOfAllTrackies = null,
+                                    allTrackies = null
+                                )
+                            }
+                        }
+
+                        else {
+
+                            _uiState.update {
+                                SharedViewModelViewState.FailedToLoadData
+                            }
                         }
                     }
                 }
 
                 else {
-
                     _uiState.update {
                         SharedViewModelViewState.FailedToLoadData
                     }
@@ -136,56 +143,50 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun addNewTrackie(
-        trackieModel: TrackieModel,
-    ) {
+    @Tested
+    fun addNewTrackie(trackieModel: TrackieModel) {
 
-        if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
+//      Database:
+        viewModelScope.launch {
 
-//          Firebase
-            viewModelScope.launch {
+            repository.addNewTrackie(trackieModel = trackieModel)
+        }
 
-                repository.addNewTrackie(
-                    trackieModel = trackieModel,
-                    onFailure = {
-                        Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - $it")
-                    }
-                )
+//      UI:
+        val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
+
+//      This method is responsible for updating information contained by LicenseViewState and increasing the amount of trackies by one.
+        fun updateLicenseViewState(): LicenseModel {
+
+            val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
+            val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies + 1
+
+            return LicenseModel(
+                active = copyOfLicenseViewState.active,
+                validUntil = copyOfLicenseViewState.validUntil,
+                totalAmountOfTrackies = newAmountOfTrackies
+            )
+        }
+
+        fun updateTrackiesForToday(): MutableList<TrackieModel> {
+
+            val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+            var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
+
+            return if (trackieModel.repeatOn.contains(element = currentDayOfWeek)) {
+
+                copyOfTrackiesForToday.add(element = trackieModel)
+                copyOfTrackiesForToday
             }
 
-//          UI
-            val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
-
-//          This method is responsible for updating information contained by LicenseViewState and increasing the amount of trackies by one.
-            fun updateLicenseViewState(): LicenseModel {
-
-                val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
-                val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies + 1
-
-                return LicenseModel(
-                    active = copyOfLicenseViewState.active,
-                    validUntil = copyOfLicenseViewState.validUntil,
-                    totalAmountOfTrackies = newAmountOfTrackies
-                )
+            else {
+                copyOfTrackiesForToday
             }
+        }
 
-            fun updateTrackiesForToday(): MutableList<TrackieModel> {
+        fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
 
-                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
-                var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
-
-                return if (trackieModel.repeatOn.contains(element = currentDayOfWeek)) {
-
-                    copyOfTrackiesForToday.add(element = trackieModel)
-                    copyOfTrackiesForToday
-                }
-
-                else {
-                    copyOfTrackiesForToday
-                }
-            }
-
-            fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
+            return if (trackieModel.repeatOn.contains(CurrentTime.getCurrentDayOfWeek())) {
 
                 val newStatesOfTrackiesForToday: MutableMap<String, Boolean> = mutableMapOf()
 
@@ -195,293 +196,276 @@ class SharedViewModel @Inject constructor(
                 }
                 newStatesOfTrackiesForToday[trackieModel.name] = false
 
-                return newStatesOfTrackiesForToday
+                newStatesOfTrackiesForToday
             }
 
-//          This method is responsible for adding name of the new Trackie to the mutableList which contains names of all trackies owned by a User.
-            fun updateNamesOfAllTrackies(): MutableList<String> {
+            else {
 
-                var namesOfAllTrackies: MutableList<String>? = copyOfViewState.namesOfAllTrackies
-
-                return if (namesOfAllTrackies != null) {
-
-                    namesOfAllTrackies.add(trackieModel.name)
-                    namesOfAllTrackies
-                }
-
-                else {
-                    mutableListOf(trackieModel.name)
-                }
-            }
-
-//          This method is responsible for adding Trackie to the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
-            fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
-
-                return if (copyOfViewState.allTrackies != null) {
-
-                    var listOfAllTrackies = copyOfViewState.allTrackies!!.toMutableList()
-                    listOfAllTrackies.add(element = trackieModel)
-
-                    listOfAllTrackies
-                }
-
-                else {
-                    null
-                }
-            }
-
-            fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
-
-                var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
-
-                copyOfViewState.weeklyRegularity.forEach { array ->
-
-                    if (trackieModel.repeatOn.contains(array.key)) {
-
-                        val total = array.value.keys.toIntArray()[0] + 1
-                        val ingested = array.value.values.toIntArray()[0]
-
-                        val value = mapOf(total to ingested)
-
-                        newWeeklyRegularity.put(
-                            key = array.key,
-                            value = value)
-                    }
-
-                    else {
-
-                        val total = array.value.keys.toIntArray()[0]
-                        val ingested = array.value.values.toIntArray()[0]
-
-                        val value = mapOf(total to ingested)
-
-                        newWeeklyRegularity.put(
-                            key = array.key,
-                            value = value
-                        )
-                    }
-                }
-
-                return newWeeklyRegularity
-            }
-
-            val updatedLicense = updateLicenseViewState()
-            val trackiesForToday = updateTrackiesForToday()
-            val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
-            val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
-            val updatedListOfAllTrackies = updateListOfAllTrackies()
-            val updatedWeeklyRegularity = updateWeeklyRegularity()
-
-            _uiState.update {
-
-                SharedViewModelViewState.LoadedSuccessfully(
-                    license = updatedLicense,
-                    trackiesForToday = trackiesForToday,
-                    statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
-                    weeklyRegularity = updatedWeeklyRegularity,
-                    namesOfAllTrackies = updatedNamesOfAllTrackies,
-                    allTrackies = updatedListOfAllTrackies
-                )
+                copyOfViewState.statesOfTrackiesForToday
             }
         }
 
-        else {
-            Log.d("SharedViewModel-firebase", "method 'addNewTrackie' - wrong UI state")
+//      This method is responsible for adding name of the new Trackie to the mutableList which contains names of all trackies owned by a User.
+        fun updateNamesOfAllTrackies(): MutableList<String> {
+
+            var namesOfAllTrackies: MutableList<String>? = copyOfViewState.namesOfAllTrackies
+
+            return if (namesOfAllTrackies != null) {
+
+                namesOfAllTrackies.add(trackieModel.name)
+                namesOfAllTrackies
+            }
+
+            else {
+                mutableListOf(trackieModel.name)
+            }
+        }
+
+//      This method is responsible for adding Trackie to the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
+        fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
+
+            return if (copyOfViewState.allTrackies != null) {
+
+                var listOfAllTrackies = copyOfViewState.allTrackies!!.toMutableList()
+                listOfAllTrackies.add(element = trackieModel)
+
+                listOfAllTrackies
+            }
+
+            else {
+                null
+            }
+        }
+
+        fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
+
+            var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
+
+            copyOfViewState.weeklyRegularity.forEach { array ->
+
+                if (trackieModel.repeatOn.contains(array.key)) {
+
+                    val total = array.value.keys.toIntArray()[0] + 1
+                    val ingested = array.value.values.toIntArray()[0]
+
+                    val value = mapOf(total to ingested)
+
+                    newWeeklyRegularity.put(
+                        key = array.key,
+                        value = value)
+                }
+
+                else {
+
+                    val total = array.value.keys.toIntArray()[0]
+                    val ingested = array.value.values.toIntArray()[0]
+
+                    val value = mapOf(total to ingested)
+
+                    newWeeklyRegularity.put(
+                        key = array.key,
+                        value = value
+                    )
+                }
+            }
+
+            return newWeeklyRegularity
+        }
+
+        val updatedLicense = updateLicenseViewState()
+        val trackiesForToday = updateTrackiesForToday()
+        val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
+        val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
+        val updatedListOfAllTrackies = updateListOfAllTrackies()
+        val updatedWeeklyRegularity = updateWeeklyRegularity()
+
+        _uiState.update {
+
+            SharedViewModelViewState.LoadedSuccessfully(
+                license = updatedLicense,
+                trackiesForToday = trackiesForToday,
+                statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
+                weeklyRegularity = updatedWeeklyRegularity,
+                namesOfAllTrackies = updatedNamesOfAllTrackies,
+                allTrackies = updatedListOfAllTrackies
+            )
         }
     }
 
-    fun deleteTrackie(
-        trackieViewState: TrackieModel,
-        onFailure: (String) -> Unit
-    ) {
+    fun deleteTrackie(trackieViewState: TrackieModel) {
 
-        if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
+//      Firebase
+        viewModelScope.launch {
 
-//          Firebase
-            viewModelScope.launch {
+            repository.deleteTrackie(trackieModel = trackieViewState)
+        }
 
-                repository.deleteTrackie(
-                    trackieModel = trackieViewState,
-                    onSuccess = {},
-                    onFailure = {
-                        Log.d("SharedViewModel-firebase", "method 'deleteTrackie' - $it")
-                    }
-                )
-            }
+//      UI
+        val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
 
-//          UI
-            val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
+//      This method is responsible for updating information contained by LicenseViewState and decreasing the amount of trackies by one.
+        fun updateLicenseViewState(): LicenseModel {
 
-//          This method is responsible for updating information contained by LicenseViewState and decreasing the amount of trackies by one.
-            fun updateLicenseViewState(): LicenseModel {
+            val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
+            val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies - 1
 
-                val copyOfLicenseViewState = (_uiState.value as SharedViewModelViewState.LoadedSuccessfully).license
-                val newAmountOfTrackies = copyOfViewState.license.totalAmountOfTrackies - 1
+            return LicenseModel(
+                active = copyOfLicenseViewState.active,
+                validUntil = copyOfLicenseViewState.validUntil,
+                totalAmountOfTrackies = newAmountOfTrackies
+            )
+        }
 
-                return LicenseModel(
-                    active = copyOfLicenseViewState.active,
-                    validUntil = copyOfLicenseViewState.validUntil,
-                    totalAmountOfTrackies = newAmountOfTrackies
-                )
-            }
+        fun updateTrackiesForToday(): MutableList<TrackieModel> {
 
-            fun updateTrackiesForToday(): MutableList<TrackieModel> {
+            var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
+            copyOfTrackiesForToday.remove(element = trackieViewState)
 
-                var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
-                copyOfTrackiesForToday.remove(element = trackieViewState)
+            return copyOfTrackiesForToday
+        }
 
-                return copyOfTrackiesForToday
-            }
+        fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
 
-            fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
+            val newStatesOfTrackiesForToday: MutableMap<String, Boolean> = mutableMapOf()
 
-                val newStatesOfTrackiesForToday: MutableMap<String, Boolean> = mutableMapOf()
+            copyOfViewState.statesOfTrackiesForToday.forEach {
 
-                copyOfViewState.statesOfTrackiesForToday.forEach {
-
-                    if (it.key != trackieViewState.name) {
-                        newStatesOfTrackiesForToday[it.key] = it.value
-                    }
-                }
-
-                return newStatesOfTrackiesForToday
-            }
-
-//          This method is responsible for adding name of the new Trackie to the mutableList which contains names of all trackies owned by a User.
-            fun updateNamesOfAllTrackies(): MutableList<String>? {
-
-                var namesOfAllTrackies: MutableList<String>? = copyOfViewState.namesOfAllTrackies
-
-                return if (namesOfAllTrackies != null) {
-
-                    namesOfAllTrackies.remove(element = trackieViewState.name)
-                    namesOfAllTrackies
-                }
-
-                else {
-                    null
+                if (it.key != trackieViewState.name) {
+                    newStatesOfTrackiesForToday[it.key] = it.value
                 }
             }
 
-//          This method is responsible for removing Trackie from the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
-            fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
+            return newStatesOfTrackiesForToday
+        }
 
-                return if (copyOfViewState.allTrackies != null) {
+//      This method is responsible for adding name of the new Trackie to the mutableList which contains names of all trackies owned by a User.
+        fun updateNamesOfAllTrackies(): MutableList<String>? {
 
-                    var listOfAllTrackies = copyOfViewState.allTrackies!!.toMutableList()
-                    listOfAllTrackies.remove(element = trackieViewState)
+            var namesOfAllTrackies: MutableList<String>? = copyOfViewState.namesOfAllTrackies
 
-                    listOfAllTrackies
-                }
+            return if (namesOfAllTrackies != null) {
 
-                else {
-                    null
-                }
+                namesOfAllTrackies.remove(element = trackieViewState.name)
+                namesOfAllTrackies
             }
 
-            fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
+            else {
+                null
+            }
+        }
 
-                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
-                var passedCurrentDayOfWeek = false
+//      This method is responsible for removing Trackie from the list of all trackies (when the parameter 'allTrackies' is not equal to null.)
+        fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
 
-                var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
+            return if (copyOfViewState.allTrackies != null) {
 
-                setOf(
-                    DaysOfWeek.monday,
-                    DaysOfWeek.tuesday,
-                    DaysOfWeek.wednesday,
-                    DaysOfWeek.thursday,
-                    DaysOfWeek.friday,
-                    DaysOfWeek.saturday,
-                    DaysOfWeek.sunday,
-                ).forEach { dayOfWeek ->
+                var listOfAllTrackies = copyOfViewState.allTrackies!!.toMutableList()
+                listOfAllTrackies.remove(element = trackieViewState)
 
-                    if (!passedCurrentDayOfWeek) {
+                listOfAllTrackies
+            }
 
-                        if (trackieViewState.repeatOn.contains(dayOfWeek)) {
+            else {
+                null
+            }
+        }
 
-                            val dayOfWeek = dayOfWeek
+        fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
+
+            val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+            var passedCurrentDayOfWeek = false
+
+            var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
+
+            setOf(
+                DaysOfWeek.monday,
+                DaysOfWeek.tuesday,
+                DaysOfWeek.wednesday,
+                DaysOfWeek.thursday,
+                DaysOfWeek.friday,
+                DaysOfWeek.saturday,
+                DaysOfWeek.sunday,
+            ).forEach { dayOfWeek ->
+
+                if (!passedCurrentDayOfWeek) {
+
+                    if (trackieViewState.repeatOn.contains(dayOfWeek)) {
+
+                        val dayOfWeek = dayOfWeek
 
 //                          getting total amount of Trackies assigned for this day and decreasing it by one:
-                            val total = copyOfViewState.weeklyRegularity[dayOfWeek]!!.keys.toIntArray()[0] - 1
+                        val total = copyOfViewState.weeklyRegularity[dayOfWeek]!!.keys.toIntArray()[0] - 1
 
 //                          getting amount of ingested Trackies assigned for this day and ... todo
-                            val ingested =
-                                if (currentDayOfWeek == dayOfWeek) {
+                        val ingested =
+                            if (currentDayOfWeek == dayOfWeek) {
 
-                                    copyOfViewState.statesOfTrackiesForToday[trackieViewState.name].let { state ->
+                                copyOfViewState.statesOfTrackiesForToday[trackieViewState.name].let { state ->
 
-                                        if (state!!) {
-                                            copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0] - 1
-                                        }
+                                    if (state!!) {
+                                        copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0] - 1
+                                    }
 
-                                        else {
-                                            copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0]
-                                        }
+                                    else {
+                                        copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0]
                                     }
                                 }
+                            }
 
-                                else {
-                                    copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0] - 1
-                                }
+                            else {
+                                copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0] - 1
+                            }
 
-                            newWeeklyRegularity[dayOfWeek] = mapOf(total to ingested)
-                        }
-
-                        else {
-
-                            val dayOfWeek = dayOfWeek
-
-//                          getting total amount of Trackies assigned for this day.
-                            val total = copyOfViewState.weeklyRegularity[dayOfWeek]!!.keys.toIntArray()[0]
-
-//                          getting amount of ingested Trackies assigned for this day.
-                            val ingested = copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0]
-
-                            newWeeklyRegularity[dayOfWeek] = mapOf(total to ingested)
-                        }
+                        newWeeklyRegularity[dayOfWeek] = mapOf(total to ingested)
                     }
 
                     else {
 
-                        newWeeklyRegularity[dayOfWeek] = mapOf(1 to 0)
+                        val dayOfWeek = dayOfWeek
+
+//                          getting total amount of Trackies assigned for this day.
+                        val total = copyOfViewState.weeklyRegularity[dayOfWeek]!!.keys.toIntArray()[0]
+
+//                          getting amount of ingested Trackies assigned for this day.
+                        val ingested = copyOfViewState.weeklyRegularity[dayOfWeek]!!.values.toIntArray()[0]
+
+                        newWeeklyRegularity[dayOfWeek] = mapOf(total to ingested)
                     }
-
-                    passedCurrentDayOfWeek = currentDayOfWeek == dayOfWeek
-
                 }
 
-                return newWeeklyRegularity
+                else {
+
+                    newWeeklyRegularity[dayOfWeek] = mapOf(1 to 0)
+                }
+
+                passedCurrentDayOfWeek = currentDayOfWeek == dayOfWeek
+
             }
 
-            val updatedLicense = updateLicenseViewState()
-            val trackiesForToday = updateTrackiesForToday()
-            val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
-            val updatedWeeklyRegularity = updateWeeklyRegularity()
-            val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
-            val updatedListOfAllTrackies = updateListOfAllTrackies()
-
-            _uiState.update {
-
-                SharedViewModelViewState.LoadedSuccessfully(
-                    license = updatedLicense,
-                    trackiesForToday = trackiesForToday,
-                    statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
-                    weeklyRegularity = updatedWeeklyRegularity,
-                    namesOfAllTrackies = updatedNamesOfAllTrackies,
-                    allTrackies = updatedListOfAllTrackies
-                )
-            }
+            return newWeeklyRegularity
         }
 
-        else {
-            onFailure("Wrong UI state")
+        val updatedLicense = updateLicenseViewState()
+        val trackiesForToday = updateTrackiesForToday()
+        val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
+        val updatedWeeklyRegularity = updateWeeklyRegularity()
+        val updatedNamesOfAllTrackies = updateNamesOfAllTrackies()
+        val updatedListOfAllTrackies = updateListOfAllTrackies()
+
+        _uiState.update {
+
+            SharedViewModelViewState.LoadedSuccessfully(
+                license = updatedLicense,
+                trackiesForToday = trackiesForToday,
+                statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
+                weeklyRegularity = updatedWeeklyRegularity,
+                namesOfAllTrackies = updatedNamesOfAllTrackies,
+                allTrackies = updatedListOfAllTrackies
+            )
         }
     }
 
-    fun fetchListOfAllTrackies(onFailure: (String) -> Unit) {
-
-        Log.d("They do not really care about us...", "fetchListOfAllTrackies: ")
+    fun fetchListOfAllTrackies() {
 
         viewModelScope.launch {
 
@@ -608,8 +592,6 @@ class SharedViewModel @Inject constructor(
     }
 
     fun resetViewModel() {
-
-        Log.d("They do not really care about us...", "RESETTING VM")
 
         viewModelScope.launch {
 

@@ -71,7 +71,7 @@ class RoomUserRepositoryTest {
         val actual = async {
 
             latch.countDown()
-            roomUserRepository.isFirstTimeInTheApp {  }
+            roomUserRepository.isFirstTimeInTheApp()
         }.await()
 
         assertEquals(
@@ -99,7 +99,7 @@ class RoomUserRepositoryTest {
         launch {
 
             roomUserRepository
-                .isFirstTimeInTheApp {}
+                .isFirstTimeInTheApp()
         }.join()
 
 //      3: checking if the license got added:
@@ -130,9 +130,9 @@ class RoomUserRepositoryTest {
 //      1: calling the tested method more than once to check if OnConflictStrategy.REPLACE works:
         launch {
 
-            roomUserRepository.isFirstTimeInTheApp {  }
-            roomUserRepository.isFirstTimeInTheApp {  }
-            roomUserRepository.isFirstTimeInTheApp {  }
+            roomUserRepository.isFirstTimeInTheApp()
+            roomUserRepository.isFirstTimeInTheApp()
+            roomUserRepository.isFirstTimeInTheApp()
         }.join()
 
 //      2: checking if the License remains the same:
@@ -274,11 +274,7 @@ class RoomUserRepositoryTest {
         val expected = true
         val actual = async {
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -330,10 +326,7 @@ class RoomUserRepositoryTest {
         val actual = async {
 
             roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+                .needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -384,11 +377,7 @@ class RoomUserRepositoryTest {
         val expected = true
         val actual = async {
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -439,11 +428,7 @@ class RoomUserRepositoryTest {
         val expected = true
         val actual = async {
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -494,11 +479,7 @@ class RoomUserRepositoryTest {
         val expected = true
         val actual = async {
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -549,11 +530,7 @@ class RoomUserRepositoryTest {
         val expected = true
         val actual = async {
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -604,11 +581,7 @@ class RoomUserRepositoryTest {
         val expected = true
         val actual = async {
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -659,11 +632,7 @@ class RoomUserRepositoryTest {
         val expected = false
         val actual = async {
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -712,15 +681,11 @@ class RoomUserRepositoryTest {
 
         }.join()
 
-//      2: making sure reset of regularity is required
+//      2: making sure reset of regularity is required:
         val expectedBoolean = true
         val actualBoolean = async{
 
-            roomUserRepository
-                .needToResetPastWeekActivity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.needToResetPastWeekRegularity()
         }.await()
 
         assertEquals(
@@ -754,11 +719,7 @@ class RoomUserRepositoryTest {
         )
         val actual = async {
 
-            roomUserRepository
-                .resetWeeklyRegularity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.resetWeeklyRegularity()
 
             roomDatabase
                 .regularityDAO()
@@ -871,10 +832,7 @@ class RoomUserRepositoryTest {
         val expectedListOfTrackiesForToday = listOf<TrackieModel>()
         val actualListOfTrackiesForToday = async {
 
-            roomUserRepository
-                .fetchTrackiesForToday(
-                    onFailure = {}
-                )
+            roomUserRepository.fetchTrackiesForToday()
         }.await()
 
         assertEquals(
@@ -897,19 +855,16 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie1,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie2,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie3,
-                    onFailure = {}
                 )
         }.join()
 
@@ -938,10 +893,7 @@ class RoomUserRepositoryTest {
         )
         val actualListOfTrackiesForToday = async {
 
-            roomUserRepository
-                .fetchTrackiesForToday(
-                    onFailure = {}
-                )
+            roomUserRepository.fetchTrackiesForToday()
         }.await()
 
         assertEquals(
@@ -1009,19 +961,16 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie1,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie2,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie3,
-                    onFailure = {}
                 )
         }.join()
 
@@ -1080,19 +1029,16 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie1,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie2,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie3,
-                    onFailure = {}
                 )
         }.join()
 
@@ -1115,8 +1061,7 @@ class RoomUserRepositoryTest {
         )
         val actual = async {
 
-            roomUserRepository
-                .fetchStatesOfTrackiesForToday {  }
+            roomUserRepository.fetchStatesOfTrackiesForToday()
         }.await()
 
         assertEquals(
@@ -1141,19 +1086,16 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie1,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie2,
-                    onFailure = {}
                 )
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackie3,
-                    onFailure = {}
                 )
         }.join()
 
@@ -1182,10 +1124,7 @@ class RoomUserRepositoryTest {
         val actual = async {
 
             roomUserRepository
-                .fetchWeeklyRegularity(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+                .fetchWeeklyRegularity()
         }.await()
 
         assertEquals(
@@ -1218,9 +1157,6 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
-                    onFailure = {
-                        onFailureMessage = it
-                    }
                 )
 
             onFailureMessage
@@ -1259,9 +1195,6 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
-                    onFailure = {
-                        onFailureMessage = it
-                    }
                 )
 
             onFailureMessage
@@ -1358,9 +1291,7 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
-                    onFailure = {
-                        onFailureMessage = it
-                    }
+
                 )
 
             onFailureMessage
@@ -1438,9 +1369,7 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel2,
-                    onFailure = {
-                        onFailureMessage = it
-                    }
+
                 )
 
             onFailureMessage
@@ -1536,9 +1465,7 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieWholeWeek1,
-                    onFailure = {
-                        errorMessage = it
-                    }
+
                 )
 
             errorMessage
@@ -1575,7 +1502,6 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieWholeWeek1,
-                    onFailure = {}
                 )
         }.join()
 
@@ -1585,7 +1511,6 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieWeekend1,
-                    onFailure = {}
                 )
         }.join()
 
@@ -1654,11 +1579,7 @@ class RoomUserRepositoryTest {
         launch{
 
             roomUserRepository
-                .deleteTrackie(
-                    trackieModel = trackieWeekend1,
-                    onSuccess = {},
-                    onFailure = {}
-                )
+                .deleteTrackie(trackieModel = trackieWeekend1)
         }.join()
 
 //      7: making sure license gets updated
@@ -1747,9 +1668,7 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
-                    onFailure = {
-                        onFailureMessage = it
-                    }
+
                 )
 
             onFailureMessage
@@ -1859,7 +1778,6 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
-                    onFailure = {}
                 )
         }.join()
 
@@ -1869,7 +1787,6 @@ class RoomUserRepositoryTest {
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel2,
-                    onFailure = {}
                 )
         }.join()
 
