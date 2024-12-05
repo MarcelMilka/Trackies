@@ -418,14 +418,13 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
-    override suspend fun deleteTrackie(trackieModel: TrackieModel) {
+    override suspend fun deleteTrackie(trackieModel: TrackieModel): Boolean {
 
         val license = roomDatabase
             .licenseDAO()
-            .getLicense()
+            .getLicense() ?: return false
 
-        if (license != null) {
+        return try {
 
 //          Delete Trackie from the table "Trackies"
             roomDatabase
@@ -449,6 +448,12 @@ class RoomUserRepository @Inject constructor(
                     nameOfTrackie = trackieModel.name
                 )
 
+            true
+        }
+
+        catch (e: Exception) {
+
+            false
         }
     }
 

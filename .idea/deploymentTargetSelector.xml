@@ -13,13 +13,10 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="addNewTrackie_returnsFalseWhenLicenseDoesNotExist()">
+      <SelectionState runConfigName="deleteTrackie_givesErrorMessageWhenLicenseIsNull()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="addNewTrackie_properlyAddsDataToColumns_returnsTrue()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="addNewTrackie_properlyAddsDataToColumnsSecondApproach_returnsTrue()">
+      <SelectionState runConfigName="deleteTrackie_returnsTrue_properlyDeletesSpecificTrackie()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

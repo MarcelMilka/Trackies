@@ -602,97 +602,51 @@ class FirebaseUserRepository @Inject constructor(
     }
 
 
-    override suspend fun deleteTrackie(trackieModel: TrackieModel) {
+    override suspend fun deleteTrackie(trackieModel: TrackieModel): Boolean {
 
-        val licenseViewState = fetchUsersLicense()
+        val licenseViewState = fetchUsersLicense() ?: return false
 
-        if (licenseViewState != null) {
+        return try {
 
-//          This method is responsible for deleting:
-//              - a document named after Trackie, which is contained by a document, also named after Trackie.
-//          (via deleting the document mentioned above, the collection also gets deleted.)
-//          route: 'user's trackies' -> 'trackies' -> '${TrackieViewState.name}' -> '${TrackieViewState.name}
-            fun deleteTrackieFromUsersTrackies (
-                onSuccess: () -> Unit,
-                onFailure: (String) -> Unit
-            ) {
+            firebase.runBatch { batch ->
 
-                usersTrackies
-                    .collection(trackieModel.name)
-                    .document(trackieModel.name)
-                    .delete()
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure("$it")
-                    }
-            }
+//              1: Deleting a document named after the Trackie
+//                 route: 'user's trackies' -> 'trackies' -> '${TrackieViewState.name}' -> '${TrackieViewState.name}
+                batch.delete(
+                    usersTrackies
+                        .collection(trackieModel.name)
+                        .document(trackieModel.name)
+                )
 
-
-//          This method is responsible for decreasing total amount of Trackies by one.
-//          route: "user's information" -> 'license'
-            fun decreaseTotalAmountOfTrackies(
-                onSuccess: () -> Unit,
-                onFailure: (String) -> Unit
-            ) {
-
+//              2: Decreasing total amount of Trackies by one.
+//                 route: "user's information" -> 'license'
                 val totalAmountOfTrackies = (licenseViewState.totalAmountOfTrackies - 1)
-                usersLicense.update("totalAmountOfTrackies", totalAmountOfTrackies)
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure("$it")
-                    }
-            }
+                batch.update(
+                    usersLicense,
+                    "totalAmountOfTrackies",
+                    totalAmountOfTrackies
+                )
 
+//              3: Deleting name of the Trackie from the array which contains names of all the user's Trackies.
+//                  route: 'names of trackies' -> 'names of trackies'
+                batch.update(
+                    namesOfTrackies,
+                    "whole week",
+                    FieldValue.arrayRemove(trackieModel.name)
+                )
 
-//          This method is responsible for deleting name of the Trackie from the array which contains names of all the user's Trackies.
-//          route: 'names of trackies' -> 'names of trackies'
-            fun deleteNameOfTrackieFromWholeWeek(
-                onSuccess: () -> Unit,
-                onFailure: (String) -> Unit
-            ) {
-
-                namesOfTrackies.update("whole week", FieldValue.arrayRemove(trackieModel.name))
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure("$it")
-                    }
-            }
-
-
-//          This method is responsible for deleting name of the Trackie from the array which contains names of the user's Trackies
-//          assigned for a particular day of week
-//          route: 'names of trackies' -> 'names of trackies'
-            fun deleteNameOfTrackieFromDaysOfWeek(
-                onSuccess: () -> Unit,
-                onFailure: (String) -> Unit
-            ) {
-
+//              4: Deleting name of the Trackie from the array which contains names of the user's Trackies assigned for a particular day of week
+//                 route: 'names of trackies' -> 'names of trackies'
                 trackieModel.repeatOn.forEach { dayOfWeek ->
 
-                    namesOfTrackies.update(dayOfWeek, FieldValue.arrayRemove(trackieModel.name))
-                        .addOnSuccessListener {
-                            onSuccess()
-                        }
-                        .addOnFailureListener {
-                            onFailure("$it")
-                        }
+                    batch.update(
+                        namesOfTrackies,
+                        dayOfWeek,
+                        FieldValue.arrayRemove(trackieModel.name)
+                    )
                 }
-            }
 
-
-//          This method is responsible for deleting
-//          route: 'user's statistics' -> 'user's weekly statistics'
-            fun deleteTrackieFromWeeklyStatistics(
-                onSuccess: () -> Unit,
-                onFailure: (String) -> Unit
-            ) {
-
+//              5: Removing Trackie from the weekly regularity:
                 setOf(
                     DaysOfWeek.monday,
                     DaysOfWeek.tuesday,
@@ -703,43 +657,20 @@ class FirebaseUserRepository @Inject constructor(
                     DaysOfWeek.sunday
                 ).forEach { dayOfWeek ->
 
-                    usersWeeklyStatistics
-                        .collection(dayOfWeek)
-                        .document(trackieModel.name)
-                        .delete()
-                        .addOnSuccessListener {
-                            onSuccess()
-                        }
-                        .addOnFailureListener {
-                            onFailure("$it")
-                        }
+                    batch.delete(
+                        usersWeeklyStatistics
+                            .collection(dayOfWeek)
+                            .document(trackieModel.name)
+                    )
                 }
-            }
+            }.await()
 
-            deleteTrackieFromUsersTrackies(
-                onSuccess = {},
-                onFailure = {}
-            )
+            true
+        }
 
-            decreaseTotalAmountOfTrackies(
-                onSuccess = {},
-                onFailure = {}
-            )
+        catch (e: Exception) {
 
-            deleteNameOfTrackieFromWholeWeek(
-                onSuccess = {},
-                onFailure = {}
-            )
-
-            deleteNameOfTrackieFromDaysOfWeek(
-                onSuccess = {},
-                onFailure = {}
-            )
-
-            deleteTrackieFromWeeklyStatistics(
-                onSuccess = {},
-                onFailure = {}
-            )
+            false
         }
     }
 

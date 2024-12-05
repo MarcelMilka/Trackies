@@ -6,7 +6,6 @@ import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
-import com.google.common.base.CharMatcher.any
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -864,6 +863,491 @@ class SharedViewModelUnitTest {
 
             userRepository.addNewTrackie(trackieModel = trackieModel1)
             userRepository.addNewTrackie(trackieModel = trackieModel2)
+        }
+    }
+
+
+    @Test
+    fun `deleteTrackie - deleteTrackie returns false, uiState does not get updated` () = runTest {
+
+//      Preparation of the test:
+        coEvery { userRepository.isFirstTimeInTheApp() } returns false
+        coEvery { userRepository.needToResetPastWeekRegularity() } returns false
+//
+        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
+            active = false,
+            validUntil = null,
+            totalAmountOfTrackies = 0
+        )
+        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
+        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
+        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
+            DaysOfWeek.monday to mapOf(0 to 0),
+            DaysOfWeek.tuesday to mapOf(0 to 0),
+            DaysOfWeek.wednesday to mapOf(0 to 0),
+            DaysOfWeek.thursday to mapOf(0 to 0),
+            DaysOfWeek.friday to mapOf(0 to 0),
+            DaysOfWeek.saturday to mapOf(0 to 0),
+            DaysOfWeek.sunday to mapOf(0 to 0),
+        )
+
+        coEvery { userRepository.deleteTrackie(trackieModel = trackieModel1) } returns false
+
+        val viewModel = SharedViewModel(userRepository)
+
+//      Wait until all tasks complete:
+        advanceUntilIdle()
+
+//      Asserting shared view model view state does not have any Trackies:
+        val expectedUiState = SharedViewModelViewState.LoadedSuccessfully(
+            license = LicenseModel(
+                active = false,
+                validUntil = null,
+                totalAmountOfTrackies = 0
+            ),
+            trackiesForToday = listOf<TrackieModel>(),
+            statesOfTrackiesForToday = mapOf<String, Boolean>(),
+            weeklyRegularity = mapOf<String, Map<Int, Int>>(
+                DaysOfWeek.monday to mapOf(0 to 0),
+                DaysOfWeek.tuesday to mapOf(0 to 0),
+                DaysOfWeek.wednesday to mapOf(0 to 0),
+                DaysOfWeek.thursday to mapOf(0 to 0),
+                DaysOfWeek.friday to mapOf(0 to 0),
+                DaysOfWeek.saturday to mapOf(0 to 0),
+                DaysOfWeek.sunday to mapOf(0 to 0),
+            ),
+            namesOfAllTrackies = null,
+            allTrackies = null
+        )
+        val actualUiState = viewModel.uiState.value
+        assertEquals(
+            expectedUiState,
+            actualUiState
+        )
+
+//      Adding new Trackie and checking if UI state has proper data:
+        val expectedOnFailureMessage = "onFailedToDeleteNewTrackie"
+        var actualOnFailureMessage = ""
+
+        viewModel.deleteTrackie(
+            trackieViewState = trackieModel1,
+            onFailedToDeleteTrackie = {
+
+                actualOnFailureMessage = "onFailedToDeleteNewTrackie"
+            }
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            expectedUiState,
+            actualUiState
+        )
+
+        assertEquals(
+            expectedOnFailureMessage,
+            actualOnFailureMessage
+        )
+
+//      Verification
+        coVerify(exactly = 1) {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.deleteTrackie(trackieModel = trackieModel1)
+        }
+
+        coVerify(exactly = 0) { userRepository.resetWeeklyRegularity() }
+
+        coVerifySequence {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.deleteTrackie(trackieModel = trackieModel1)
+        }
+    }
+
+    @Test
+    fun `deleteTrackie - deleteTrackie returns false, uiState does not get updated v2`() = runTest {
+
+//      Preparation of the test:
+        coEvery { userRepository.isFirstTimeInTheApp() } returns false
+        coEvery { userRepository.needToResetPastWeekRegularity() } returns false
+
+        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
+            active = false,
+            validUntil = null,
+            totalAmountOfTrackies = 0
+        )
+        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
+        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
+        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
+            DaysOfWeek.monday to mapOf(0 to 0),
+            DaysOfWeek.tuesday to mapOf(0 to 0),
+            DaysOfWeek.wednesday to mapOf(0 to 0),
+            DaysOfWeek.thursday to mapOf(0 to 0),
+            DaysOfWeek.friday to mapOf(0 to 0),
+            DaysOfWeek.saturday to mapOf(0 to 0),
+            DaysOfWeek.sunday to mapOf(0 to 0),
+        )
+
+        coEvery { userRepository.addNewTrackie(trackieModel1) } returns true
+        coEvery { userRepository.addNewTrackie(trackieModel2) } returns true
+        coEvery { userRepository.deleteTrackie(trackieModel2) } returns false
+
+        val viewModel = SharedViewModel(userRepository)
+
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel1,
+            onFailedToAddNewTrackie = {}
+        )
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel2,
+            onFailedToAddNewTrackie = {}
+        )
+
+//      Failing to delete a trackie and making sure ui does not change
+        val expectedOnFailureMessage = "lklskdjhfaskjfhasl"
+        var actualOnFailureMessage = ""
+        viewModel.deleteTrackie(
+            trackieViewState = trackieModel2,
+            onFailedToDeleteTrackie = {
+
+                actualOnFailureMessage = "lklskdjhfaskjfhasl"
+            }
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            expectedOnFailureMessage,
+            actualOnFailureMessage
+        )
+
+        val expectedUiState = SharedViewModelViewState.LoadedSuccessfully(
+            license = LicenseModel(
+                active = false,
+                validUntil = null,
+                totalAmountOfTrackies = 2
+            ),
+            trackiesForToday = listOf<TrackieModel>(trackieModel1),
+            statesOfTrackiesForToday = mapOf<String, Boolean>(
+                "Water" to false
+            ),
+            weeklyRegularity = mapOf<String, Map<Int, Int>>(
+                DaysOfWeek.monday to mapOf(1 to 0),
+                DaysOfWeek.tuesday to mapOf(1 to 0),
+                DaysOfWeek.wednesday to mapOf(1 to 0),
+                DaysOfWeek.thursday to mapOf(1 to 0),
+                DaysOfWeek.friday to mapOf(1 to 0),
+                DaysOfWeek.saturday to mapOf(2 to 0),
+                DaysOfWeek.sunday to mapOf(2 to 0),
+            ),
+            namesOfAllTrackies = mutableListOf("Water", "Banana"),
+            allTrackies = null
+        )
+        val actualUiState = viewModel.uiState.value
+        assertEquals(
+            expectedUiState,
+            actualUiState
+        )
+
+//      Verification
+        coVerify(exactly = 1) {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.addNewTrackie(trackieModel = trackieModel1)
+            userRepository.addNewTrackie(trackieModel = trackieModel2)
+
+            userRepository.deleteTrackie(trackieModel = trackieModel2)
+        }
+
+        coVerify(exactly = 0) { userRepository.resetWeeklyRegularity() }
+
+        coVerifySequence {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.addNewTrackie(trackieModel = trackieModel1)
+            userRepository.addNewTrackie(trackieModel = trackieModel2)
+
+            userRepository.deleteTrackie(trackieModel = trackieModel2)
+        }
+    }
+
+    @Test
+    fun `deleteTrackie - deleteTrackie returns true, uiState gets updated properly, one trackie is left after deleting`() = runTest {
+
+//      Preparation of the test:
+        coEvery { userRepository.isFirstTimeInTheApp() } returns false
+        coEvery { userRepository.needToResetPastWeekRegularity() } returns false
+
+        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
+            active = false,
+            validUntil = null,
+            totalAmountOfTrackies = 0
+        )
+        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
+        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
+        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
+            DaysOfWeek.monday to mapOf(0 to 0),
+            DaysOfWeek.tuesday to mapOf(0 to 0),
+            DaysOfWeek.wednesday to mapOf(0 to 0),
+            DaysOfWeek.thursday to mapOf(0 to 0),
+            DaysOfWeek.friday to mapOf(0 to 0),
+            DaysOfWeek.saturday to mapOf(0 to 0),
+            DaysOfWeek.sunday to mapOf(0 to 0),
+        )
+
+        coEvery { userRepository.addNewTrackie(trackieModel1) } returns true
+        coEvery { userRepository.addNewTrackie(trackieModel2) } returns true
+        coEvery { userRepository.deleteTrackie(trackieModel2) } returns true
+
+        val viewModel = SharedViewModel(userRepository)
+
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel1,
+            onFailedToAddNewTrackie = {}
+        )
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel2,
+            onFailedToAddNewTrackie = {}
+        )
+
+//      Deleting one of the trackies and checking if the ui gets updated
+        val expectedOnFailureMessage = ""
+        var actualOnFailureMessage = ""
+        viewModel.deleteTrackie(
+            trackieViewState = trackieModel2,
+            onFailedToDeleteTrackie = {
+
+                actualOnFailureMessage = "lklskdjhfaskjfhasl"
+            }
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            expectedOnFailureMessage,
+            actualOnFailureMessage
+        )
+
+        val expectedUiState = SharedViewModelViewState.LoadedSuccessfully(
+            license = LicenseModel(
+                active = false,
+                validUntil = null,
+                totalAmountOfTrackies = 1
+            ),
+            trackiesForToday = listOf<TrackieModel>(trackieModel1),
+            statesOfTrackiesForToday = mapOf<String, Boolean>(
+                "Water" to false
+            ),
+            weeklyRegularity = mapOf<String, Map<Int, Int>>(
+                DaysOfWeek.monday to mapOf(1 to 0),
+                DaysOfWeek.tuesday to mapOf(1 to 0),
+                DaysOfWeek.wednesday to mapOf(1 to 0),
+                DaysOfWeek.thursday to mapOf(1 to 0),
+                DaysOfWeek.friday to mapOf(1 to 0),
+                DaysOfWeek.saturday to mapOf(1 to 0),
+                DaysOfWeek.sunday to mapOf(1 to 0),
+            ),
+            namesOfAllTrackies = mutableListOf("Water"),
+            allTrackies = null
+        )
+        val actualUiState = viewModel.uiState.value
+        assertEquals(
+            expectedUiState,
+            actualUiState
+        )
+
+//      Verification
+        coVerify(exactly = 1) {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.addNewTrackie(trackieModel = trackieModel1)
+            userRepository.addNewTrackie(trackieModel = trackieModel2)
+
+            userRepository.deleteTrackie(trackieModel = trackieModel2)
+        }
+
+        coVerify(exactly = 0) { userRepository.resetWeeklyRegularity() }
+
+        coVerifySequence {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.addNewTrackie(trackieModel = trackieModel1)
+            userRepository.addNewTrackie(trackieModel = trackieModel2)
+
+            userRepository.deleteTrackie(trackieModel = trackieModel2)
+        }
+    }
+
+    @Test
+    fun `deleteTrackie - deleteTrackie returns true, uiState gets updated properly, there are no any trackies left after deletion`() = runTest {
+
+//      Preparation of the test:
+        coEvery { userRepository.isFirstTimeInTheApp() } returns false
+        coEvery { userRepository.needToResetPastWeekRegularity() } returns false
+
+        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
+            active = false,
+            validUntil = null,
+            totalAmountOfTrackies = 0
+        )
+        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
+        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
+        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
+            DaysOfWeek.monday to mapOf(0 to 0),
+            DaysOfWeek.tuesday to mapOf(0 to 0),
+            DaysOfWeek.wednesday to mapOf(0 to 0),
+            DaysOfWeek.thursday to mapOf(0 to 0),
+            DaysOfWeek.friday to mapOf(0 to 0),
+            DaysOfWeek.saturday to mapOf(0 to 0),
+            DaysOfWeek.sunday to mapOf(0 to 0),
+        )
+
+        coEvery { userRepository.addNewTrackie(trackieModel1) } returns true
+        coEvery { userRepository.addNewTrackie(trackieModel2) } returns true
+
+        coEvery { userRepository.deleteTrackie(trackieModel1) } returns true
+        coEvery { userRepository.deleteTrackie(trackieModel2) } returns true
+
+        val viewModel = SharedViewModel(userRepository)
+
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel1,
+            onFailedToAddNewTrackie = {}
+        )
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel2,
+            onFailedToAddNewTrackie = {}
+        )
+
+//      Deleting al the trackies and checking if the ui gets updated
+        val expectedOnFailureMessage1 = ""
+        var actualOnFailureMessage1 = ""
+        viewModel.deleteTrackie(
+            trackieViewState = trackieModel1,
+            onFailedToDeleteTrackie = {
+
+                actualOnFailureMessage1 = "lklskdjhfaskjfhasl"
+            }
+        )
+
+        assertEquals(
+            expectedOnFailureMessage1,
+            actualOnFailureMessage1
+        )
+
+        val expectedOnFailureMessage2 = ""
+        var actualOnFailureMessage2 = ""
+        viewModel.deleteTrackie(
+            trackieViewState = trackieModel2,
+            onFailedToDeleteTrackie = {
+
+                actualOnFailureMessage1 = "lklskdjhfaskjfhasl"
+            }
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            expectedOnFailureMessage2,
+            actualOnFailureMessage2
+        )
+
+        val expectedUiState = SharedViewModelViewState.LoadedSuccessfully(
+            license = LicenseModel(
+                active = false,
+                validUntil = null,
+                totalAmountOfTrackies = 0
+            ),
+            trackiesForToday = listOf<TrackieModel>(),
+            statesOfTrackiesForToday = mapOf<String, Boolean>(),
+            weeklyRegularity = mapOf<String, Map<Int, Int>>(
+                DaysOfWeek.monday to mapOf(0 to 0),
+                DaysOfWeek.tuesday to mapOf(0 to 0),
+                DaysOfWeek.wednesday to mapOf(0 to 0),
+                DaysOfWeek.thursday to mapOf(0 to 0),
+                DaysOfWeek.friday to mapOf(0 to 0),
+                DaysOfWeek.saturday to mapOf(0 to 0),
+                DaysOfWeek.sunday to mapOf(0 to 0),
+            ),
+            namesOfAllTrackies = mutableListOf(),
+            allTrackies = null
+        )
+        val actualUiState = viewModel.uiState.value
+        assertEquals(
+            expectedUiState,
+            actualUiState
+        )
+
+//      Verification
+        coVerify(exactly = 1) {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.addNewTrackie(trackieModel = trackieModel1)
+            userRepository.addNewTrackie(trackieModel = trackieModel2)
+
+            userRepository.deleteTrackie(trackieModel = trackieModel1)
+            userRepository.deleteTrackie(trackieModel = trackieModel2)
+        }
+
+        coVerify(exactly = 0) { userRepository.resetWeeklyRegularity() }
+
+        coVerifySequence {
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity()
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday()
+            userRepository.fetchStatesOfTrackiesForToday()
+            userRepository.fetchWeeklyRegularity()
+
+            userRepository.addNewTrackie(trackieModel = trackieModel1)
+            userRepository.addNewTrackie(trackieModel = trackieModel2)
+
+            userRepository.deleteTrackie(trackieModel = trackieModel1)
+            userRepository.deleteTrackie(trackieModel = trackieModel2)
         }
     }
 }

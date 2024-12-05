@@ -27,7 +27,7 @@ interface UserRepository {
 
     suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>?
 
-    suspend fun deleteTrackie(trackieModel: TrackieModel)
+    suspend fun deleteTrackie(trackieModel: TrackieModel): Boolean
 
     suspend fun fetchAllTrackies(
         onSuccess: () -> Unit,

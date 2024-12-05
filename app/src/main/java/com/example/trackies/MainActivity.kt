@@ -748,7 +748,6 @@ class MainActivity : ComponentActivity() {
 
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
-//                          SharedViewModel:
                             val sharedViewModelEntry = navigationController.sharedViewModelEntry(
                                 navBackStackEntry = it
                             )
@@ -760,7 +759,10 @@ class MainActivity : ComponentActivity() {
 
                                     if (detailedTrackieUiState != null) {
 
-                                        sharedViewModel.deleteTrackie(detailedTrackieUiState!!)
+                                        sharedViewModel.deleteTrackie(
+                                            trackieViewState = detailedTrackieUiState!!,
+                                            onFailedToDeleteTrackie = {}
+                                        )
 
                                         homeScreenViewModel.onDeleteTrackie()
 

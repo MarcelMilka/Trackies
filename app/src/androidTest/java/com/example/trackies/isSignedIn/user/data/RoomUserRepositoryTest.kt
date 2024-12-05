@@ -22,6 +22,7 @@ import dagger.hilt.components.SingletonComponent
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -1429,7 +1430,7 @@ class RoomUserRepositoryTest {
 //////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun deleteTrackie_givesErrorMessageWhenLicenseIsNull() = runBlocking {
+    fun deleteTrackie_givesReturnsFalse_licenseIsNull() = runBlocking {
 
 //      making sure license is null:
         val license = async{
@@ -1442,28 +1443,21 @@ class RoomUserRepositoryTest {
         assertNull(license)
 
 //      test of the method:
-        val expected = "License is null"
+        val expected = false
         val actual = async {
 
-            var errorMessage = ""
             roomUserRepository
-                .addNewTrackie(
-                    trackieModel = trackieWholeWeek1,
-
-                )
-
-            errorMessage
+                .addNewTrackie(trackieModel = trackieWholeWeek1)
         }.await()
 
         assertEquals(
             expected,
             actual
         )
-
     }
 
     @Test
-    fun deleteTrackie_properlyDeletesSpecificTrackie() = runBlocking {
+    fun deleteTrackie_returnsTrue_properlyDeletesSpecificTrackie() = runBlocking {
 
         CountDownLatch(9)
 
@@ -1560,11 +1554,15 @@ class RoomUserRepositoryTest {
         )
 
 //      6: deleting one of the trackies
-        launch{
+        val returnedBoolean = async {
 
             roomUserRepository
                 .deleteTrackie(trackieModel = trackieWeekend1)
-        }.join()
+        }.await()
+
+        assertTrue(
+            returnedBoolean
+        )
 
 //      7: making sure license gets updated
         val expectedLicense2 = License(
