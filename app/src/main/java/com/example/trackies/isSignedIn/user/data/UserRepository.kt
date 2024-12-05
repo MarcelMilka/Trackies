@@ -21,7 +21,7 @@ interface UserRepository {
 
     suspend fun fetchTodayTrackies(): List<TrackieModel>?
 
-    suspend fun addNewTrackie(trackieModel: TrackieModel)
+    suspend fun addNewTrackie(trackieModel: TrackieModel): Boolean
 
     suspend fun fetchTrackiesForToday(): List<TrackieModel>?
 

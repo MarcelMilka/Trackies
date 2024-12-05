@@ -682,6 +682,7 @@ class MainActivity : ComponentActivity() {
 
                                     sharedViewModel.addNewTrackie(
                                         trackieModel = it,
+                                        onFailedToAddNewTrackie = {},
                                     )
                                     addNewTrackieViewModel.clearAll()
                                 }

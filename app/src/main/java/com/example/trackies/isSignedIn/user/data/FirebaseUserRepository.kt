@@ -1,7 +1,6 @@
 package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
-import androidx.compose.runtime.key
 import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
@@ -13,28 +12,18 @@ import com.example.trackies.isSignedIn.user.buisness.convertEntityToLicenseModel
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.contracts.contract
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class FirebaseUserRepository @Inject constructor(
     var uniqueIdentifier: String
 ): UserRepository {
-
-    init {
-        Log.d("Magnetic Man", "$this is used as the user repository")
-    }
 
     val firebase: FirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -386,56 +375,94 @@ class FirebaseUserRepository @Inject constructor(
 
 
 //  This method is responsible for adding new trackie to the user's database.
-    override suspend fun addNewTrackie(trackieModel: TrackieModel) {
+    override suspend fun addNewTrackie(trackieModel: TrackieModel): Boolean {
 
-        val licenseViewState = fetchUsersLicense()
+        val licenseViewState = fetchUsersLicense() ?: return false
 
-        if (licenseViewState != null) {
+        return try {
 
-            licenseViewState.totalAmountOfTrackies
+            firebase.runBatch { batch ->
 
-//          add new trackie to 'user's trackies' -> 'trackies'
-            usersTrackies.collection(trackieModel.name).document(trackieModel.name).set(trackieModel)
 
-//          update total amount of trackies owned by the user 'user's information' -> 'license'
-            val updatedTotalAmountOfTrackies = (licenseViewState.totalAmountOfTrackies + 1)
-            usersLicense.update("totalAmountOfTrackies", updatedTotalAmountOfTrackies)
+//              add new trackie to 'user's trackies' -> 'trackies'
+                val collectionTrackies =
+                    usersTrackies
+                    .collection(trackieModel.name)
+                    .document(trackieModel.name)
 
-//          add name of the trackie to 'names of trackies' -> 'names of trackies' -> 'whole week'
-            namesOfTrackies.update("whole week", FieldValue.arrayUnion(trackieModel.name))
+                batch.set(
+                    collectionTrackies,
+                    trackieModel
+                )
 
-//          add name of the trackie to 'names of trackies' -> '(names of trackies)' -> *specific day of week*
-            trackieModel.repeatOn.forEach { dayOfWeek ->
 
-                namesOfTrackies.update(dayOfWeek, FieldValue.arrayUnion(trackieModel.name))
-            }
+//              update total amount of trackies owned by the user 'user's information' -> 'license'
+                val updatedTotalAmountOfTrackies = (licenseViewState.totalAmountOfTrackies + 1)
 
-//          add name of the trackies to 'user's statistics' -> 'user's weekly statistics' -> *specific day of week*
-            setOf(
-                DaysOfWeek.monday,
-                DaysOfWeek.tuesday,
-                DaysOfWeek.wednesday,
-                DaysOfWeek.thursday,
-                DaysOfWeek.friday,
-                DaysOfWeek.saturday,
-                DaysOfWeek.sunday
-            ).forEach { dayOfWeek ->
+                batch.update(
+                    usersLicense,
+                    "totalAmountOfTrackies",
+                    updatedTotalAmountOfTrackies
+                )
 
-                if (trackieModel.ingestionTime == null) {
+//              add name of the trackie to 'names of trackies' -> 'names of trackies' -> 'whole week'
+                batch.update(
+                    namesOfTrackies,
+                    "whole week",
+                    FieldValue.arrayUnion(trackieModel.name)
+                )
 
-                    if (trackieModel.repeatOn.contains(dayOfWeek)) {
+//              add name of the trackie to 'names of trackies' -> '(names of trackies)' -> *specific day of week*
+                trackieModel
+                    .repeatOn
+                    .forEach { dayOfWeek ->
 
-                        val fieldToSave = mutableMapOf<String, Boolean>()
+                        batch
+                            .update(
+                                namesOfTrackies,
+                                dayOfWeek,
+                                FieldValue.arrayUnion(trackieModel.name)
+                            )
+                    }
 
-                        fieldToSave["ingested"] = false
+//              add name of the trackies to 'user's statistics' -> 'user's weekly statistics' -> *specific day of week*
+                setOf(
+                    DaysOfWeek.monday,
+                    DaysOfWeek.tuesday,
+                    DaysOfWeek.wednesday,
+                    DaysOfWeek.thursday,
+                    DaysOfWeek.friday,
+                    DaysOfWeek.saturday,
+                    DaysOfWeek.sunday
+                ).forEach { dayOfWeek ->
 
-                        usersWeeklyStatistics
-                            .collection(dayOfWeek)
-                            .document(trackieModel.name)
-                            .set(fieldToSave)
+                    if (trackieModel.ingestionTime == null) {
+
+                        if (trackieModel.repeatOn.contains(dayOfWeek)) {
+
+                            val fieldToSave = mutableMapOf<String, Boolean>()
+
+                            fieldToSave["ingested"] = false
+
+                            val statisticsDocument =
+                                usersWeeklyStatistics
+                                .collection(dayOfWeek)
+                                .document(trackieModel.name)
+
+                            batch.set(
+                                statisticsDocument,
+                                fieldToSave
+                            )
+                        }
                     }
                 }
-            }
+            }.await()
+
+            true
+        }
+
+        catch (e: Exception) {
+            false
         }
     }
 

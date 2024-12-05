@@ -1136,7 +1136,7 @@ class RoomUserRepositoryTest {
 //////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun addNewTrackie_returnsErrorMessageWhenLicenseDoesNotExist() = runBlocking {
+    fun addNewTrackie_returnsFalseWhenLicenseDoesNotExist() = runBlocking {
 
 //      1: making sure license does not exist:
         val licenseBefore = async {
@@ -1149,17 +1149,13 @@ class RoomUserRepositoryTest {
         assertNull(licenseBefore)
 
 //      2: adding new Trackie:
-        val expected = "License is null"
+        val expected = false
         val actual = async {
-
-            var onFailureMessage = ""
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
                 )
-
-            onFailureMessage
         }.await()
 
         assertEquals(
@@ -1169,7 +1165,7 @@ class RoomUserRepositoryTest {
     }
 
     @Test
-    fun addNewTrackie_properlyAddsDataToColumns() = runBlocking {
+    fun addNewTrackie_properlyAddsDataToColumns_returnsTrue() = runBlocking {
 
         CountDownLatch(5)
 
@@ -1186,18 +1182,14 @@ class RoomUserRepositoryTest {
 
         assertNotNull(licenseBefore)
 
-//      2: making sure on failure error does not occur:
-        val expected = ""
+//      Making sure true is returned:
+        val expected = true
         val actual = async {
-
-            var onFailureMessage = ""
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
                 )
-
-            onFailureMessage
         }.await()
 
         assertEquals(
@@ -1265,7 +1257,7 @@ class RoomUserRepositoryTest {
     }
 
     @Test
-    fun addNewTrackie_properlyAddsDataToColumnsSecondApproach() = runBlocking {
+    fun addNewTrackie_properlyAddsDataToColumnsSecondApproach_returnsTrue() = runBlocking {
 
         CountDownLatch(9)
 
@@ -1283,18 +1275,14 @@ class RoomUserRepositoryTest {
         assertNotNull(licenseBefore)
 
 //      2: making sure on failure error does not occur:
-        val expected = ""
+        val expected = true
         val actual = async {
-
-            var onFailureMessage = ""
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel1,
 
                 )
-
-            onFailureMessage
         }.await()
 
         assertEquals(
@@ -1361,18 +1349,14 @@ class RoomUserRepositoryTest {
         )
 
 //      6: adding another Trackie, making sure on failure error does not occur:
-        val expectedV2 = ""
+        val expectedV2 = true
         val actualV2 = async {
-
-            var onFailureMessage = ""
 
             roomUserRepository
                 .addNewTrackie(
                     trackieModel = trackieModel2,
 
                 )
-
-            onFailureMessage
         }.await()
 
         assertEquals(

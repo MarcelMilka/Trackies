@@ -374,13 +374,13 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun addNewTrackie(trackieModel: TrackieModel) {
+    override suspend fun addNewTrackie(trackieModel: TrackieModel): Boolean {
 
         val license = roomDatabase
             .licenseDAO()
-            .getLicense()
+            .getLicense() ?: return false
 
-        if (license != null) {
+        return try {
 
 //          Add Trackie to the table "Trackies"
             val trackie = trackieModel.convertTrackieModelToTrackieEntity()
@@ -398,16 +398,23 @@ class RoomUserRepository @Inject constructor(
             trackieModel
                 .repeatOn
                 .forEach { dayOfWeek ->
-                roomDatabase
-                    .regularityDAO()
-                    .addTrackieToRegularity(
-                        regularity = Regularity(
-                            name = trackieModel.name,
-                            dayOfWeek = dayOfWeek,
-                            ingested = false
+                    roomDatabase
+                        .regularityDAO()
+                        .addTrackieToRegularity(
+                            regularity = Regularity(
+                                name = trackieModel.name,
+                                dayOfWeek = dayOfWeek,
+                                ingested = false
+                            )
                         )
-                    )
-            }
+                }
+
+            true
+        }
+
+        catch (e: Exception) {
+
+            false
         }
     }
 

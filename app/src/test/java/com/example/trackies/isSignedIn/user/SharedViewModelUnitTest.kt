@@ -6,6 +6,7 @@ import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
+import com.google.common.base.CharMatcher.any
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -607,7 +608,7 @@ class SharedViewModelUnitTest {
 
 
     @Test
-    fun `addNewTrackie - ui state loads properly, new trackie gets added properly`() = runTest {
+    fun `addNewTrackie - addNewTrackie returns false, uiState does not get updated`() = runTest {
 
 //      Preparation of the test:
         coEvery { userRepository.isFirstTimeInTheApp() } returns false
@@ -630,13 +631,15 @@ class SharedViewModelUnitTest {
             DaysOfWeek.sunday to mapOf(0 to 0),
         )
 
+        coEvery { userRepository.addNewTrackie(trackieModel = trackieModel1) } returns false
+
         val viewModel = SharedViewModel(userRepository)
 
 //      Wait until all tasks complete:
         advanceUntilIdle()
 
 //      Asserting shared view model view state does not have any Trackies:
-        val expectedUiState1 = SharedViewModelViewState.LoadedSuccessfully(
+        val expectedUiState = SharedViewModelViewState.LoadedSuccessfully(
             license = LicenseModel(
                 active = false,
                 validUntil = null,
@@ -656,43 +659,34 @@ class SharedViewModelUnitTest {
             namesOfAllTrackies = null,
             allTrackies = null
         )
-        val actualUiState1 = viewModel.uiState.value
+        val actualUiState = viewModel.uiState.value
         assertEquals(
-            expectedUiState1,
-            actualUiState1
+            expectedUiState,
+            actualUiState
         )
 
 //      Adding new Trackie and checking if UI state has proper data:
-        viewModel.addNewTrackie(trackieModel = trackieModel1)
+        val expectedOnFailureMessage = "onFailedToAddNewTrackie"
+        var actualOnFailureMessage = ""
+
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel1,
+            onFailedToAddNewTrackie = {
+
+                actualOnFailureMessage = "onFailedToAddNewTrackie"
+            },
+        )
 
         advanceUntilIdle()
 
-        val expectedUiState2 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 1
-            ),
-            trackiesForToday = listOf<TrackieModel>(trackieModel1),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(
-                "Water" to false
-            ),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(1 to 0),
-                DaysOfWeek.tuesday to mapOf(1 to 0),
-                DaysOfWeek.wednesday to mapOf(1 to 0),
-                DaysOfWeek.thursday to mapOf(1 to 0),
-                DaysOfWeek.friday to mapOf(1 to 0),
-                DaysOfWeek.saturday to mapOf(1 to 0),
-                DaysOfWeek.sunday to mapOf(1 to 0),
-            ),
-            namesOfAllTrackies = mutableListOf("Water"),
-            allTrackies = null
-        )
-        val actualUiState2 = viewModel.uiState.value
         assertEquals(
-            expectedUiState2,
-            actualUiState2
+            expectedUiState,
+            actualUiState
+        )
+
+        assertEquals(
+            expectedOnFailureMessage,
+            actualOnFailureMessage
         )
 
 //      Verification
@@ -724,12 +718,12 @@ class SharedViewModelUnitTest {
     }
 
     @Test
-    fun `addNewTrackie - ui state loads properly, two new trackies get added properly`() = runTest {
+    fun `addNewTrackie - addNewTrackie returns true, two new trackies get added properly`() = runTest {
 
 //      Preparation of the test:
         coEvery { userRepository.isFirstTimeInTheApp() } returns false
         coEvery { userRepository.needToResetPastWeekRegularity() } returns false
-//
+
         coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
             active = false,
             validUntil = null,
@@ -746,6 +740,9 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(0 to 0),
             DaysOfWeek.sunday to mapOf(0 to 0),
         )
+
+        coEvery { userRepository.addNewTrackie(trackieModel1) } returns true
+        coEvery { userRepository.addNewTrackie(trackieModel2) } returns true
 
         val viewModel = SharedViewModel(userRepository)
 
@@ -780,8 +777,25 @@ class SharedViewModelUnitTest {
         )
 
 //      Adding new Trackie and checking if UI state has proper data:
-        viewModel.addNewTrackie(trackieModel = trackieModel1)
-        viewModel.addNewTrackie(trackieModel = trackieModel2)
+        val expectedOnFailureMessage1 = ""
+        var actualOnFailureMessage1 = ""
+
+        val expectedOnFailureMessage2 = ""
+        var actualOnFailureMessage2 = ""
+
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel1,
+            onFailedToAddNewTrackie = {
+                actualOnFailureMessage1 = "asdalksjdhakljhd"
+            }
+        )
+        viewModel.addNewTrackie(
+            trackieModel = trackieModel2,
+            onFailedToAddNewTrackie = {
+                actualOnFailureMessage2 = "asdalksjdhakljhd"
+
+            }
+        )
 
         advanceUntilIdle()
 
@@ -813,6 +827,16 @@ class SharedViewModelUnitTest {
             actualUiState2
         )
 
+        assertEquals(
+            expectedOnFailureMessage1,
+            actualOnFailureMessage1
+        )
+
+        assertEquals(
+            expectedOnFailureMessage2,
+            actualOnFailureMessage2
+        )
+
 //      Verification
         coVerify(exactly = 1) {
             userRepository.isFirstTimeInTheApp()
@@ -840,621 +864,22 @@ class SharedViewModelUnitTest {
 
             userRepository.addNewTrackie(trackieModel = trackieModel1)
             userRepository.addNewTrackie(trackieModel = trackieModel2)
-        }
-    }
-
-    @Test
-    fun `addNewTrackie - ui state loads properly, three new trackies get added properly`() = runTest {
-
-//      Preparation of the test:
-        coEvery { userRepository.isFirstTimeInTheApp() } returns false
-        coEvery { userRepository.needToResetPastWeekRegularity() } returns false
-//
-        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
-            active = false,
-            validUntil = null,
-            totalAmountOfTrackies = 0
-        )
-        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
-        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
-        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
-            DaysOfWeek.monday to mapOf(0 to 0),
-            DaysOfWeek.tuesday to mapOf(0 to 0),
-            DaysOfWeek.wednesday to mapOf(0 to 0),
-            DaysOfWeek.thursday to mapOf(0 to 0),
-            DaysOfWeek.friday to mapOf(0 to 0),
-            DaysOfWeek.saturday to mapOf(0 to 0),
-            DaysOfWeek.sunday to mapOf(0 to 0),
-        )
-
-        val viewModel = SharedViewModel(userRepository)
-
-//      Wait until all tasks complete:
-        advanceUntilIdle()
-
-//      Asserting shared view model view state does not have any Trackies:
-        val expectedUiState1 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 0
-            ),
-            trackiesForToday = listOf<TrackieModel>(),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(0 to 0),
-                DaysOfWeek.tuesday to mapOf(0 to 0),
-                DaysOfWeek.wednesday to mapOf(0 to 0),
-                DaysOfWeek.thursday to mapOf(0 to 0),
-                DaysOfWeek.friday to mapOf(0 to 0),
-                DaysOfWeek.saturday to mapOf(0 to 0),
-                DaysOfWeek.sunday to mapOf(0 to 0),
-            ),
-            namesOfAllTrackies = null,
-            allTrackies = null
-        )
-        val actualUiState1 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState1,
-            actualUiState1
-        )
-
-//      Adding new Trackie and checking if UI state has proper data:
-        viewModel.addNewTrackie(trackieModel = trackieModel1)
-        viewModel.addNewTrackie(trackieModel = trackieModel2)
-        viewModel.addNewTrackie(trackieModel = trackieModel3)
-
-        advanceUntilIdle()
-
-        val expectedUiState2 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 3
-            ),
-            trackiesForToday = listOf<TrackieModel>(trackieModel1, trackieModel3),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(
-                "Water" to false,
-                "Chocolate" to false
-            ),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(2 to 0),
-                DaysOfWeek.tuesday to mapOf(2 to 0),
-                DaysOfWeek.wednesday to mapOf(2 to 0),
-                DaysOfWeek.thursday to mapOf(2 to 0),
-                DaysOfWeek.friday to mapOf(2 to 0),
-                DaysOfWeek.saturday to mapOf(2 to 0),
-                DaysOfWeek.sunday to mapOf(2 to 0),
-            ),
-            namesOfAllTrackies = mutableListOf("Water", "Banana", "Chocolate"),
-            allTrackies = null
-        )
-        val actualUiState2 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState2,
-            actualUiState2
-        )
-
-//      Verification
-        coVerify(exactly = 1) {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-            userRepository.addNewTrackie(trackieModel = trackieModel3)
-        }
-
-        coVerify(exactly = 0) { userRepository.resetWeeklyRegularity() }
-
-        coVerifySequence {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-            userRepository.addNewTrackie(trackieModel = trackieModel3)
-        }
-    }
-
-
-    @Test
-    fun `addNewTrackie - needToResetPastWeekRegularity returns true - ui state loads properly, new trackie gets added properly`() = runTest {
-
-//      Preparation of the test:
-        coEvery { userRepository.isFirstTimeInTheApp() } returns false
-        coEvery { userRepository.needToResetPastWeekRegularity() } returns true
-        coEvery { userRepository.resetWeeklyRegularity() } returns true
-//
-        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
-            active = false,
-            validUntil = null,
-            totalAmountOfTrackies = 0)
-        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
-        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
-        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
-            DaysOfWeek.monday to mapOf(0 to 0),
-            DaysOfWeek.tuesday to mapOf(0 to 0),
-            DaysOfWeek.wednesday to mapOf(0 to 0),
-            DaysOfWeek.thursday to mapOf(0 to 0),
-            DaysOfWeek.friday to mapOf(0 to 0),
-            DaysOfWeek.saturday to mapOf(0 to 0),
-            DaysOfWeek.sunday to mapOf(0 to 0),
-        )
-
-        val viewModel = SharedViewModel(userRepository)
-
-//      Wait until all tasks complete:
-        advanceUntilIdle()
-
-//      Asserting shared view model view state does not have any Trackies:
-        val expectedUiState1 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 0
-            ),
-            trackiesForToday = listOf<TrackieModel>(),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(0 to 0),
-                DaysOfWeek.tuesday to mapOf(0 to 0),
-                DaysOfWeek.wednesday to mapOf(0 to 0),
-                DaysOfWeek.thursday to mapOf(0 to 0),
-                DaysOfWeek.friday to mapOf(0 to 0),
-                DaysOfWeek.saturday to mapOf(0 to 0),
-                DaysOfWeek.sunday to mapOf(0 to 0),
-            ),
-            namesOfAllTrackies = null,
-            allTrackies = null
-        )
-        val actualUiState1 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState1,
-            actualUiState1
-        )
-
-//      Adding new Trackie and checking if UI state has proper data:
-        viewModel.addNewTrackie(trackieModel = trackieModel1)
-
-        advanceUntilIdle()
-
-        val expectedUiState2 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 1
-            ),
-            trackiesForToday = listOf<TrackieModel>(trackieModel1),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(
-                "Water" to false
-            ),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(1 to 0),
-                DaysOfWeek.tuesday to mapOf(1 to 0),
-                DaysOfWeek.wednesday to mapOf(1 to 0),
-                DaysOfWeek.thursday to mapOf(1 to 0),
-                DaysOfWeek.friday to mapOf(1 to 0),
-                DaysOfWeek.saturday to mapOf(1 to 0),
-                DaysOfWeek.sunday to mapOf(1 to 0),
-            ),
-            namesOfAllTrackies = mutableListOf("Water"),
-            allTrackies = null
-        )
-        val actualUiState2 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState2,
-            actualUiState2
-        )
-
-//      Verification
-        coVerify(exactly = 1) {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-            userRepository.resetWeeklyRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-        }
-
-        coVerifySequence {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-            userRepository.resetWeeklyRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-        }
-    }
-
-    @Test
-    fun `addNewTrackie - needToResetPastWeekRegularity returns true - ui state loads properly, two new trackies get added properly`() = runTest {
-
-//      Preparation of the test:
-        coEvery { userRepository.isFirstTimeInTheApp() } returns false
-        coEvery { userRepository.needToResetPastWeekRegularity() } returns true
-        coEvery { userRepository.resetWeeklyRegularity() } returns true
-//
-        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
-            active = false,
-            validUntil = null,
-            totalAmountOfTrackies = 0
-        )
-        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
-        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
-        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
-            DaysOfWeek.monday to mapOf(0 to 0),
-            DaysOfWeek.tuesday to mapOf(0 to 0),
-            DaysOfWeek.wednesday to mapOf(0 to 0),
-            DaysOfWeek.thursday to mapOf(0 to 0),
-            DaysOfWeek.friday to mapOf(0 to 0),
-            DaysOfWeek.saturday to mapOf(0 to 0),
-            DaysOfWeek.sunday to mapOf(0 to 0),
-        )
-
-        val viewModel = SharedViewModel(userRepository)
-
-//      Wait until all tasks complete:
-        advanceUntilIdle()
-
-//      Asserting shared view model view state does not have any Trackies:
-        val expectedUiState1 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 0
-            ),
-            trackiesForToday = listOf<TrackieModel>(),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(0 to 0),
-                DaysOfWeek.tuesday to mapOf(0 to 0),
-                DaysOfWeek.wednesday to mapOf(0 to 0),
-                DaysOfWeek.thursday to mapOf(0 to 0),
-                DaysOfWeek.friday to mapOf(0 to 0),
-                DaysOfWeek.saturday to mapOf(0 to 0),
-                DaysOfWeek.sunday to mapOf(0 to 0),
-            ),
-            namesOfAllTrackies = null,
-            allTrackies = null
-        )
-        val actualUiState1 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState1,
-            actualUiState1
-        )
-
-//      Adding new Trackie and checking if UI state has proper data:
-        viewModel.addNewTrackie(trackieModel = trackieModel1)
-        viewModel.addNewTrackie(trackieModel = trackieModel2)
-
-        advanceUntilIdle()
-
-        val expectedUiState2 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 2
-            ),
-            trackiesForToday = listOf<TrackieModel>(trackieModel1),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(
-                "Water" to false
-            ),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(1 to 0),
-                DaysOfWeek.tuesday to mapOf(1 to 0),
-                DaysOfWeek.wednesday to mapOf(1 to 0),
-                DaysOfWeek.thursday to mapOf(1 to 0),
-                DaysOfWeek.friday to mapOf(1 to 0),
-                DaysOfWeek.saturday to mapOf(2 to 0),
-                DaysOfWeek.sunday to mapOf(2 to 0),
-            ),
-            namesOfAllTrackies = mutableListOf("Water", "Banana"),
-            allTrackies = null
-        )
-        val actualUiState2 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState2,
-            actualUiState2
-        )
-
-//      Verification
-        coVerify(exactly = 1) {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-            userRepository.resetWeeklyRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-        }
-
-        coVerifySequence {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-            userRepository.resetWeeklyRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-        }
-    }
-
-    @Test
-    fun `addNewTrackie - needToResetPastWeekRegularity returns true - ui state loads properly, three new trackies get added properly`() = runTest {
-
-//      Preparation of the test:
-        coEvery { userRepository.isFirstTimeInTheApp() } returns false
-        coEvery { userRepository.needToResetPastWeekRegularity() } returns true
-        coEvery { userRepository.resetWeeklyRegularity() } returns true
-//
-        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
-            active = false,
-            validUntil = null,
-            totalAmountOfTrackies = 0
-        )
-        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
-        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
-        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
-            DaysOfWeek.monday to mapOf(0 to 0),
-            DaysOfWeek.tuesday to mapOf(0 to 0),
-            DaysOfWeek.wednesday to mapOf(0 to 0),
-            DaysOfWeek.thursday to mapOf(0 to 0),
-            DaysOfWeek.friday to mapOf(0 to 0),
-            DaysOfWeek.saturday to mapOf(0 to 0),
-            DaysOfWeek.sunday to mapOf(0 to 0),)
-
-        val viewModel = SharedViewModel(userRepository)
-
-//      Wait until all tasks complete:
-        advanceUntilIdle()
-
-//      Asserting shared view model view state does not have any Trackies:
-        val expectedUiState1 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 0
-            ),
-            trackiesForToday = listOf<TrackieModel>(),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(0 to 0),
-                DaysOfWeek.tuesday to mapOf(0 to 0),
-                DaysOfWeek.wednesday to mapOf(0 to 0),
-                DaysOfWeek.thursday to mapOf(0 to 0),
-                DaysOfWeek.friday to mapOf(0 to 0),
-                DaysOfWeek.saturday to mapOf(0 to 0),
-                DaysOfWeek.sunday to mapOf(0 to 0),
-            ),
-            namesOfAllTrackies = null,
-            allTrackies = null
-        )
-        val actualUiState1 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState1,
-            actualUiState1
-        )
-
-//      Adding new Trackie and checking if UI state has proper data:
-        viewModel.addNewTrackie(trackieModel = trackieModel1)
-        viewModel.addNewTrackie(trackieModel = trackieModel2)
-        viewModel.addNewTrackie(trackieModel = trackieModel3)
-
-        advanceUntilIdle()
-
-        val expectedUiState2 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 3
-            ),
-            trackiesForToday = listOf<TrackieModel>(trackieModel1, trackieModel3),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(
-                "Water" to false,
-                "Chocolate" to false
-            ),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(2 to 0),
-                DaysOfWeek.tuesday to mapOf(2 to 0),
-                DaysOfWeek.wednesday to mapOf(2 to 0),
-                DaysOfWeek.thursday to mapOf(2 to 0),
-                DaysOfWeek.friday to mapOf(2 to 0),
-                DaysOfWeek.saturday to mapOf(2 to 0),
-                DaysOfWeek.sunday to mapOf(2 to 0),
-            ),
-            namesOfAllTrackies = mutableListOf("Water", "Banana", "Chocolate"),
-            allTrackies = null
-        )
-        val actualUiState2 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState2,
-            actualUiState2
-        )
-
-//      Verification
-        coVerify(exactly = 1) {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-            userRepository.resetWeeklyRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-            userRepository.addNewTrackie(trackieModel = trackieModel3)
-        }
-
-        coVerifySequence {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-            userRepository.resetWeeklyRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-            userRepository.addNewTrackie(trackieModel = trackieModel3)
-        }
-    }
-
-
-    @Test
-    fun `addNewTrackie - ui state loads properly, trackie gets deleted properly, there are two trackies left`() = runTest {
-
-//      Preparation of the test:
-        coEvery { userRepository.isFirstTimeInTheApp() } returns false
-        coEvery { userRepository.needToResetPastWeekRegularity() } returns false
-//
-        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(
-            active = false,
-            validUntil = null,
-            totalAmountOfTrackies = 0
-        )
-        coEvery { userRepository.fetchTrackiesForToday() } returns listOf<TrackieModel>()
-        coEvery { userRepository.fetchStatesOfTrackiesForToday() } returns mapOf<String, Boolean>()
-        coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
-            DaysOfWeek.monday to mapOf(0 to 0),
-            DaysOfWeek.tuesday to mapOf(0 to 0),
-            DaysOfWeek.wednesday to mapOf(0 to 0),
-            DaysOfWeek.thursday to mapOf(0 to 0),
-            DaysOfWeek.friday to mapOf(0 to 0),
-            DaysOfWeek.saturday to mapOf(0 to 0),
-            DaysOfWeek.sunday to mapOf(0 to 0),
-        )
-
-        val viewModel = SharedViewModel(userRepository)
-
-//      Wait until all tasks complete:
-        advanceUntilIdle()
-
-//      Asserting shared view model view state does not have any Trackies:
-        val expectedUiState1 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 0
-            ),
-            trackiesForToday = listOf<TrackieModel>(),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(0 to 0),
-                DaysOfWeek.tuesday to mapOf(0 to 0),
-                DaysOfWeek.wednesday to mapOf(0 to 0),
-                DaysOfWeek.thursday to mapOf(0 to 0),
-                DaysOfWeek.friday to mapOf(0 to 0),
-                DaysOfWeek.saturday to mapOf(0 to 0),
-                DaysOfWeek.sunday to mapOf(0 to 0),
-            ),
-            namesOfAllTrackies = null,
-            allTrackies = null
-        )
-        val actualUiState1 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState1,
-            actualUiState1
-        )
-
-//      Adding new Trackie and checking if UI state has proper data:
-        viewModel.addNewTrackie(trackieModel = trackieModel1)
-        viewModel.addNewTrackie(trackieModel = trackieModel2)
-        viewModel.addNewTrackie(trackieModel = trackieModel3)
-
-        advanceUntilIdle()
-
-        val expectedUiState2 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(
-                active = false,
-                validUntil = null,
-                totalAmountOfTrackies = 3
-            ),
-            trackiesForToday = listOf<TrackieModel>(trackieModel1, trackieModel3),
-            statesOfTrackiesForToday = mapOf<String, Boolean>(
-                "Water" to false,
-                "Chocolate" to false
-            ),
-            weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(2 to 0),
-                DaysOfWeek.tuesday to mapOf(2 to 0),
-                DaysOfWeek.wednesday to mapOf(2 to 0),
-                DaysOfWeek.thursday to mapOf(2 to 0),
-                DaysOfWeek.friday to mapOf(2 to 0),
-                DaysOfWeek.saturday to mapOf(2 to 0),
-                DaysOfWeek.sunday to mapOf(2 to 0),
-            ),
-            namesOfAllTrackies = mutableListOf("Water", "Banana", "Chocolate"),
-            allTrackies = null
-        )
-        val actualUiState2 = viewModel.uiState.value
-        assertEquals(
-            expectedUiState2,
-            actualUiState2
-        )
-
-//      Verification
-        coVerify(exactly = 1) {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-            userRepository.addNewTrackie(trackieModel = trackieModel3)
-        }
-
-        coVerify(exactly = 0) { userRepository.resetWeeklyRegularity() }
-
-        coVerifySequence {
-            userRepository.isFirstTimeInTheApp()
-            userRepository.needToResetPastWeekRegularity()
-
-            userRepository.fetchUsersLicense()
-            userRepository.fetchTrackiesForToday()
-            userRepository.fetchStatesOfTrackiesForToday()
-            userRepository.fetchWeeklyRegularity()
-
-            userRepository.addNewTrackie(trackieModel = trackieModel1)
-            userRepository.addNewTrackie(trackieModel = trackieModel2)
-            userRepository.addNewTrackie(trackieModel = trackieModel3)
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Suppress("DEPRECATION")
 @ExperimentalCoroutinesApi
