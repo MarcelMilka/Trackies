@@ -23,9 +23,9 @@ interface UserRepository {
 
     suspend fun addNewTrackie(trackieModel: TrackieModel): Boolean
 
-    suspend fun fetchTrackiesForToday(currentDayOfWeek: String): List<TrackieModel>?
+    suspend fun fetchTrackiesForToday(): List<TrackieModel>?
 
-    suspend fun fetchStatesOfTrackiesForToday(currentDayOfWeek: String): Map<String, Boolean>?
+    suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>?
 
     suspend fun deleteTrackie(trackieModel: TrackieModel): Boolean
 
@@ -35,8 +35,10 @@ interface UserRepository {
 
     suspend fun markTrackieAsIngested(
         currentDayOfWeek: String,
-        trackieModel: TrackieModel
-    ): Boolean
+        trackieModel: TrackieModel,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    )
 
     suspend fun deleteUsersData()
 }

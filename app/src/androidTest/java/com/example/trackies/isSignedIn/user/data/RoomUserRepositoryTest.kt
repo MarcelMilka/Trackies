@@ -27,7 +27,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -1043,6 +1042,8 @@ class RoomUserRepositoryTest {
                 .markTrackieAsIngested(
                     currentDayOfWeek = DaysOfWeek.wednesday,
                     trackieModel = trackie1,
+                    onSuccess = {},
+                    onFailure = {}
                 )
         }.join()
 
@@ -1053,7 +1054,7 @@ class RoomUserRepositoryTest {
         )
         val actual = async {
 
-            roomUserRepository.fetchStatesOfTrackiesForToday(DaysOfWeek.wednesday)
+            roomUserRepository.fetchStatesOfTrackiesForToday()
         }.await()
 
         assertEquals(
@@ -1098,6 +1099,8 @@ class RoomUserRepositoryTest {
                 .markTrackieAsIngested(
                     currentDayOfWeek = DaysOfWeek.wednesday,
                     trackieModel = trackie1,
+                    onSuccess = {},
+                    onFailure = {}
                 )
         }.join()
 
@@ -1613,71 +1616,251 @@ class RoomUserRepositoryTest {
 //////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun markTrackieAsIngested_properlyMarksTrackieAsIngested_returnsTrue() = runTest {
+    fun markTrackieAsIngested_trackieProperlyGetsMarkedAsIngested() = runBlocking {
 
-//      Preparation:
-        roomUserRepository
-            .addNewUser()
+        CountDownLatch(6)
 
-        roomUserRepository
-            .addNewTrackie(trackie1) // whole week
+//      1: making sure license exists:
+        val licenseBefore = async {
 
-        roomUserRepository
-            .addNewTrackie(trackie2) // mon - fri
-
-
-
-//      Assertions:
-        val boolean =
             roomUserRepository
-            .markTrackieAsIngested(
-                currentDayOfWeek = DaysOfWeek.wednesday,
-                trackieModel = trackie2
-            )
+                .addNewUser()
 
-        assertTrue(boolean)
+            roomDatabase
+                .licenseDAO()
+                .getLicense()
+        }.await()
 
-        val expectedRoomUserRepositoryWeeklyRegularity = mapOf<String, Map<Int, Int>> (
-            DaysOfWeek.monday to mapOf(2 to 0),
-            DaysOfWeek.tuesday to mapOf(2 to 0),
-            DaysOfWeek.wednesday to mapOf(2 to 1),
-            DaysOfWeek.thursday to mapOf(2 to 0),
-            DaysOfWeek.friday to mapOf(2 to 0),
-            DaysOfWeek.saturday to mapOf(1 to 0),
-            DaysOfWeek.sunday to mapOf(1 to 0),
-        )
-        val actualRoomUserRepositoryWeeklyRegularity =
+        assertNotNull(licenseBefore)
+
+//      2: adding new trackie
+        val expectedErrorMessage = ""
+        val actualErrorMessage = async {
+
+            var onFailureMessage = ""
+
             roomUserRepository
-                .fetchWeeklyRegularity()
+                .addNewTrackie(
+                    trackieModel = trackieModel1,
+
+                )
+
+            onFailureMessage
+        }.await()
 
         assertEquals(
-            expectedRoomUserRepositoryWeeklyRegularity,
-            actualRoomUserRepositoryWeeklyRegularity
+            expectedErrorMessage,
+            actualErrorMessage
         )
 
-        val expectedRoomDatabaseWeeklyRegularity = listOf<Regularity>(
-            Regularity(name = "lorem ipsum dolor", dayOfWeek = DaysOfWeek.monday, ingested = false),
-            Regularity(name = "lorem ipsum dolor", dayOfWeek = DaysOfWeek.tuesday, ingested = false),
-            Regularity(name = "lorem ipsum dolor", dayOfWeek = DaysOfWeek.wednesday, ingested = false),
-            Regularity(name = "lorem ipsum dolor", dayOfWeek = DaysOfWeek.thursday, ingested = false),
-            Regularity(name = "lorem ipsum dolor", dayOfWeek = DaysOfWeek.friday, ingested = false),
-            Regularity(name = "lorem ipsum dolor", dayOfWeek = DaysOfWeek.saturday, ingested = false),
-            Regularity(name = "lorem ipsum dolor", dayOfWeek = DaysOfWeek.sunday, ingested = false),
+//      3: marking Trackie as ingested
+        val expectedOnFailureMessage = ""
+        val actualOnFailureMessage = async{
 
-            Regularity(name = "sit amet", dayOfWeek = DaysOfWeek.monday, ingested = false),
-            Regularity(name = "sit amet", dayOfWeek = DaysOfWeek.tuesday, ingested = false),
-            Regularity(name = "sit amet", dayOfWeek = DaysOfWeek.wednesday, ingested = true),
-            Regularity(name = "sit amet", dayOfWeek = DaysOfWeek.thursday, ingested = false),
-            Regularity(name = "sit amet", dayOfWeek = DaysOfWeek.friday, ingested = false),
+            var onFailure = ""
+
+            roomUserRepository
+                .markTrackieAsIngested(
+                    currentDayOfWeek = DaysOfWeek.monday,
+                    trackieModel = trackieModel1,
+                    onSuccess = {},
+                    onFailure = {
+                        onFailure = it
+                    }
+                )
+
+            onFailure
+        }.await()
+
+        assertEquals(
+            expectedOnFailureMessage,
+            actualOnFailureMessage
         )
-        val actualRoomDatabaseWeeklyRegularity =
+
+//      4: making sure content in the license table does not get affected:
+        val expectedLicense = License(
+            first = 1,
+            isSignedIn = true,
+            totalAmountOfTrackies = 1
+        )
+        val actualLicense = async {
+
+            roomDatabase
+                .licenseDAO()
+                .getLicense()
+        }.await()
+
+        assertEquals(
+            expectedLicense,
+            actualLicense
+        )
+
+//      5: making sure content in the trackie table does not get affected:
+        val expectedTrackieTableContent = listOf(
+            trackieModel1.convertTrackieModelToTrackieEntity()
+        )
+        val actualTrackieTableContent = async {
+
+            roomDatabase
+                .trackiesDAO()
+                .getAllTrackies()
+        }.await()
+
+        assertEquals(
+            expectedTrackieTableContent,
+            actualTrackieTableContent
+        )
+
+//      6: verifying whether regularity table gets updated properly:
+        val expectedRegularityTableContent = listOf(
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.monday, ingested = true),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.tuesday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.wednesday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.thursday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.friday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.saturday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.sunday, ingested = false),
+        )
+        val actualRegularityTableContent = async {
+
             roomDatabase
                 .regularityDAO()
                 .fetchWeeklyRegularity()
+        }.await()
 
         assertEquals(
-            expectedRoomDatabaseWeeklyRegularity,
-            actualRoomDatabaseWeeklyRegularity
+            expectedRegularityTableContent,
+            actualRegularityTableContent
+        )
+    }
+
+    @Test
+    fun markTrackieAsIngested_trackieProperlyGetsMarkedAsIngestedCaseWithSeveralTrackies() = runBlocking {
+
+        CountDownLatch(8)
+
+//      creating the license
+        launch {
+
+            roomUserRepository
+                .addNewUser()
+        }.join()
+
+//      1: adding first trackie:
+        launch{
+
+            roomUserRepository
+                .addNewTrackie(
+                    trackieModel = trackieModel1,
+                )
+        }.join()
+
+//      2: adding second trackie:
+        launch{
+
+            roomUserRepository
+                .addNewTrackie(
+                    trackieModel = trackieModel2,
+                )
+        }.join()
+
+//      3: making sure license got updated:
+        val expectedLicense = License(
+            first = 1,
+            isSignedIn = true,
+            totalAmountOfTrackies = 2
+        )
+        val actualLicense = async{
+
+            roomDatabase
+                .licenseDAO()
+                .getLicense()
+        }.await()
+
+        assertEquals(
+            expectedLicense,
+            actualLicense
+        )
+
+//      4: making sure all trackies are in the database:
+        val expectedListOfTrackies = listOf(
+            trackieModel1.convertTrackieModelToTrackieEntity(),
+            trackieModel2.convertTrackieModelToTrackieEntity()
+        )
+        val actualListOfTrackies = async{
+
+            roomDatabase
+                .trackiesDAO()
+                .getAllTrackies()
+        }.await()
+
+        assertEquals(
+            expectedListOfTrackies,
+            actualListOfTrackies
+        )
+
+//      5: making sure all regularity instances are in the database
+        val expectedListOfRegularities = listOf(
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.monday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.tuesday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.wednesday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.thursday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.friday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.saturday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.sunday, ingested = false),
+
+            Regularity(name = "only weekend", dayOfWeek = DaysOfWeek.friday, ingested = false),
+            Regularity(name = "only weekend", dayOfWeek = DaysOfWeek.saturday, ingested = false),
+            Regularity(name = "only weekend", dayOfWeek = DaysOfWeek.sunday, ingested = false),
+        )
+        val actualListOfRegularities = async {
+
+            roomDatabase
+                .regularityDAO()
+                .fetchWeeklyRegularity()
+        }.await()
+
+        assertEquals(
+            expectedListOfRegularities,
+            actualListOfRegularities
+        )
+
+//      6: marking trackie as ingested:
+        launch {
+
+            roomUserRepository
+                .markTrackieAsIngested(
+                    currentDayOfWeek = "friday",
+                    trackieModel = trackieModel2,
+                    onSuccess = {},
+                    onFailure = {}
+                )
+        }.join()
+
+//      7: making sure the regularity instance got updated
+        val expectedListOfRegularities2 = listOf(
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.monday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.tuesday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.wednesday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.thursday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.friday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.saturday, ingested = false),
+            Regularity(name = "trackie model 1", dayOfWeek = DaysOfWeek.sunday, ingested = false),
+
+            Regularity(name = "only weekend", dayOfWeek = DaysOfWeek.friday, ingested = true),
+            Regularity(name = "only weekend", dayOfWeek = DaysOfWeek.saturday, ingested = false),
+            Regularity(name = "only weekend", dayOfWeek = DaysOfWeek.sunday, ingested = false),
+        )
+        val actualListOfRegularities2 = async {
+
+            roomDatabase
+                .regularityDAO()
+                .fetchWeeklyRegularity()
+        }.await()
+
+        assertEquals(
+            expectedListOfRegularities2,
+            actualListOfRegularities2
         )
     }
 

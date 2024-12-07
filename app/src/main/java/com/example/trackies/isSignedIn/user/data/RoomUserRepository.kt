@@ -195,7 +195,9 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun fetchTrackiesForToday(currentDayOfWeek: String): List<TrackieModel>? {
+    override suspend fun fetchTrackiesForToday(): List<TrackieModel>? {
+
+        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
         val entitiesOfTrackiesForToday = roomDatabase
             .trackiesDAO()
@@ -229,7 +231,9 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun fetchStatesOfTrackiesForToday(currentDayOfWeek: String): Map<String, Boolean>? {
+    override suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>? {
+
+        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
         val regularity = roomDatabase
             .regularityDAO()
@@ -453,9 +457,11 @@ class RoomUserRepository @Inject constructor(
     override suspend fun markTrackieAsIngested(
         currentDayOfWeek: String,
         trackieModel: TrackieModel,
-    ): Boolean {
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
 
-        return try {
+        try {
 
             roomDatabase
                 .regularityDAO()
@@ -466,13 +472,11 @@ class RoomUserRepository @Inject constructor(
                         ingested = true
                     )
                 )
-
-            true
         }
 
         catch (e: Exception) {
 
-            false
+            onFailure("$e")
         }
     }
 
