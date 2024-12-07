@@ -37,6 +37,7 @@ class SharedViewModel @Inject constructor(
 
 //              2: Checking if it's required to reset weekly regularity: (true == it's required to reset regularity)
                 val needToResetPastWeekRegularity = repository.needToResetPastWeekRegularity()
+                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
                 if (needToResetPastWeekRegularity != null) {
 
@@ -50,8 +51,8 @@ class SharedViewModel @Inject constructor(
                             true -> {
 
                                 val licenseInformation = repository.fetchUsersLicense()
-                                val trackiesForToday = repository.fetchTrackiesForToday()
-                                val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday()
+                                val trackiesForToday = repository.fetchTrackiesForToday(currentDayOfWeek = currentDayOfWeek)
+                                val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(currentDayOfWeek = currentDayOfWeek)
                                 val weeklyRegularity = repository.fetchWeeklyRegularity()
 
                                 if (
@@ -95,8 +96,8 @@ class SharedViewModel @Inject constructor(
                     else {
 
                         val licenseInformation = repository.fetchUsersLicense()
-                        val trackiesForToday = repository.fetchTrackiesForToday()
-                        val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday()
+                        val trackiesForToday = repository.fetchTrackiesForToday(currentDayOfWeek = currentDayOfWeek)
+                        val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(currentDayOfWeek = currentDayOfWeek)
                         val weeklyRegularity = repository.fetchWeeklyRegularity()
 
                         if (
@@ -527,6 +528,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
+    @Tested
     fun fetchListOfAllTrackies(
         onFailedToFetchAllTrackies: () -> Unit
     ) {
@@ -574,90 +576,96 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun markTrackieAsIngested(trackieModel: TrackieModel) {
+    fun markTrackieAsIngested(
+        trackieModel: TrackieModel,
+        currentDayOfWeek: String,
+        onFailedToMarkTrackieAsIngested: () -> Unit
+    ) {
 
-        if (_uiState.value is SharedViewModelViewState.LoadedSuccessfully) {
+        viewModelScope.launch {
 
-            Log.d("Halla!", "marked trackie as ingested")
-//          Firebase
-            viewModelScope.launch {
+            val properlyDeletedTrackie = async {
 
                 repository.markTrackieAsIngested(
-                    currentDayOfWeek = CurrentTime.getCurrentDayOfWeek(),
+                    currentDayOfWeek = currentDayOfWeek,
                     trackieModel = trackieModel,
-                    onSuccess = {
-
-                    },
-                    onFailure = {
-                        Log.d("SharedViewModel-firebase", "method 'markTrackieAsIngested' - $it")
-                    }
                 )
-            }
+            }.await()
 
-//          UI
-            val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
+            when (properlyDeletedTrackie) {
 
-            fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
+                true -> {
 
-                val updatedMap = copyOfViewState.statesOfTrackiesForToday.toMutableMap()
+                    val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
 
-                updatedMap[trackieModel.name] = true
+                    fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
 
-                return updatedMap
-            }
+                        val updatedMap = copyOfViewState.statesOfTrackiesForToday.toMutableMap()
 
-            fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
+                        updatedMap[trackieModel.name] = true
 
-                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
-
-                var updatedWeeklyRegularity = mutableMapOf<String, MutableMap<Int, Int>>()
-
-                copyOfViewState.weeklyRegularity.forEach {
-
-                    if (it.key == currentDayOfWeek) {
-
-                        val total = it.value.keys.toIntArray()[0]
-                        var ingested = it.value.values.toIntArray()[0]
-                        ingested = ingested + 1
-
-                        val value = mutableMapOf(total to ingested)
-
-                        updatedWeeklyRegularity.put(
-                            key = it.key,
-                            value = value
-                        )
+                        return updatedMap
                     }
 
-                    else {
+                    fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
 
-                        val total = it.value.keys.toIntArray()[0]
-                        var ingested = it.value.values.toIntArray()[0]
+                        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
-                        val value = mutableMapOf(total to ingested)
+                        var updatedWeeklyRegularity = mutableMapOf<String, MutableMap<Int, Int>>()
 
-                        updatedWeeklyRegularity.put(
-                            key = it.key,
-                            value = value
+                        copyOfViewState.weeklyRegularity.forEach {
+
+                            if (it.key == currentDayOfWeek) {
+
+                                val total = it.value.keys.toIntArray()[0]
+                                var ingested = it.value.values.toIntArray()[0]
+                                ingested = ingested + 1
+
+                                val value = mutableMapOf(total to ingested)
+
+                                updatedWeeklyRegularity.put(
+                                    key = it.key,
+                                    value = value
+                                )
+                            }
+
+                            else {
+
+                                val total = it.value.keys.toIntArray()[0]
+                                var ingested = it.value.values.toIntArray()[0]
+
+                                val value = mutableMapOf(total to ingested)
+
+                                updatedWeeklyRegularity.put(
+                                    key = it.key,
+                                    value = value
+                                )
+                            }
+                        }
+
+                        return updatedWeeklyRegularity
+                    }
+
+                    val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
+                    val updatedWeeklyRegularity = updateWeeklyRegularity()
+
+                    _uiState.update {
+
+                        SharedViewModelViewState.LoadedSuccessfully(
+                            license = copyOfViewState.license,
+                            trackiesForToday = copyOfViewState.trackiesForToday,
+                            statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
+                            weeklyRegularity = updatedWeeklyRegularity,
+                            namesOfAllTrackies = copyOfViewState.namesOfAllTrackies,
+                            allTrackies = copyOfViewState.allTrackies
                         )
                     }
                 }
 
-                return updatedWeeklyRegularity
-            }
+                false -> {
 
-            val updatedStatesOfTrackiesForToday = updateStatesOfTrackiesForToday()
-            val updatedWeeklyRegularity = updateWeeklyRegularity()
-
-            _uiState.update {
-
-                SharedViewModelViewState.LoadedSuccessfully(
-                    license = copyOfViewState.license,
-                    trackiesForToday = copyOfViewState.trackiesForToday,
-                    statesOfTrackiesForToday = updatedStatesOfTrackiesForToday,
-                    weeklyRegularity = updatedWeeklyRegularity,
-                    namesOfAllTrackies = copyOfViewState.namesOfAllTrackies,
-                    allTrackies = copyOfViewState.allTrackies
-                )
+                    onFailedToMarkTrackieAsIngested()
+                }
             }
         }
     }

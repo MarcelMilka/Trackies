@@ -468,10 +468,10 @@ class FirebaseUserRepository @Inject constructor(
 
 
 //  This method is responsible for fetching all the user's trackies assigned to the current day of week.
-    override suspend fun fetchTrackiesForToday(): List<TrackieModel>? {
+    override suspend fun fetchTrackiesForToday(currentDayOfWeek: String): List<TrackieModel>? {
 
         val namesOfTrackiesForToday: List<String>? =
-            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
+            fetchNamesOfTrackies(dayOfWeek = currentDayOfWeek)
 
         val trackiesForToday: MutableList<TrackieModel> = mutableListOf()
 
@@ -531,10 +531,12 @@ class FirebaseUserRepository @Inject constructor(
     }
 
 
-    override suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>? {
+    override suspend fun fetchStatesOfTrackiesForToday(
+        currentDayOfWeek: String
+    ): Map<String, Boolean>? {
 
         val namesOfTrackiesForToday: List<String>? =
-            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
+            fetchNamesOfTrackies(dayOfWeek = currentDayOfWeek)
 
         var namesAndStatesOfTrackies = mutableMapOf<String, Boolean>()
 
@@ -898,25 +900,33 @@ class FirebaseUserRepository @Inject constructor(
     override suspend fun markTrackieAsIngested(
         currentDayOfWeek: String,
         trackieModel: TrackieModel,
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
+    ): Boolean {
 
-        if (trackieModel.ingestionTime == null) {
+        return try {
 
-            trackieModel.repeatOn.forEach { dayOfWeek ->
+            firebase.runBatch { batch ->
 
-                usersWeeklyStatistics
-                    .collection(currentDayOfWeek) // current day of week
-                    .document(trackieModel.name)
-                    .update("ingested", true)
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure("$it")
-                    }
-            }
+                if (trackieModel.ingestionTime == null) {
+
+                    val docRef =
+                        usersWeeklyStatistics
+                        .collection(currentDayOfWeek)
+                        .document(trackieModel.name)
+
+                    batch.update(
+                        docRef,
+                        "ingested",
+                        true
+                    )
+                }
+            }.await()
+
+            true
+        }
+
+        catch (e: Exception) {
+
+            false
         }
     }
 

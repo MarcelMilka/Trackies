@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.globalConstants.CurrentTime
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.insertNewPassword
 import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.confirmDeletionOfTheAccount
 import com.example.trackies.isSignedIn.homeScreen.ui.homeScreen
@@ -456,7 +457,9 @@ class MainActivity : ComponentActivity() {
                             onMarkAsIngested = {
 
                                 sharedViewModel.markTrackieAsIngested(
-                                    trackieModel = it
+                                    trackieModel = it,
+                                    currentDayOfWeek = CurrentTime.getCurrentDayOfWeek(),
+                                    onFailedToMarkTrackieAsIngested = {}
                                 )
                             }
                         )
@@ -565,7 +568,9 @@ class MainActivity : ComponentActivity() {
                             onMarkTrackieAsIngested = {
 
                                 sharedViewModel.markTrackieAsIngested(
-                                    trackieModel = it
+                                    trackieModel = it,
+                                    currentDayOfWeek = CurrentTime.getCurrentDayOfWeek(),
+                                    onFailedToMarkTrackieAsIngested = {}
                                 )
                             },
 
