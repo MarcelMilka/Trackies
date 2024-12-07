@@ -1,7 +1,6 @@
 package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
-import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModelEntity
@@ -34,7 +33,7 @@ class FirebaseUserRepository @Inject constructor(
     private val namesOfTrackies = user.collection("names of trackies").document("names of trackies")
     private val usersWeeklyStatistics = user.collection("user's statistics").document("user's weekly statistics")
 
-    override suspend fun needToResetPastWeekRegularity(): Boolean? {
+    override suspend fun needToResetPastWeekRegularity(currentDayOfWeek: String): Boolean? {
 
         val weeklyRegularity = fetchWeeklyRegularity()
 
@@ -42,7 +41,6 @@ class FirebaseUserRepository @Inject constructor(
 
             if (weeklyRegularity != null) {
 
-                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
                 var resetPastWeekActivity = false
                 var passedCurrentDayOfWeek = false
 
@@ -88,9 +86,8 @@ class FirebaseUserRepository @Inject constructor(
         }
     }
 
-    override suspend fun resetWeeklyRegularity(): Boolean {
+    override suspend fun resetWeeklyRegularity(currentDayOfWeek: String): Boolean {
 
-        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
         var passedCurrentDayOfWeek = false
 
         var resetIsSuccessful = true
@@ -139,6 +136,7 @@ class FirebaseUserRepository @Inject constructor(
 
         catch (e: Exception) {
 
+            Log.d("FirebaseUserRepository error", "$e")
             false
         }
     }
@@ -306,74 +304,6 @@ class FirebaseUserRepository @Inject constructor(
         fetchNamesOfTrackies(dayOfWeek = "whole week")?.toMutableList()
 
 
-//  This method is responsible for fetching all Trackies assigned to the current day of week.
-    override suspend fun fetchTodayTrackies(): List<TrackieModel>? {
-
-        val namesOfTrackiesForToday: List<String>? =
-            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
-
-        val fetchedTrackies: MutableList<TrackieModel> = mutableListOf()
-
-        return suspendCoroutine { continuation ->
-
-            if (namesOfTrackiesForToday != null) {
-
-                if (namesOfTrackiesForToday.isNotEmpty()) {
-
-                    val tasks = namesOfTrackiesForToday.map { nameOfTheTrackie ->
-
-                        usersTrackies.collection(nameOfTheTrackie).document(nameOfTheTrackie)
-                            .get()
-                            .addOnSuccessListener { document ->
-
-                                val trackieViewStateEntity = document.toObject(TrackieModelEntity::class.java)
-
-                                if (trackieViewStateEntity != null) {
-
-                                    try {
-                                        val trackieViewState = trackieViewStateEntity.convertEntityToTrackieModel()
-                                        fetchedTrackies.add(element = trackieViewState)
-                                    }
-                                    catch (e: Exception) {
-                                        Log.d("Halla!", "FirebaseUserRepository, fetchTodayTrackies: $e")
-                                        continuation.resume(null)
-                                    }
-                                }
-                                else {
-                                    Log.d(
-                                        "Halla!",
-                                        "FirebaseUserRepository, fetchTodayTrackies: trackieViewStateEntity is null"
-                                    )
-                                    continuation.resume(null)
-                                }
-                            }
-                            .addOnFailureListener { exception ->
-                                Log.d("Halla!", "fetchTrackiesForToday, an error occurred while fetching data, $exception")
-                            }
-                    }
-
-                    Tasks.whenAllComplete(tasks)
-                        .addOnCompleteListener {
-                            continuation.resume(fetchedTrackies)
-                        }
-                }
-
-                else {
-                    Log.d(
-                        "Halla!",
-                        "FirebaseUserRepository, fetchTodayTrackies: there are no any names of trackies assigned for this day"
-                    )
-                    continuation.resume(listOf())
-                }
-            }
-
-            else {
-                continuation.resume(null)
-            }
-        }
-    }
-
-
 //  This method is responsible for adding new trackie to the user's database.
     override suspend fun addNewTrackie(trackieModel: TrackieModel): Boolean {
 
@@ -462,16 +392,18 @@ class FirebaseUserRepository @Inject constructor(
         }
 
         catch (e: Exception) {
+
+            Log.d("FirebaseUserRepository error", "$e")
             false
         }
     }
 
 
 //  This method is responsible for fetching all the user's trackies assigned to the current day of week.
-    override suspend fun fetchTrackiesForToday(): List<TrackieModel>? {
+    override suspend fun fetchTrackiesForToday(currentDayOfWeek: String): List<TrackieModel>? {
 
         val namesOfTrackiesForToday: List<String>? =
-            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
+            fetchNamesOfTrackies(dayOfWeek = currentDayOfWeek)
 
         val trackiesForToday: MutableList<TrackieModel> = mutableListOf()
 
@@ -499,6 +431,7 @@ class FirebaseUserRepository @Inject constructor(
 
                                     catch (e: Exception) {
 
+                                        Log.d("FirebaseUserRepository error", "$e")
                                         continuation.resume(
                                             value = null
                                         )
@@ -531,10 +464,10 @@ class FirebaseUserRepository @Inject constructor(
     }
 
 
-    override suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>? {
+    override suspend fun fetchStatesOfTrackiesForToday(currentDayOfWeek: String): Map<String, Boolean>? {
 
         val namesOfTrackiesForToday: List<String>? =
-            fetchNamesOfTrackies(dayOfWeek = CurrentTime.getCurrentDayOfWeek())
+            fetchNamesOfTrackies(dayOfWeek = currentDayOfWeek)
 
         var namesAndStatesOfTrackies = mutableMapOf<String, Boolean>()
 
@@ -547,7 +480,7 @@ class FirebaseUserRepository @Inject constructor(
                     namesOfTrackiesForToday.onEach {nameOfTheTrackie ->
 
                         usersWeeklyStatistics
-                            .collection(CurrentTime.getCurrentDayOfWeek())
+                            .collection(currentDayOfWeek)
                             .document(nameOfTheTrackie)
                             .get()
                             .addOnSuccessListener {document ->
@@ -670,6 +603,7 @@ class FirebaseUserRepository @Inject constructor(
 
         catch (e: Exception) {
 
+            Log.d("FirebaseUserRepository error", "$e")
             false
         }
     }
@@ -707,6 +641,7 @@ class FirebaseUserRepository @Inject constructor(
 
                                     catch (e: Exception) {
 
+                                        Log.d("FirebaseUserRepository error", "$e")
                                         continuation.resume(
                                             value = null
                                         )
@@ -748,8 +683,6 @@ class FirebaseUserRepository @Inject constructor(
 
 
     override suspend fun fetchWeeklyRegularity(): Map<String, Map<Int, Int>>? {
-
-        var weeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
 
         val daysOfWeek = listOf(
             DaysOfWeek.monday,
@@ -811,6 +744,7 @@ class FirebaseUserRepository @Inject constructor(
 
         catch (e: Exception) {
 
+            Log.d("FirebaseUserRepository error", "$e")
             return null
         }
     }
@@ -890,6 +824,7 @@ class FirebaseUserRepository @Inject constructor(
 
         catch (e: Exception) {
 
+            Log.d("FirebaseUserRepository error", "$e")
             return null
         }
     }
@@ -898,25 +833,35 @@ class FirebaseUserRepository @Inject constructor(
     override suspend fun markTrackieAsIngested(
         currentDayOfWeek: String,
         trackieModel: TrackieModel,
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
+    ): Boolean {
 
-        if (trackieModel.ingestionTime == null) {
+        return try {
 
-            trackieModel.repeatOn.forEach { dayOfWeek ->
+            firebase.runBatch { batch ->
 
-                usersWeeklyStatistics
-                    .collection(currentDayOfWeek) // current day of week
-                    .document(trackieModel.name)
-                    .update("ingested", true)
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure("$it")
-                    }
-            }
+                if (trackieModel.ingestionTime == null) {
+
+                    val docRef =
+                        usersWeeklyStatistics
+                        .collection(currentDayOfWeek)
+                        .document(trackieModel.name)
+
+                    batch.update(
+                        docRef,
+                        "ingested",
+                        true
+                    )
+                }
+
+            }.await()
+
+            true
+        }
+
+        catch (e: Exception) {
+
+            Log.d("FirebaseUserRepository error", "$e")
+            false
         }
     }
 

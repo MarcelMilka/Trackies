@@ -3,7 +3,7 @@ package com.example.trackies.isSignedIn.user.vm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.globalConstants.CurrentTime
+import com.example.globalConstants.CurrentDateTime
 import com.example.globalConstants.DaysOfWeek
 import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
@@ -36,22 +36,33 @@ class SharedViewModel @Inject constructor(
             if (repository.isFirstTimeInTheApp() != null) {
 
 //              2: Checking if it's required to reset weekly regularity: (true == it's required to reset regularity)
-                val needToResetPastWeekRegularity = repository.needToResetPastWeekRegularity()
+                val needToResetPastWeekRegularity = repository.needToResetPastWeekRegularity(
+                    currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
+                )
 
                 if (needToResetPastWeekRegularity != null) {
 
 //                  3.1: Reset of the regularity from the past week: and fetching user's data:
                     if (needToResetPastWeekRegularity) {
 
-                        val resetOfRegularityIsSuccessful = repository.resetWeeklyRegularity()
+                        val resetOfRegularityIsSuccessful = repository.resetWeeklyRegularity(
+                            currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
+                        )
 
                         when (resetOfRegularityIsSuccessful) {
 
                             true -> {
 
                                 val licenseInformation = repository.fetchUsersLicense()
-                                val trackiesForToday = repository.fetchTrackiesForToday()
-                                val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday()
+
+                                val trackiesForToday = repository.fetchTrackiesForToday(
+                                    currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
+                                )
+
+                                val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
+                                    currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
+                                )
+
                                 val weeklyRegularity = repository.fetchWeeklyRegularity()
 
                                 if (
@@ -95,8 +106,15 @@ class SharedViewModel @Inject constructor(
                     else {
 
                         val licenseInformation = repository.fetchUsersLicense()
-                        val trackiesForToday = repository.fetchTrackiesForToday()
-                        val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday()
+
+                        val trackiesForToday = repository.fetchTrackiesForToday(
+                            currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
+                        )
+
+                        val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
+                            currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
+                        )
+
                         val weeklyRegularity = repository.fetchWeeklyRegularity()
 
                         if (
@@ -180,7 +198,7 @@ class SharedViewModel @Inject constructor(
 
                     fun updateTrackiesForToday(): MutableList<TrackieModel> {
 
-                        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+                        val currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
                         var copyOfTrackiesForToday = copyOfViewState.trackiesForToday.toMutableList()
 
                         return if (trackieModel.repeatOn.contains(element = currentDayOfWeek)) {
@@ -196,7 +214,7 @@ class SharedViewModel @Inject constructor(
 
                     fun updateStatesOfTrackiesForToday(): Map<String, Boolean> {
 
-                        return if (trackieModel.repeatOn.contains(CurrentTime.getCurrentDayOfWeek())) {
+                        return if (trackieModel.repeatOn.contains(CurrentDateTime.getCurrentDayOfWeek())) {
 
                             val newStatesOfTrackiesForToday: MutableMap<String, Boolean> = mutableMapOf()
 
@@ -395,7 +413,7 @@ class SharedViewModel @Inject constructor(
 
                     fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
 
-                        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+                        val currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
                         var passedCurrentDayOfWeek = false
 
                         var newWeeklyRegularity = mutableMapOf<String, Map<Int, Int>>()
@@ -583,14 +601,8 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
 
                 repository.markTrackieAsIngested(
-                    currentDayOfWeek = CurrentTime.getCurrentDayOfWeek(),
+                    currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek(),
                     trackieModel = trackieModel,
-                    onSuccess = {
-
-                    },
-                    onFailure = {
-                        Log.d("SharedViewModel-firebase", "method 'markTrackieAsIngested' - $it")
-                    }
                 )
             }
 
@@ -608,7 +620,7 @@ class SharedViewModel @Inject constructor(
 
             fun updateWeeklyRegularity(): Map<String, Map<Int, Int>> {
 
-                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+                val currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
 
                 var updatedWeeklyRegularity = mutableMapOf<String, MutableMap<Int, Int>>()
 

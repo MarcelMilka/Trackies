@@ -22,7 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.globalConstants.CurrentTime
+import com.example.globalConstants.CurrentDateTime
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
@@ -39,7 +39,7 @@ fun detailedTrackieWeeklyRegularityChartLoadedSuccessFully(
     sharedViewModelUiState: SharedViewModelViewState.LoadedSuccessfully
 ) {
 
-    val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+    val currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
     var activatedBar: String? by remember {
         mutableStateOf(currentDayOfWeek)
     }

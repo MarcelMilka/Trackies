@@ -3,7 +3,7 @@ package com.example.globalConstants
 import java.time.LocalDate
 import java.time.LocalTime
 
-object CurrentTime {
+object CurrentDateTime {
 
     fun getCurrentDayOfWeek(): String {
 

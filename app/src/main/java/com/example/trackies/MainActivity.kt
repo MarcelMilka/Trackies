@@ -685,8 +685,6 @@ class MainActivity : ComponentActivity() {
                                         onFailedToAddNewTrackie = {},
                                     )
 
-                                    Log.d("Halla!", "${sharedViewModelUiState}")
-
                                     addNewTrackieViewModel.clearAll()
                                 }
                             )

@@ -1,7 +1,6 @@
 package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
-import com.example.globalConstants.CurrentTime
 import com.example.globalConstants.DaysOfWeek
 import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.aRoom.db.RoomDatabase
@@ -43,9 +42,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-//  Fetches all rows from the table "License".
-//  Table "License" can have only one row, with @PrimaryKey 'first' equal to 1.
-//  If .firstTimeInTheApp() returns null, then a method addNewUserShould
     @Tested
     override suspend fun isFirstTimeInTheApp(): Boolean? {
 
@@ -77,7 +73,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun needToResetPastWeekRegularity(): Boolean? {
+    override suspend fun needToResetPastWeekRegularity(currentDayOfWeek: String): Boolean? {
 
         val weeklyRegularity =
             roomDatabase
@@ -87,8 +83,6 @@ class RoomUserRepository @Inject constructor(
         return suspendCoroutine { continuation ->
 
             if (weeklyRegularity != null) {
-
-                val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
 
                 var passedCurrentDayOfWeek = false
                 var daysOfWeekToCheck = mutableSetOf<String>()
@@ -144,7 +138,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun resetWeeklyRegularity(): Boolean {
+    override suspend fun resetWeeklyRegularity(currentDayOfWeek: String): Boolean {
 
         return try {
 
@@ -171,6 +165,7 @@ class RoomUserRepository @Inject constructor(
 
                 catch (e: Exception) {
 
+                    Log.d("RoomUserRepository error", "$e")
                     resetIsSuccessful = false
                 }
             }
@@ -180,6 +175,7 @@ class RoomUserRepository @Inject constructor(
 
         catch (e: Exception) {
 
+            Log.d("RoomUserRepository error", "$e")
             false
         }
     }
@@ -195,9 +191,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun fetchTrackiesForToday(): List<TrackieModel>? {
-
-        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+    override suspend fun fetchTrackiesForToday(currentDayOfWeek: String): List<TrackieModel>? {
 
         val entitiesOfTrackiesForToday = roomDatabase
             .trackiesDAO()
@@ -226,14 +220,14 @@ class RoomUserRepository @Inject constructor(
         }
 
         catch (e: Exception) {
+
+            Log.d("RoomUserRepository error", "$e")
             null
         }
     }
 
     @Tested
-    override suspend fun fetchStatesOfTrackiesForToday(): Map<String, Boolean>? {
-
-        val currentDayOfWeek = CurrentTime.getCurrentDayOfWeek()
+    override suspend fun fetchStatesOfTrackiesForToday(currentDayOfWeek: String): Map<String, Boolean>? {
 
         val regularity = roomDatabase
             .regularityDAO()
@@ -410,6 +404,7 @@ class RoomUserRepository @Inject constructor(
 
         catch (e: Exception) {
 
+            Log.d("RoomUserRepository error", "$e")
             false
         }
     }
@@ -449,6 +444,7 @@ class RoomUserRepository @Inject constructor(
 
         catch (e: Exception) {
 
+            Log.d("RoomUserRepository error", "$e")
             false
         }
     }
@@ -456,12 +452,10 @@ class RoomUserRepository @Inject constructor(
     @Tested
     override suspend fun markTrackieAsIngested(
         currentDayOfWeek: String,
-        trackieModel: TrackieModel,
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
+        trackieModel: TrackieModel
+    ): Boolean {
 
-        try {
+        return try {
 
             roomDatabase
                 .regularityDAO()
@@ -472,11 +466,14 @@ class RoomUserRepository @Inject constructor(
                         ingested = true
                     )
                 )
+
+            true
         }
 
         catch (e: Exception) {
 
-            onFailure("$e")
+            Log.d("RoomUserRepository error", "$e")
+            false
         }
     }
 
@@ -485,6 +482,4 @@ class RoomUserRepository @Inject constructor(
     override suspend fun fetchNamesOfTrackies(dayOfWeek: String): List<String>? = null
 
     override suspend fun fetchNamesOfAllTrackies(): MutableList<String>? = null
-
-    override suspend fun fetchTodayTrackies(): List<TrackieModel>? = null
 }
