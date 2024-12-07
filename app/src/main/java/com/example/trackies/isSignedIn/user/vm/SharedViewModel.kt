@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.globalConstants.CurrentDateTime
 import com.example.globalConstants.DaysOfWeek
-import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
@@ -28,6 +27,9 @@ class SharedViewModel @Inject constructor(
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    var error: SharedViewModelErrors? = null
+
+//  @Tested
     init {
 
         viewModelScope.launch {
@@ -87,6 +89,8 @@ class SharedViewModel @Inject constructor(
 
                                 else {
 
+                                    error = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
+
                                     _uiState.update {
                                         SharedViewModelViewState.FailedToLoadData
                                     }
@@ -94,6 +98,8 @@ class SharedViewModel @Inject constructor(
                             }
 
                             false -> {
+
+                                error = SharedViewModelErrors.ResetWeeklyRegularityReturnedError
 
                                 _uiState.update {
                                     SharedViewModelViewState.FailedToLoadData
@@ -139,6 +145,8 @@ class SharedViewModel @Inject constructor(
 
                         else {
 
+                            error = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
+
                             _uiState.update {
                                 SharedViewModelViewState.FailedToLoadData
                             }
@@ -147,6 +155,9 @@ class SharedViewModel @Inject constructor(
                 }
 
                 else {
+
+                    error = SharedViewModelErrors.NeedToResetPastWeekRegularityReturnedError
+
                     _uiState.update {
                         SharedViewModelViewState.FailedToLoadData
                     }
@@ -155,6 +166,8 @@ class SharedViewModel @Inject constructor(
 
             else {
 
+                error = SharedViewModelErrors.IsFirstTimeInTheAppReturnedError
+
                 _uiState.update {
                     SharedViewModelViewState.FailedToLoadData
                 }
@@ -162,7 +175,6 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    @Tested
     fun addNewTrackie(
         trackieModel: TrackieModel,
         onFailedToAddNewTrackie: () -> Unit
@@ -326,7 +338,6 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    @Tested
     fun deleteTrackie(
         trackieViewState: TrackieModel,
         onFailedToDeleteTrackie: () -> Unit
@@ -692,4 +703,11 @@ class SharedViewModel @Inject constructor(
             }
         }
     }
+}
+
+enum class SharedViewModelErrors {
+    IsFirstTimeInTheAppReturnedError,
+    NeedToResetPastWeekRegularityReturnedError,
+    ResetWeeklyRegularityReturnedError,
+    AtLeastOneFinalMethodReturnedError,
 }

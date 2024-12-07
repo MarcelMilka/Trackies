@@ -1,12 +1,19 @@
 package com.example.trackies.isSignedIn.user.data
 
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.aRoom.di.RoomDatabaseProvider
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 import com.example.trackies.isSignedIn.user.di.UserRepositoryModule
+import dagger.Lazy
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +25,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
@@ -82,5 +90,35 @@ class RoomUserRepositoryTest {
             expected,
             actual
         )
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    class RoomDatabaseProvider {
+
+        @Provides
+        @Singleton
+        fun provideRoomDatabase(): RoomDatabase =
+            Room
+                .inMemoryDatabaseBuilder(
+                    context = ApplicationProvider.getApplicationContext(),
+                    klass = RoomDatabase::class.java
+                )
+                .allowMainThreadQueries()
+                .build()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    class UserRepositoryModule {
+
+        @Provides
+        fun provideUserRepository(
+            lazyRoomDatabase: Lazy<RoomDatabase>
+        ): UserRepository {
+
+            val roomDatabase = lazyRoomDatabase.get()
+            return RoomUserRepository(roomDatabase = roomDatabase)
+        }
     }
 }
