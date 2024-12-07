@@ -213,10 +213,7 @@ class RoomUserRepository @Inject constructor(
     }
 
     @Tested
-    override suspend fun fetchAllTrackies(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ): List<TrackieModel>? {
+    override suspend fun fetchAllTrackies(): List<TrackieModel>? {
 
         return try {
 
@@ -229,7 +226,6 @@ class RoomUserRepository @Inject constructor(
         }
 
         catch (e: Exception) {
-            onFailure("$e")
             null
         }
     }

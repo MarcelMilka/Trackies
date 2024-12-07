@@ -935,11 +935,7 @@ class RoomUserRepositoryTest {
         val expectedListOfAllTrackies = listOf<TrackieModel>()
         val actualListOfAllTrackies = async {
 
-            roomUserRepository
-                .fetchAllTrackies(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.fetchAllTrackies()
         }.await()
 
         assertEquals(
@@ -1001,11 +997,7 @@ class RoomUserRepositoryTest {
         )
         val actualListOfTrackiesForToday = async {
 
-            roomUserRepository
-                .fetchAllTrackies(
-                    onSuccess = {},
-                    onFailure = {}
-                )
+            roomUserRepository.fetchAllTrackies()
         }.await()
 
         assertEquals(

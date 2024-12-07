@@ -675,10 +675,7 @@ class FirebaseUserRepository @Inject constructor(
     }
 
 
-    override suspend fun fetchAllTrackies(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ): List<TrackieModel>? {
+    override suspend fun fetchAllTrackies(): List<TrackieModel>? {
 
         val namesOfAllTrackies: List<String>? = fetchNamesOfTrackies("whole week")
         val allTrackies: MutableList<TrackieModel> = mutableListOf()
@@ -703,38 +700,48 @@ class FirebaseUserRepository @Inject constructor(
 
                                     try {
 
-                                        allTrackies.add(element = trackieViewState)
+                                        allTrackies.add(
+                                            element = trackieViewState
+                                        )
                                     }
 
                                     catch (e: Exception) {
 
-                                        continuation.resume(value = null)
-                                        onFailure("$e")
+                                        continuation.resume(
+                                            value = null
+                                        )
                                     }
                                 }
                             }
                             .addOnFailureListener {
 
-                                continuation.resume(value = null)
-                                onFailure("$it")
+                                continuation.resume(
+                                    value = null
+                                )
                             }
                     }
 
                     Tasks.whenAllComplete(tasks).addOnCompleteListener {
 
-                        continuation.resume(value = allTrackies)
+                        continuation.resume(
+                            value = allTrackies
+                        )
                     }
                 }
 
                 else {
 
-                    continuation.resume(value = listOf<TrackieModel>())
+                    continuation.resume(
+                        value = listOf<TrackieModel>()
+                    )
                 }
             }
 
             else {
 
-                continuation.resume(value = null)
+                continuation.resume(
+                    value = null
+                )
             }
         }
     }

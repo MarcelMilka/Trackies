@@ -554,7 +554,7 @@ class MainActivity : ComponentActivity() {
 
                             fetchAllUsersTrackies = {
 
-                                sharedViewModel.fetchListOfAllTrackies()
+                                sharedViewModel.fetchListOfAllTrackies {}
                             },
 
                             onReturn = {
@@ -684,6 +684,9 @@ class MainActivity : ComponentActivity() {
                                         trackieModel = it,
                                         onFailedToAddNewTrackie = {},
                                     )
+
+                                    Log.d("Halla!", "${sharedViewModelUiState}")
+
                                     addNewTrackieViewModel.clearAll()
                                 }
                             )

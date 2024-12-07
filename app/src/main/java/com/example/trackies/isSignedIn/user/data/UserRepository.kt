@@ -29,10 +29,7 @@ interface UserRepository {
 
     suspend fun deleteTrackie(trackieModel: TrackieModel): Boolean
 
-    suspend fun fetchAllTrackies(
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ): List<TrackieModel>?
+    suspend fun fetchAllTrackies(): List<TrackieModel>?
 
     suspend fun fetchWeeklyRegularity(): Map<String, Map<Int, Int>>?
 
