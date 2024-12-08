@@ -6,7 +6,6 @@ import com.example.trackies.isSignedIn.homeScreen.buisness.HeightOfLazyColumn
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -42,8 +41,6 @@ class HomeScreenViewModel @Inject constructor(): ViewModel(){
         }
 
         viewModelScope.launch {
-
-            delay(250)
 
             _uiState.update {
 
@@ -87,8 +84,6 @@ class HomeScreenViewModel @Inject constructor(): ViewModel(){
 
         viewModelScope.launch {
 
-            delay(250)
-
             _uiState.update {
 
                 HomeScreenViewState(
@@ -109,14 +104,6 @@ class HomeScreenViewModel @Inject constructor(): ViewModel(){
                 heightOfLazyColumn = copyOfUiState.value.heightOfLazyColumn,
                 typeOfHomeScreenChart = homeScreenChartToDisplay
             )
-        }
-    }
-
-//  Used to set values to default when a user switches account.
-    fun resetHomeScreenViewState() {
-
-        _uiState.update {
-            HomeScreenViewState()
         }
     }
 }

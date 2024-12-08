@@ -86,18 +86,6 @@ class MainActivity : ComponentActivity() {
         initialDestination
     }
 
-    private val homeScreenViewModel by lazy {
-        HomeScreenViewModel()
-    }
-
-    private val lazyAllTrackiesViewModel by lazy {
-        AllTrackiesViewModel()
-    }
-
-    private val detailedTrackieViewModel by lazy {
-        DetailedTrackieViewModel()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -399,17 +387,16 @@ class MainActivity : ComponentActivity() {
                         exitTransition = {ExitTransition.None}
                     ) {
 
-//                      SharedViewModel:
-                        val sharedViewModelEntry = navigationController.sharedViewModelEntry(
-                            navBackStackEntry = it
-                        )
+                        val viewModelEntry = navigationController
+                                .sharedViewModelEntry(navBackStackEntry = it)
 
-                        var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
-
+                        var sharedViewModel = hiltViewModel<SharedViewModel>(viewModelEntry)
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
-//                      HomeScreen
+                        var homeScreenViewModel = hiltViewModel<HomeScreenViewModel>(viewModelEntry)
                         val homeScreenUiState by homeScreenViewModel.uiState.collectAsState()
+
+                        val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
 
                         homeScreen(
 
@@ -532,17 +519,16 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
 
-                        val allTrackiesViewModel = lazyAllTrackiesViewModel
+                        val viewModelEntry = navigationController
+                            .sharedViewModelEntry(navBackStackEntry = it)
+
+                        var sharedViewModel = hiltViewModel<SharedViewModel>(viewModelEntry)
+                        val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
+
+                        val allTrackiesViewModel = hiltViewModel<AllTrackiesViewModel>(viewModelEntry)
                         val listToDisplay by allTrackiesViewModel.listToDisplay.collectAsState()
 
-//                      SharedViewModel:
-                        val sharedViewModelEntry = navigationController.sharedViewModelEntry(
-                            navBackStackEntry = it
-                        )
-
-                        var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
-
-                        val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
+                        val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
 
                         displayAllTrackies(
 
@@ -728,15 +714,13 @@ class MainActivity : ComponentActivity() {
                             exitTransition = {ExitTransition.None}
                         ) {
 
-//                          SharedViewModel:
-                            val sharedViewModelEntry = navigationController.sharedViewModelEntry(
-                                navBackStackEntry = it
-                            )
+                            val viewModelEntry = navigationController
+                                .sharedViewModelEntry(navBackStackEntry = it)
 
-                            var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
-
+                            var sharedViewModel = hiltViewModel<SharedViewModel>(viewModelEntry)
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
+                            val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
                             detailedTrackie(
@@ -753,15 +737,19 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.ConfirmDeletionOfTheTrackie) {
 
+                            val viewModelEntry = navigationController
+                                .sharedViewModelEntry(navBackStackEntry = it)
+
+                            var sharedViewModel = hiltViewModel<SharedViewModel>(viewModelEntry)
+
+                            val homeScreenViewModel = hiltViewModel<HomeScreenViewModel>(viewModelEntry)
+
+                            val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
-                            val sharedViewModelEntry = navigationController.sharedViewModelEntry(
-                                navBackStackEntry = it
-                            )
-
-                            var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
 
                             confirmDeletionOfTheTrackie(
+
                                 onConfirm = {
 
                                     if (detailedTrackieUiState != null) {
@@ -774,17 +762,18 @@ class MainActivity : ComponentActivity() {
 
                                         homeScreenViewModel.onDeleteTrackie()
 
-                                        navigationController.navigate(route = Destinations.HomeScreen) {
-                                            popUpTo(route = Destinations.HomeScreen) {inclusive = true}
-                                        }
-
+                                        navigationController.navigateUp()
+                                        navigationController.navigateUp()
                                     }
 
                                     else {
+
                                         navigationController.navigateUp()
                                     }
                                 },
+
                                 onDecline = {
+
                                     navigationController.navigateUp()
                                 }
                             )
