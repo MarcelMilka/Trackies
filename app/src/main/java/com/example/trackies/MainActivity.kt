@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.globalConstants.CurrentDateTime
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.insertNewPassword
 import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.confirmDeletionOfTheAccount
 import com.example.trackies.isSignedIn.homeScreen.ui.homeScreen
@@ -456,7 +457,9 @@ class MainActivity : ComponentActivity() {
                             onMarkAsIngested = {
 
                                 sharedViewModel.markTrackieAsIngested(
-                                    trackieModel = it
+                                    trackieModel = it,
+                                    currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek(),
+                                    onFailedToMarkTrackieAsIngested = {}
                                 )
                             }
                         )
@@ -554,7 +557,7 @@ class MainActivity : ComponentActivity() {
 
                             fetchAllUsersTrackies = {
 
-                                sharedViewModel.fetchListOfAllTrackies {}
+                                sharedViewModel.fetchAllTrackies {}
                             },
 
                             onReturn = {
@@ -565,7 +568,9 @@ class MainActivity : ComponentActivity() {
                             onMarkTrackieAsIngested = {
 
                                 sharedViewModel.markTrackieAsIngested(
-                                    trackieModel = it
+                                    trackieModel = it,
+                                    currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek(),
+                                    onFailedToMarkTrackieAsIngested = {}
                                 )
                             },
 
@@ -682,6 +687,7 @@ class MainActivity : ComponentActivity() {
 
                                     sharedViewModel.addNewTrackie(
                                         trackieModel = it,
+                                        currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek(),
                                         onFailedToAddNewTrackie = {},
                                     )
 
@@ -761,7 +767,8 @@ class MainActivity : ComponentActivity() {
                                     if (detailedTrackieUiState != null) {
 
                                         sharedViewModel.deleteTrackie(
-                                            trackieViewState = detailedTrackieUiState!!,
+                                            trackieModel = detailedTrackieUiState!!,
+                                            currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek(),
                                             onFailedToDeleteTrackie = {}
                                         )
 
@@ -856,7 +863,6 @@ class MainActivity : ComponentActivity() {
                                         password = it,
                                         onComplete = {
 
-                                            sharedViewModel.resetViewModel()
                                             sharedViewModel.deleteUsersData()
 
                                             navigationController.navigate(route = Destinations.YourAccountGotDeleted) {
