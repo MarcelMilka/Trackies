@@ -45,6 +45,7 @@ import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.vm.DetailedTrackieViewModel
 import com.example.trackies.isSignedIn.homeScreen.viewModel.HomeScreenViewModel
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
+import com.example.trackies.isSignedIn.xTrackie.ui.trackiesPremium.trackiesPremiumDialog
 import com.example.trackies.isSignedOut.presentation.ui.guestMode.guestModeInformation
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInHints
 import com.example.trackies.isSignedOut.presentation.ui.signUp.authenticate
@@ -678,6 +679,11 @@ class MainActivity : ComponentActivity() {
                                     )
 
                                     addNewTrackieViewModel.clearAll()
+                                },
+
+                                onDisplayTrackiesPremiumDialog = {
+
+                                    navigationController.navigate(route = Destinations.TrackiesPremiumDialog)
                                 }
                             )
                         }
@@ -703,6 +709,14 @@ class MainActivity : ComponentActivity() {
                                 }
 
                             )
+                        }
+
+                        dialog(route = Destinations.TrackiesPremiumDialog)  {
+
+                            trackiesPremiumDialog {
+
+                                navigationController.navigateUp()
+                            }
                         }
                     }
 

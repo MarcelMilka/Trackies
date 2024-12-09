@@ -1,5 +1,6 @@
 package com.example.trackies.isSignedIn.addNewTrackie.vm
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments

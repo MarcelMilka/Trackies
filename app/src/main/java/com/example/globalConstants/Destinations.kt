@@ -27,6 +27,7 @@ object Destinations {
         val AddNewTrackieRoute = "AddNewTrackieRoute"
             val AddNewTrackie = "AddNewTrackie"
             val ScheduleIngestionTime = "ScheduleIngestionTime"
+            val TrackiesPremiumDialog = "TrackiesPremiumDialog"
 
         val DisplayDetailedTrackieRoute = "DisplayDetailedTrackieRoute"
             val DetailedTrackie = "DetailedTrackie"

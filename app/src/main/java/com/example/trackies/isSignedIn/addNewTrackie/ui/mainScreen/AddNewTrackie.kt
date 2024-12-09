@@ -6,18 +6,33 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardReturn
+import androidx.compose.material.icons.rounded.AllInclusive
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.globalConstants.TrackiesPremium
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.convertIntoTrackieModel
 import com.example.trackies.isSignedIn.addNewTrackie.ui.scaffold.addNewTrackieBottomBar
@@ -40,6 +55,9 @@ import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
+import com.example.trackies.ui.theme.PrimaryColor
+import com.example.trackies.ui.theme.White50
+import com.example.trackies.ui.theme.quickSandBold
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +80,9 @@ fun addNewTrackie(
     onDeactivate: (AddNewTrackieSegments) -> Unit,
 
     onClearAll: () -> Unit,
-    onAdd: (TrackieModel) -> Unit
+    onAdd: (TrackieModel) -> Unit,
+
+    onDisplayTrackiesPremiumDialog: () -> Unit
 ) {
 
     Scaffold(
@@ -149,7 +169,27 @@ fun addNewTrackie(
 
                                 is SharedViewModelViewState.LoadedSuccessfully -> {
 
+                                    val licenseIsActive = sharedViewModelUiState.license.active
+
+                                    val enabledToAddAnotherTrackie =
+                                        sharedViewModelUiState.license.totalAmountOfTrackies < TrackiesPremium.totalAmountOfTrackiesNonPremiumAccount
+
+                                    val enabledToAddNewTrackie = when (licenseIsActive) {
+
+                                        true -> {
+
+                                            true
+                                        }
+
+                                        false -> {
+
+                                            enabledToAddAnotherTrackie
+                                        }
+                                    }
+
                                     nameOfTrackie(
+                                        enabledToAddNewTrackie = enabledToAddNewTrackie,
+
                                         addNewTrackieViewModel = addNewTrackieViewModel,
 
                                         updateName = {
@@ -158,20 +198,28 @@ fun addNewTrackie(
                                         },
 
                                         activate = {
+
                                             onActivate(
                                                 AddNewTrackieSegments.NameOfTrackie
                                             )
                                         },
+
                                         deactivate = {
                                             onDeactivate(
                                                 AddNewTrackieSegments.NameOfTrackie
                                             )
+                                        },
+
+                                        displayTrackiesPremiumDialog = {
+
+                                            onDisplayTrackiesPremiumDialog()
                                         }
                                     )
 
                                     verticalSpacerS()
 
                                     dailyDose(
+                                        enabledToAddNewTrackie = enabledToAddNewTrackie,
                                         addNewTrackieViewModel = addNewTrackieViewModel,
 
                                         updateMeasuringUnit = {
@@ -190,12 +238,17 @@ fun addNewTrackie(
                                             onDeactivate(
                                                 AddNewTrackieSegments.DailyDose
                                             )
+                                        },
+                                        displayTrackiesPremiumDialog = {
+
+                                            onDisplayTrackiesPremiumDialog()
                                         }
                                     )
 
                                     verticalSpacerS()
 
                                     scheduleDays(
+                                        enabledToAddNewTrackie = enabledToAddNewTrackie,
                                         addNewTrackieViewModel = addNewTrackieViewModel,
 
                                         updateRepeatOn = {
@@ -213,11 +266,16 @@ fun addNewTrackie(
                                                 AddNewTrackieSegments.ScheduleDays
                                             )
                                         },
+                                        displayTrackiesPremiumDialog = {
+
+                                            onDisplayTrackiesPremiumDialog()
+                                        }
                                     )
 
                                     verticalSpacerS()
 
                                     timeOfIngestion(
+                                        enabledToUseThisFeature = licenseIsActive,
                                         addNewTrackieViewModel = addNewTrackieViewModel,
                                         update = {
 
@@ -237,6 +295,10 @@ fun addNewTrackie(
                                                 AddNewTrackieSegments.TimeOfIngestion
                                             )
                                         },
+                                        displayTrackiesPremiumDialog = {
+
+                                            onDisplayTrackiesPremiumDialog()
+                                        }
                                     )
                                 }
 

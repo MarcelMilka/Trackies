@@ -50,10 +50,12 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun nameOfTrackie(
+    enabledToAddNewTrackie: Boolean,
     addNewTrackieViewModel: AddNewTrackieViewModel,
     updateName: (String) -> Unit,
     activate: () -> Unit,
     deactivate: () -> Unit,
+    displayTrackiesPremiumDialog: () -> Unit
 ) {
 
 //  AddNewTrackieModel-data:
@@ -163,8 +165,19 @@ import kotlinx.coroutines.launch
 //              Expand
                 false -> {
 
-                    activate()
-                    keyboardController?.show()
+                    when (enabledToAddNewTrackie) {
+
+                        true -> {
+
+                            activate()
+                            keyboardController?.show()
+                        }
+
+                        false -> {
+
+                            displayTrackiesPremiumDialog()
+                        }
+                    }
                 }
             }
         },

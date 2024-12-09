@@ -55,6 +55,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun dailyDose(
+    enabledToAddNewTrackie: Boolean,
     addNewTrackieViewModel: AddNewTrackieViewModel,
 
     updateMeasuringUnit: (EnumMeasuringUnits) -> Unit,
@@ -62,6 +63,8 @@ import kotlinx.coroutines.launch
 
     activate: () -> Unit,
     deactivate: () -> Unit,
+
+    displayTrackiesPremiumDialog: () -> Unit
 ) {
 
 //  AddNewTrackieModel-data:
@@ -227,7 +230,18 @@ import kotlinx.coroutines.launch
 //              Expand
                 false -> {
 
-                    activate()
+                    when (enabledToAddNewTrackie) {
+
+                        true -> {
+
+                            activate()
+                        }
+
+                        false -> {
+
+                            displayTrackiesPremiumDialog()
+                        }
+                    }
                 }
             }
         },

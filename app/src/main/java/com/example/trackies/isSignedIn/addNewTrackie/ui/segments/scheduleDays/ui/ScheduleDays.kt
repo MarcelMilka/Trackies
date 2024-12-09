@@ -43,10 +43,12 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun scheduleDays(
+    enabledToAddNewTrackie: Boolean,
     addNewTrackieViewModel: AddNewTrackieViewModel,
     updateRepeatOn: (MutableSet<String>) -> Unit,
     activate: () -> Unit,
     deactivate: () -> Unit,
+    displayTrackiesPremiumDialog: () -> Unit
 ) {
 
 //  AddNewTrackieModel-data:
@@ -195,7 +197,18 @@ import kotlinx.coroutines.launch
 //              Expand
                 false -> {
 
-                    activate()
+                    when (enabledToAddNewTrackie) {
+
+                        true -> {
+
+                            activate()
+                        }
+
+                        false -> {
+
+                            displayTrackiesPremiumDialog()
+                        }
+                    }
                 }
             }
         },
