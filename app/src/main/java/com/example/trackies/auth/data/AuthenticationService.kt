@@ -7,7 +7,7 @@ interface AuthenticationService {
 
     var initialDestination: String
 
-    fun  getSignedInUser():String?
+    fun  getSignedInUser(): String?
 
     fun signUpWithEmailAndPassword(
         email: String,

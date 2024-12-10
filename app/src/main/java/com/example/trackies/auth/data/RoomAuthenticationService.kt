@@ -1,7 +1,7 @@
 package com.example.trackies.auth.data
 
-import android.util.Log
 import com.example.globalConstants.Destinations
+import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.di.RoomAuthenticator
 import com.example.trackies.isSignedOut.presentation.ui.signIn.signIn.SignInErrorsToReturn
@@ -14,10 +14,7 @@ class RoomAuthenticationService @Inject constructor(
     val roomDatabase: RoomDatabase
 ): AuthenticationService {
 
-    init {
-        Log.d("Magnetic Man", "$this provides authentication service repository")
-    }
-
+    @Tested
     override var initialDestination: String = Destinations.IsSignedOut
         get() {
 
@@ -31,6 +28,7 @@ class RoomAuthenticationService @Inject constructor(
             }
         }
 
+    @Tested
     override fun getSignedInUser(): String? = runBlocking {
 
         val license =
@@ -54,13 +52,7 @@ class RoomAuthenticationService @Inject constructor(
         }
     }
 
-    override fun signUpWithEmailAndPassword(
-        email: String,
-        password: String,
-        signUpError: (SignUpErrors) -> Unit,
-        verificationEmailGotSent: (Boolean) -> Unit
-    ) {}
-
+    @Tested
     override fun signInWithEmailAndPassword(
         email: String,
         password: String,
@@ -74,13 +66,16 @@ class RoomAuthenticationService @Inject constructor(
                 .licenseDAO()
                 .signIn()
         }
-
-        onSucceededToSignIn("succeeded to sign in the user")
     }
 
+    @Tested
     override fun getEmailAddress(): String? = "Local database user"
 
-    override fun signOut(onComplete: () -> Unit, onFailure: () -> Unit) {
+    @Tested
+    override fun signOut(
+        onComplete: () -> Unit,
+        onFailure: () -> Unit
+    ) {
 
         runBlocking {
             roomDatabase
@@ -91,6 +86,7 @@ class RoomAuthenticationService @Inject constructor(
         onComplete()
     }
 
+    @Tested
     override fun deleteAccount(
         password: String,
         onComplete: () -> Unit,
@@ -122,6 +118,14 @@ class RoomAuthenticationService @Inject constructor(
             }
         }
     }
+
+
+    override fun signUpWithEmailAndPassword(
+        email: String,
+        password: String,
+        signUpError: (SignUpErrors) -> Unit,
+        verificationEmailGotSent: (Boolean) -> Unit
+    ) {}
 
     override fun recoverThePassword(
         email: String,

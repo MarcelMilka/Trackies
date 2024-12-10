@@ -1,5 +1,6 @@
-package com.example.trackies.isSignedIn.user
+package testsOfViewModels
 
+import MainCoroutineRule
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelErrors
@@ -15,22 +16,14 @@ import io.mockk.coVerifySequence
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import kotlin.coroutines.ContinuationInterceptor
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(JUnit4::class)
@@ -1857,20 +1850,5 @@ class SharedViewModelUnitTest {
 
             userRepository.markTrackieAsIngested(trackieModel = mondayToFridayTrackieModel, currentDayOfWeek = DaysOfWeek.wednesday)
         }
-    }
-}
-
-@Suppress("DEPRECATION")
-@ExperimentalCoroutinesApi
-class MainCoroutineRule : TestWatcher(), TestCoroutineScope by TestCoroutineScope() {
-
-    override fun starting(description: Description) {
-        super.starting(description)
-        Dispatchers.setMain(this.coroutineContext[ContinuationInterceptor] as CoroutineDispatcher)
-    }
-
-    override fun finished(description: Description) {
-        super.finished(description)
-        Dispatchers.resetMain()
     }
 }
