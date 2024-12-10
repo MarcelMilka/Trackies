@@ -16,15 +16,6 @@
       <SelectionState runConfigName="RoomAuthenticationServiceTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="signInWithEmailAndPassword_processOfSigningInWorksProperly()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="signOut_processOfSigningOutWorksProperly()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="deleteAccount_processOfDeletingAccountWorksProperly()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="getEmailAddress_properlyReturnsString()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

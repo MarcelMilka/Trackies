@@ -586,7 +586,6 @@ class MainActivity : ComponentActivity() {
                             )
 
                             var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
-
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                             var addNewTrackieViewModel: AddNewTrackieViewModel =
@@ -756,8 +755,6 @@ class MainActivity : ComponentActivity() {
 
                             var sharedViewModel = hiltViewModel<SharedViewModel>(viewModelEntry)
 
-                            val homeScreenViewModel = hiltViewModel<HomeScreenViewModel>(viewModelEntry)
-
                             val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
                             val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
 
@@ -773,8 +770,6 @@ class MainActivity : ComponentActivity() {
                                             currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek(),
                                             onFailedToDeleteTrackie = {}
                                         )
-
-                                        homeScreenViewModel.onDeleteTrackie()
 
                                         navigationController.navigateUp()
                                         navigationController.navigateUp()

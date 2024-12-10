@@ -2,6 +2,7 @@ package com.example.trackies.isSignedIn.homeScreen.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.isSignedIn.homeScreen.buisness.HeightOfLazyColumn
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
@@ -13,11 +14,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeScreenViewModel @Inject constructor(): ViewModel(){
+class HomeScreenViewModel @Inject constructor(): ViewModel() {
 
     private var _uiState = MutableStateFlow<HomeScreenViewState>(HomeScreenViewState())
     val uiState = _uiState.asStateFlow()
 
+    @Tested
     fun updateHeightOfLazyColumn(totalAmountOfTrackiesForToday: Int) {
 
         val copyOfUiState = _uiState
@@ -47,48 +49,6 @@ class HomeScreenViewModel @Inject constructor(): ViewModel(){
                 HomeScreenViewState(
                     heightOfLazyColumn = updatedHeightOfLazyColumn,
                     typeOfHomeScreenChart = copyOfUiState.value.typeOfHomeScreenChart
-                )
-            }
-        }
-    }
-
-    fun onDeleteTrackie() {
-
-        val updatedHeightOfLazyColumn = when (_uiState.value.heightOfLazyColumn) {
-
-            HeightOfLazyColumn.noTrackies -> {
-                HeightOfLazyColumn.noTrackies
-            }
-
-            HeightOfLazyColumn.oneTrackie -> {
-                HeightOfLazyColumn.noTrackies
-            }
-
-            HeightOfLazyColumn.twoTrackies -> {
-                HeightOfLazyColumn.oneTrackie
-            }
-
-
-            HeightOfLazyColumn.threeTrackies -> {
-                HeightOfLazyColumn.twoTrackies
-            }
-
-            HeightOfLazyColumn.moreThanThreeTrackies -> {
-                HeightOfLazyColumn.threeTrackies
-            }
-
-            else -> {
-                HeightOfLazyColumn.moreThanThreeTrackies
-            }
-        }
-
-        viewModelScope.launch {
-
-            _uiState.update {
-
-                HomeScreenViewState(
-                    heightOfLazyColumn = updatedHeightOfLazyColumn,
-                    typeOfHomeScreenChart = _uiState.value.typeOfHomeScreenChart
                 )
             }
         }
