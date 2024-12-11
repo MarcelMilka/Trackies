@@ -132,6 +132,10 @@ dependencies {
     //noinspection UseTomlInstead
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.0.0")
 
+//  UI testing
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.5")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.5")
+
 }
 
 kapt {

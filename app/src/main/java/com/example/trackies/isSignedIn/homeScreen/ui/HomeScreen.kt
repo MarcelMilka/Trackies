@@ -150,7 +150,12 @@ fun homeScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.Bottom,
 
-                                        content = { textHeadlineLarge(content = "Whoops...") }
+                                        content = {
+
+                                            textHeadlineLarge(
+                                                content = "Whoops..."
+                                            )
+                                        }
                                     )
 
                                     Column(
@@ -236,7 +241,6 @@ fun homeScreen(
                                 }
 
                                 SharedViewModelViewState.FailedToLoadData -> {}
-
                             }
                         }
                     )

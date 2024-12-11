@@ -13,10 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="RoomAuthenticationServiceTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="getEmailAddress_properlyReturnsString()">
+      <SelectionState runConfigName="aaa()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
