@@ -1,10 +1,11 @@
 package com.example.trackies.isSignedIn.addNewTrackie.vm
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieModel
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.EnumMeasuringUnits
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestionEntity
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.DailyDoseViewState
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.buisness.NameOfTrackieViewState
@@ -241,7 +242,7 @@ class AddNewTrackieViewModel @Inject constructor(
         }
     }
 
-    fun updateMeasuringUnit(measuringUnit: MeasuringUnit) {
+    fun updateMeasuringUnit(measuringUnit: EnumMeasuringUnits) {
 
         addNewTrackieModel.update {
             it.copy(

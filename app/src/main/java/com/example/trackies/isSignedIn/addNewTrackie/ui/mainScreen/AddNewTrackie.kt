@@ -19,11 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.globalConstants.MeasuringUnit
 import com.example.globalConstants.TrackiesPremium
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.convertIntoTrackieModel
 import com.example.trackies.isSignedIn.addNewTrackie.ui.scaffold.addNewTrackieBottomBar
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.EnumMeasuringUnits
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.ui.dailyDose
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.ui.dailyDoseLoading
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.ui.nameOfTrackie
@@ -54,7 +54,7 @@ fun addNewTrackie(
     onReturn: () -> Unit,
 
     onUpdateName: (String) -> Unit,
-    onUpdateMeasuringUnit: (MeasuringUnit) -> Unit,
+    onUpdateMeasuringUnit: (EnumMeasuringUnits) -> Unit,
     onUpdateDose: (Int) -> Unit,
     onUpdateRepeatOn: (MutableSet<String>) -> Unit,
 

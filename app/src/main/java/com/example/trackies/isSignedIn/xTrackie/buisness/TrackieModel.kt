@@ -1,13 +1,13 @@
 package com.example.trackies.isSignedIn.xTrackie.buisness
 
 import com.example.globalConstants.DaysOfWeek
-import com.example.globalConstants.MeasuringUnit
+import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.entities.Trackie
 
 data class TrackieModel(
     val name: String,
     val totalDose: Int,
-    val measuringUnit: MeasuringUnit,
+    val measuringUnit: String,
     val repeatOn: List<String>,
     val ingestionTime: Map<String, Int>?
 )

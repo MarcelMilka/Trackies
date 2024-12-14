@@ -3,14 +3,13 @@ package com.example.trackies.isSignedIn.user.buisness.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.globalConstants.DaysOfWeek
-import com.example.trackies.isSignedIn.xTrackie.buisness.MeasuringUnits
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 
 @Entity(tableName = "Trackies")
 data class Trackie(
     @PrimaryKey val name: String,
     val totalDose: Int,
-    val measuringUnit: MeasuringUnits,
+    val measuringUnit: String,
     val monday: Boolean,
     val tuesday: Boolean,
     val wednesday: Boolean,
@@ -56,7 +55,7 @@ fun Trackie.convertTrackieToTrackieModel(): TrackieModel {
     return TrackieModel(
         name = this.name,
         totalDose = this.totalDose,
-        measuringUnit = com.example.globalConstants.MeasuringUnits,
+        measuringUnit = this.measuringUnit,
         repeatOn = repeatOn.toList(),
         ingestionTime = null
 
