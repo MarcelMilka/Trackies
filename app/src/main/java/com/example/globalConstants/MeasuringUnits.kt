@@ -1,7 +1,21 @@
 package com.example.globalConstants
 
-object MeasuringUnits {
-    val ml = "ml"
-    val g = "g"
-    val pcs = "pcs"
+enum class MeasuringUnit {
+    ml,
+    g,
+    pcs
 }
+
+fun MeasuringUnit.turnMeasuringUnitToString(): String = this.toString()
+
+fun String.turnStringToMeasuringUnit(): MeasuringUnit =
+    when(this) {
+
+        "ml" -> MeasuringUnit.ml
+
+        "g" -> MeasuringUnit.g
+
+        "pcs" -> MeasuringUnit.pcs
+
+        else -> MeasuringUnit.g
+    }
