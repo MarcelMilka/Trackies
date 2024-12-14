@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.globalConstants.CurrentDateTime
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
@@ -33,7 +34,7 @@ import com.example.trackies.ui.theme.fonts
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun homeScreenWeeklyRegularityChartLoadedSuccessFully(
+fun homeScreenWeeklyRegularityChart(
     sharedViewModelUiState: SharedViewModelViewState.LoadedSuccessfully
 ) {
 
@@ -46,7 +47,8 @@ fun homeScreenWeeklyRegularityChartLoadedSuccessFully(
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp),
+            .height(180.dp)
+            .testTag(tag = "homeScreenWeeklyRegularityChart"),
 
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Top,
@@ -115,13 +117,14 @@ fun homeScreenWeeklyRegularityChartLoadedSuccessFully(
 
                                 val color = if (activatedBar == it.key) { PrimaryColor } else { SecondaryColor }
 
-                                if ( activatedBar == it.key ) {
+                                if (activatedBar == it.key) {
 
                                     Surface(
 
                                         modifier = Modifier
                                             .fillMaxWidth(0.95f)
-                                            .height(20.dp),
+                                            .height(20.dp)
+                                            .testTag("activated bar ${it.key}"),
 
                                         shape = RoundedCornerShape(5.dp),
 
@@ -154,7 +157,8 @@ fun homeScreenWeeklyRegularityChartLoadedSuccessFully(
 
                                     modifier = Modifier
                                         .fillMaxWidth(0.5f)
-                                        .height(height.dp),
+                                        .height(height.dp)
+                                        .testTag("bar ${it.key}"),
 
                                     shape = RoundedCornerShape(5.dp),
 

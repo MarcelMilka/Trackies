@@ -34,31 +34,20 @@ import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.SecondaryColor
 
-@Composable fun trackie(
-    trackieViewState: TrackieModel,
-    stateOfTheTrackie: Boolean,
+@Composable
+fun trackie(
+    trackieModel: TrackieModel,
+    isMarkedAsIngested: Boolean,
+
     onMarkAsIngested: () -> Unit,
     onDisplayDetails: () -> Unit
 ) {
 
-    var targetValueOfProgressBar by remember { mutableIntStateOf(0) }
-    var targetValueOfCurrentDose by remember { mutableIntStateOf(0) }
+    var targetValueOfProgressBar by remember {
 
-    when (stateOfTheTrackie) {
-
-        true -> {
-
-            targetValueOfProgressBar = 100
-            targetValueOfCurrentDose = trackieViewState.totalDose
-        }
-        false -> {
-
-            targetValueOfProgressBar = 0
-            targetValueOfCurrentDose = 0
-        }
+        mutableIntStateOf(0)
     }
-
-    val progressOfTheProgressBar by animateIntAsState(
+    val valueOfProgressBar by animateIntAsState(
         targetValue = targetValueOfProgressBar,
         animationSpec = tween(
             durationMillis = 1000,
@@ -68,8 +57,12 @@ import com.example.trackies.ui.theme.SecondaryColor
         label = "",
     )
 
-    val progressOfTheCurrentDose by animateIntAsState(
-        targetValue = targetValueOfCurrentDose,
+    var targetValueOfDose by remember {
+
+        mutableIntStateOf(0)
+    }
+    val valueOfDose by animateIntAsState(
+        targetValue = targetValueOfDose,
         animationSpec = tween(
             durationMillis = 1000,
             delayMillis = 50,
@@ -78,11 +71,24 @@ import com.example.trackies.ui.theme.SecondaryColor
         label = "",
     )
 
+    when (isMarkedAsIngested) {
+
+        true -> {
+
+            targetValueOfProgressBar = 100
+            targetValueOfDose = trackieModel.totalDose
+        }
+
+        false -> {
+
+            targetValueOfProgressBar = 0
+            targetValueOfDose = 0
+        }
+    }
 
     Row(
 
         modifier = Modifier
-
             .fillMaxWidth()
             .height(60.dp)
             .background(
@@ -95,6 +101,7 @@ import com.example.trackies.ui.theme.SecondaryColor
 
         content = {
 
+//          name of a trackie, progress bar, scope of ingested dose/total dose
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -106,10 +113,12 @@ import com.example.trackies.ui.theme.SecondaryColor
 
                 content = {
 
-                    textTitleMedium(content = trackieViewState.name)
+//                  name of a trackie
+                    textTitleMedium(content = trackieModel.name)
 
                     verticalSpacerS()
 
+//                  progress bar, scope of ingested dose/total dose
                     Row(
                         modifier = Modifier
                             .height(12.dp)
@@ -120,14 +129,15 @@ import com.example.trackies.ui.theme.SecondaryColor
 
                         content = {
 
-                            trackieProgressBar(progress = progressOfTheProgressBar)
+                            trackieProgressBar(progress = valueOfProgressBar)
 
-                            textTitleSmall(content = " $progressOfTheCurrentDose/${trackieViewState.totalDose} ${trackieViewState.measuringUnit}")
+                            textTitleSmall(content = " $valueOfDose/${trackieModel.totalDose} ${trackieModel.measuringUnit}")
                         }
                     )
                 }
             )
 
+//          button to display details of a Trackie
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -137,30 +147,33 @@ import com.example.trackies.ui.theme.SecondaryColor
                 verticalArrangement = Arrangement.Center,
 
                 content = {
+
                     iconButton(
+
                         icon = Icons.Rounded.Search,
                         onClick = {
+
                             onDisplayDetails()
                         }
                     )
                 }
             )
 
-            when (stateOfTheTrackie) {
+//          buttons to mark a Trackie as ingested or signifying a trackie has been ingested for today
+            when (isMarkedAsIngested) {
 
                 true -> {
 
                     magicButtonMarkedAsIngested()
 
                     horizontalSpacerS()
-
                 }
 
                 false -> {
 
                     magicButton(
-                        totalDose = trackieViewState.totalDose,
-                        measuringUnit = trackieViewState.measuringUnit,
+                        totalDose = trackieModel.totalDose,
+                        measuringUnit = trackieModel.measuringUnit,
                         onMarkAsIngested = {
                             onMarkAsIngested()
                         }

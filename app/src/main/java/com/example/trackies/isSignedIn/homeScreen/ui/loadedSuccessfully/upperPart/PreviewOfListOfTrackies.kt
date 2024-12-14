@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
@@ -23,13 +24,14 @@ import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 
 @Composable
 fun previewOfListOfTrackies(
-    homeScreenUiState: HomeScreenViewState,
-    sharedViewModelUiState: SharedViewModelViewState.LoadedSuccessfully,
+    homeScreenViewState: HomeScreenViewState,
+    sharedViewState: SharedViewModelViewState.LoadedSuccessfully,
+
     onMarkAsIngested: (TrackieModel) -> Unit,
     onDisplayDetails: (TrackieModel) -> Unit
 ) {
 
-    val targetHeightOfLazyColumn = homeScreenUiState.heightOfLazyColumn
+    val targetHeightOfLazyColumn = homeScreenViewState.heightOfLazyColumn
     val heightOfLazyColumn by animateIntAsState(
         targetValue = targetHeightOfLazyColumn,
         animationSpec = tween(
@@ -41,55 +43,62 @@ fun previewOfListOfTrackies(
     )
 
     LazyColumn(
+
         modifier = Modifier
             .fillMaxWidth()
-            .height(height = heightOfLazyColumn.dp),
+            .height(height = heightOfLazyColumn.dp)
+            .testTag(tag = "previewOfListOfTrackies"),
 
         verticalArrangement = Arrangement.Top,
 
         content = {
 
-            items(
-                items = sharedViewModelUiState.trackiesForToday.take(n = 3)
-            ) { trackieViewState ->
+//          display trackies for today
+            items(items = sharedViewState.trackiesForToday.take(n = 3)) { trackieModel ->
 
                 trackie(
-                    trackieViewState = trackieViewState,
-                    stateOfTheTrackie = sharedViewModelUiState.statesOfTrackiesForToday[trackieViewState.name]!!,
+                    trackieModel = trackieModel,
+                    isMarkedAsIngested = sharedViewState.statesOfTrackiesForToday[trackieModel.name]!!,
+
                     onMarkAsIngested = {
-                        onMarkAsIngested(trackieViewState)
+
+                        onMarkAsIngested(trackieModel)
                     },
                     onDisplayDetails = {
-                        onDisplayDetails(trackieViewState)
+
+                        onDisplayDetails(trackieModel)
                     }
                 )
 
                 verticalSpacerS()
-
             }
 
+//          display how many Trackies for today are left to display e.g. '+2 more trackies'
             item {
 
-                if (sharedViewModelUiState.trackiesForToday.count() > 3) {
+                if (sharedViewState.trackiesForToday.count() > 3) {
 
                     Row(
 
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(20.dp),
+                            .height(20.dp)
+                            .testTag(tag = "Row with information about trackies left to display"),
 
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
 
                         content = {
 
-                            val amountOfTrackiesLeft = sharedViewModelUiState.trackiesForToday.count() - 3
+                            val amountOfTrackiesLeft = sharedViewState.trackiesForToday.count() - 3
 
                             if (amountOfTrackiesLeft == 1) {
+
                                 textTitleMedium(content = "+ $amountOfTrackiesLeft more trackie")
                             }
 
                             else {
+
                                 textTitleMedium(content = "+ $amountOfTrackiesLeft more trackies")
                             }
                         }

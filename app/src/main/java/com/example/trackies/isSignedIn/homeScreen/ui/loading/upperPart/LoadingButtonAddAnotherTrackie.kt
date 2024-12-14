@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
@@ -19,9 +20,11 @@ fun loadingButtonAddAnotherTrackie() {
             .fillMaxWidth()
             .height(30.dp)
             .background(
-
                 color = PrimaryColor,
-                shape = RoundedCornerShape(size = Dimensions.roundedCornersOfMediumElements)
+                shape = RoundedCornerShape(
+                    size = Dimensions.roundedCornersOfMediumElements
+                )
             )
+            .testTag(tag = "loadingButtonAddAnotherTrackie"),
     )
 }

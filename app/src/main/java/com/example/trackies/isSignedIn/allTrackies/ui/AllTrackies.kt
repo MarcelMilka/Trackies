@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.allTrackies.buisness.ListOfTrackiesToDisplay
 import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrackies
 import com.example.trackies.isSignedIn.allTrackies.ui.components.displayAllTrackiesForToday
-import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingPreviewOfListOfTrackies
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
@@ -103,7 +103,7 @@ fun displayAllTrackies(
 
                         SharedViewModelViewState.Loading -> {
 
-                            previewOfListOfTrackiesLoading()
+                            loadingPreviewOfListOfTrackies()
                         }
 
                         is SharedViewModelViewState.LoadedSuccessfully -> {
@@ -136,7 +136,7 @@ fun displayAllTrackies(
 
                                         null -> {
 
-                                            previewOfListOfTrackiesLoading()
+                                            loadingPreviewOfListOfTrackies()
 
                                             fetchAllUsersTrackies()
                                         }

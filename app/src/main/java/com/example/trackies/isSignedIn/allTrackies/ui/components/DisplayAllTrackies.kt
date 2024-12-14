@@ -40,8 +40,8 @@ fun displayAllTrackies(
                 if (listOfTrackiesForToday.contains(trackieViewState)) {
 
                     trackie(
-                        trackieViewState = trackieViewState,
-                        stateOfTheTrackie = statesOfTrackiesForToday[trackieViewState.name]!!,
+                        trackieModel = trackieViewState,
+                        isMarkedAsIngested = statesOfTrackiesForToday[trackieViewState.name]!!,
                         onMarkAsIngested = {
                             onMarkAsIngested(trackieViewState)
                         },

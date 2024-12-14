@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -17,12 +18,15 @@ fun iconButtonToNavigateBetweenActivities (
 
     IconButton(
 
-        onClick = { onClick() },
+        onClick = {
+            onClick()
+        },
 
         content = {
+
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = "iconButtonToNavigateBetweenActivities",
                 tint = White,
             )
         }
@@ -47,7 +51,7 @@ fun iconButton(
 
                 imageVector = icon,
 
-                contentDescription = null,
+                contentDescription = "iconButton",
 
                 tint = White,
             )

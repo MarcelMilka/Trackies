@@ -13,7 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="aaa()">
+      <SelectionState runConfigName="buttonDisplayAllTrackies_calls_onSwitchChart_weekly()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="buttonDisplayAllTrackies_calls_switchingBetweenCharts()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="clickingBarsOfTheChart()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="TestOfHomeScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="uiStateIs_Loading()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

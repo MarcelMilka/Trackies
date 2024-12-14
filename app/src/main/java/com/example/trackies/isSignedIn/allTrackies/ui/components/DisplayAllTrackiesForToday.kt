@@ -32,8 +32,8 @@ fun displayAllTrackiesForToday(
             this.items(listOfTrackies) {
 
                 trackie(
-                    trackieViewState = it,
-                    stateOfTheTrackie = statesOfTrackiesForToday[it.name]!!,
+                    trackieModel = it,
+                    isMarkedAsIngested = statesOfTrackiesForToday[it.name]!!,
                     onMarkAsIngested = {
                         onMarkAsIngested(it)
                     },

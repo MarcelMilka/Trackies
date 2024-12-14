@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.sharedUI.customText.boldTextTitleMedium
 import com.example.trackies.ui.sharedUI.customText.centeredTextTitleMedium
@@ -18,7 +19,8 @@ fun yearlyRegularityChartLoadedSuccessfully() {
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp),
+            .height(180.dp)
+            .testTag(tag = "yearlyRegularityChartLoadedSuccessfully"),
 
         verticalArrangement = Arrangement.Center,
 

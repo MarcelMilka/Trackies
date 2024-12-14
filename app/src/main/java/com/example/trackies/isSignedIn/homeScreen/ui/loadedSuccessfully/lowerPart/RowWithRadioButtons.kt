@@ -11,12 +11,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
 import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
 
 @Composable
-fun rowWithRadioButtonsLoadedSuccessfully(
+fun rowWithRadioButtons(
     graphToDisplay: HomeScreenChartToDisplay,
     switchChart: (HomeScreenChartToDisplay) -> Unit
 ) {
@@ -53,7 +54,8 @@ fun rowWithRadioButtonsLoadedSuccessfully(
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(20.dp),
+            .height(20.dp)
+            .testTag(tag = "rowWithRadioButtons"),
 
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically

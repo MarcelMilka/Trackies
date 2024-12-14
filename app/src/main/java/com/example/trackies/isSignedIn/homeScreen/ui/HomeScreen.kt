@@ -13,18 +13,17 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
-import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.rowWithRadioButtonsLoadedSuccessfully
-import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddAnotherTrackie
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.rowWithRadioButtons
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonAddNewTrackie
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.buttonDisplayAllTrackies
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.upperPart.previewOfListOfTrackies
 import com.example.trackies.ui.sharedUI.loadingText.loadingText
-import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.regularityChartLoading
-import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.rowWithRadioButtonsLoading
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingRegularityChart
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingRowWithRadioButtons
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonAddAnotherTrackie
-import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonShowAllTrackies
-import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.previewOfListOfTrackiesLoading
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingButtonDisplayAllTrackies
+import com.example.trackies.isSignedIn.homeScreen.ui.loading.upperPart.loadingPreviewOfListOfTrackies
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
@@ -34,8 +33,8 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
-import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.homeScreenWeeklyRegularityChartLoadedSuccessFully
-import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.monthlyRegularityChartLoadedSuccessfully
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.homeScreenWeeklyRegularityChart
+import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.homeScreenMonthlyRegularityChart
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.yearlyRegularityChartLoadedSuccessfully
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
@@ -43,7 +42,8 @@ import com.example.trackies.ui.theme.Dimensions
 @Composable
 fun homeScreen(
     sharedViewModelUiState: SharedViewModelViewState,
-    homeScreenUiState: HomeScreenViewState,
+    homeScreenViewModelUiState: HomeScreenViewState,
+
     onOpenSettings: () -> Unit,
     onDisplayAllTrackies: () -> Unit,
     onAddNewTrackie: () -> Unit,
@@ -65,7 +65,7 @@ fun homeScreen(
 
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(20.dp)
+                    .padding(all = Dimensions.padding)
                     .background(color = BackgroundColor),
 
                 verticalArrangement = Arrangement.SpaceBetween,
@@ -83,7 +83,10 @@ fun homeScreen(
 
                         content = {
 
-                            iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Person) { onOpenSettings() }
+                            iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.Person) {
+
+                                onOpenSettings()
+                            }
 
                             verticalSpacerL()
 
@@ -95,11 +98,11 @@ fun homeScreen(
 
                                     verticalSpacerS()
 
-                                    previewOfListOfTrackiesLoading()
+                                    loadingPreviewOfListOfTrackies()
 
                                     verticalSpacerS()
 
-                                    loadingButtonShowAllTrackies()
+                                    loadingButtonDisplayAllTrackies()
 
                                     verticalSpacerS()
 
@@ -116,32 +119,37 @@ fun homeScreen(
                                     textHeadlineMedium(content = "Your today's trackies")
 
                                     previewOfListOfTrackies(
-                                        homeScreenUiState = homeScreenUiState,
-                                        sharedViewModelUiState = sharedViewModelUiState,
-                                        onMarkAsIngested = {
-                                            onMarkAsIngested(it)
+                                        homeScreenViewState = homeScreenViewModelUiState,
+                                        sharedViewState = sharedViewModelUiState,
+
+                                        onMarkAsIngested = { trackieModel ->
+
+                                            onMarkAsIngested(trackieModel)
                                         },
-                                        onDisplayDetails = {
-                                            onDisplayDetailedTrackie(it)
+                                        onDisplayDetails = { trackieModel ->
+
+                                            onDisplayDetailedTrackie(trackieModel)
                                         }
                                     )
 
                                     verticalSpacerS()
 
                                     buttonDisplayAllTrackies {
+
                                         onDisplayAllTrackies()
                                     }
 
                                     verticalSpacerS()
 
-                                    buttonAddAnotherTrackie {
+                                    buttonAddNewTrackie {
+
                                         onAddNewTrackie()
                                     }
-
                                 }
 
                                 SharedViewModelViewState.FailedToLoadData -> {
 
+//                                  big text 'Whoops...'
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -158,6 +166,7 @@ fun homeScreen(
                                         }
                                     )
 
+//                                  smaller text 'An error occurred while loading your data. Try again later.'
                                     Column(
                                         modifier = Modifier
                                             .fillMaxSize(),
@@ -196,11 +205,11 @@ fun homeScreen(
 
                                     verticalSpacerS()
 
-                                    rowWithRadioButtonsLoading()
+                                    loadingRowWithRadioButtons()
 
                                     verticalSpacerS()
 
-                                    regularityChartLoading()
+                                    loadingRegularityChart()
 
                                 }
 
@@ -210,27 +219,29 @@ fun homeScreen(
 
                                     verticalSpacerS()
 
-                                    rowWithRadioButtonsLoadedSuccessfully(
-                                        graphToDisplay = homeScreenUiState.typeOfHomeScreenChart,
+                                    rowWithRadioButtons(
+                                        graphToDisplay = homeScreenViewModelUiState.typeOfHomeScreenChart,
                                         switchChart = {
+
                                             onSwitchChart(it)
                                         }
                                     )
 
                                     verticalSpacerS()
 
-                                    when (homeScreenUiState.typeOfHomeScreenChart) {
+                                    when (homeScreenViewModelUiState.typeOfHomeScreenChart) {
 
                                         HomeScreenChartToDisplay.Weekly -> {
 
-                                            homeScreenWeeklyRegularityChartLoadedSuccessFully(
+                                            homeScreenWeeklyRegularityChart(
+
                                                 sharedViewModelUiState = sharedViewModelUiState
                                             )
                                         }
 
                                         HomeScreenChartToDisplay.Monthly -> {
 
-                                            monthlyRegularityChartLoadedSuccessfully()
+                                            homeScreenMonthlyRegularityChart()
                                         }
 
                                         HomeScreenChartToDisplay.Yearly -> {

@@ -395,7 +395,7 @@ class MainActivity : ComponentActivity() {
                         val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                         var homeScreenViewModel = hiltViewModel<HomeScreenViewModel>(viewModelEntry)
-                        val homeScreenUiState by homeScreenViewModel.uiState.collectAsState()
+                        val homeScreenViewModelUiState by homeScreenViewModel.uiState.collectAsState()
 
                         val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
 
@@ -403,7 +403,7 @@ class MainActivity : ComponentActivity() {
 
                             sharedViewModelUiState = sharedViewModelUiState,
 
-                            homeScreenUiState = homeScreenUiState,
+                            homeScreenViewModelUiState = homeScreenViewModelUiState,
 
                             onOpenSettings = {
 
@@ -423,9 +423,12 @@ class MainActivity : ComponentActivity() {
                             onDisplayDetailedTrackie = {
 
                                 detailedTrackieViewModel.setTrackieToDisplayDetailsOf(
-                                    trackieViewState = it)
+                                    trackieViewState = it
+                                )
 
-                                navigationController.navigate(route = Destinations.DisplayDetailedTrackieRoute)
+                                navigationController.navigate(
+                                    route = Destinations.DisplayDetailedTrackieRoute
+                                )
                             },
 
                             onUpdateHeightOfLazyColumn = {
@@ -581,11 +584,11 @@ class MainActivity : ComponentActivity() {
                         ) {
 
 //                          SharedViewModel:
-                            val sharedViewModelEntry = navigationController.sharedViewModelEntry(
+                            val viewModelEntry = navigationController.sharedViewModelEntry(
                                 navBackStackEntry = it
                             )
 
-                            var sharedViewModel: SharedViewModel = hiltViewModel(sharedViewModelEntry)
+                            var sharedViewModel: SharedViewModel = hiltViewModel(viewModelEntry)
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                             var addNewTrackieViewModel: AddNewTrackieViewModel =

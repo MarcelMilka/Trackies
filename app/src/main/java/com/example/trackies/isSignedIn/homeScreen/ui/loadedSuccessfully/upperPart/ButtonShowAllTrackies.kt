@@ -8,6 +8,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.SecondaryColor
@@ -23,7 +24,8 @@ fun buttonDisplayAllTrackies(onClick: () -> Unit) {
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp),
+            .height(30.dp)
+            .testTag(tag = "buttonDisplayAllTrackies"),
 
         shape = RoundedCornerShape(10.dp),
 

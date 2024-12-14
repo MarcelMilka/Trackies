@@ -47,11 +47,17 @@ fun magicButton(
     onMarkAsIngested: () -> Unit
 ) {
 
-    var isChecked by remember { mutableStateOf(false) }
+    var isMarkedAsIngested by remember {
 
-    var targetWidthOfButton by remember { mutableIntStateOf(110) } // 70 or 110
-    val animatedWidthOfButton by animateIntAsState(
-        targetValue = targetWidthOfButton,
+        mutableStateOf(false)
+    }
+
+    var targetWidthOfTheButton by remember {
+
+        mutableIntStateOf(110)
+    }
+    val widthOfTheButton by animateIntAsState(
+        targetValue = targetWidthOfTheButton,
         animationSpec = tween(
             durationMillis = 250,
             delayMillis = 0,
@@ -60,28 +66,39 @@ fun magicButton(
         label = "",
     )
 
-    val targetColorOfButton = if (isChecked) TrackieMarkedAsIngested else PrimaryColor
-    val animatedColorOfButton by animateColorAsState(targetValue = targetColorOfButton)
+    val targetColorOfTheButton = if (isMarkedAsIngested) TrackieMarkedAsIngested else PrimaryColor
+    val colorOfTheButton by animateColorAsState(targetValue = targetColorOfTheButton)
 
-    var buttonIsHeld by remember { mutableStateOf(false) }
+    var buttonIsHeld by remember {
 
-    var widthOfSurface by remember { mutableIntStateOf(0) }
+        mutableStateOf(false)
+    }
 
-    var heightOfSurface by remember { mutableIntStateOf(0) }
+    var widthOfSurface by remember {
+
+        mutableIntStateOf(0)
+    }
+
+    var heightOfSurface by remember {
+
+        mutableIntStateOf(0)
+    }
 
     Surface(
 
-        color = animatedColorOfButton,
+        color = colorOfTheButton,
         shape = RoundedCornerShape(18.dp),
 
         modifier = Modifier
-            .width(animatedWidthOfButton.dp)
+            .width(widthOfTheButton.dp)
             .height(50.dp)
             .pointerInput(Unit) {
+
                 detectTapGestures(
+
                     onPress = {
 
-                        if (animatedWidthOfButton != 70) {
+                        if (widthOfTheButton != 70) {
 
                             buttonIsHeld = true
                             val startTime = System.currentTimeMillis()
@@ -92,8 +109,8 @@ fun magicButton(
 
                                     if ((System.currentTimeMillis() - startTime) >= 2000L) {
 
-                                        isChecked = true
-                                        targetWidthOfButton = 70
+                                        isMarkedAsIngested = true
+                                        targetWidthOfTheButton = 70
 
                                         launch {
                                             onMarkAsIngested()
@@ -128,13 +145,14 @@ fun magicButton(
 
             Box(
 
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize(),
 
                 contentAlignment = Alignment.Center,
 
                 content = {
 
-//                  Orange surface which expands while holding the button
+//                  orange surface which expands while holding the button
                     Surface(
 
                         modifier = Modifier
@@ -148,10 +166,10 @@ fun magicButton(
                         content = {}
                     )
 
-//                  Dose for today
+//                  dose for today e.g. '+10ml'
                     AnimatedVisibility(
 
-                        visible = !isChecked,
+                        visible = !isMarkedAsIngested,
                         enter = fadeIn(animationSpec = tween(250)),
                         exit = fadeOut(animationSpec = tween(250)),
 
@@ -175,10 +193,10 @@ fun magicButton(
                         }
                     )
 
-//                  Icon which shows that the goal has been achieved for today
+//                  icon which shows that the goal has been achieved for today
                     AnimatedVisibility(
 
-                        visible = isChecked,
+                        visible = isMarkedAsIngested,
                         enter = fadeIn(animationSpec = tween(250)),
                         exit = fadeOut(animationSpec = tween(250)),
 

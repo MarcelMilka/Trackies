@@ -12,17 +12,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.SecondaryColor
 
 @Composable
-fun rowWithRadioButtonsLoading() {
+fun loadingRowWithRadioButtons() {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(20.dp),
+            .height(20.dp)
+            .testTag(tag = "loadingRowWithRadioButtons"),
 
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically

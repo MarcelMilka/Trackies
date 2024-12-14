@@ -34,8 +34,6 @@ class SharedViewModel @Inject constructor(
 //  @Tested
     init {
 
-        Log.d("Halla!", "init!")
-
         viewModelScope.launch {
 
 //          1: Checking if the user is first time in the app. If so, the method automatically adds new user to the database:
