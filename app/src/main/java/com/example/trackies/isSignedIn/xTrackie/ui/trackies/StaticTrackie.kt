@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.isSignedIn.xTrackie.ui.componentsOfTrackies.trackieProgressBar
 import com.example.trackies.ui.sharedUI.customButtons.iconButton
 import com.example.trackies.ui.sharedUI.customSpacers.horizontalSpacerS
@@ -28,7 +29,7 @@ import com.example.trackies.ui.theme.SecondaryColor
 fun staticTrackie(
     name: String,
     totalDose: Int,
-    measuringUnit: String,
+    measuringUnit: MeasuringUnit,
     repeatOn: List<String>,
     ingestionTime: Map<String, Int>?,
 

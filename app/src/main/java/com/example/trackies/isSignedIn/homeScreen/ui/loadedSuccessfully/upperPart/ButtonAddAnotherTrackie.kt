@@ -18,7 +18,10 @@ fun buttonAddNewTrackie(onClick: () -> Unit ) {
 
     Button(
 
-        onClick = { onClick() },
+        onClick = {
+
+            onClick()
+        },
 
         modifier = Modifier
             .fillMaxWidth()
@@ -33,6 +36,7 @@ fun buttonAddNewTrackie(onClick: () -> Unit ) {
         ),
 
         content = {
+
             textTitleSmall(content = "add new trackie")
         }
     )

@@ -19,6 +19,7 @@ fun buttonDisplayAllTrackies(onClick: () -> Unit) {
     Button(
 
         onClick = {
+
             onClick()
         },
 
@@ -35,6 +36,7 @@ fun buttonDisplayAllTrackies(onClick: () -> Unit) {
         ),
 
         content = {
+
             textTitleSmall(content = "show all trackies")
         }
     )

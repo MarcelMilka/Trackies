@@ -13,7 +13,7 @@ import androidx.compose.material.icons.rounded.KeyboardReturn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.lowerPart.detailedTrackieWeeklyRegularityChartLoadedSuccessFully
+import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.lowerPart.detailedTrackieWeeklyRegularityChart
 import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart.upperPartLoadedSuccessfully
 import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart.upperPartLoading
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
@@ -133,8 +133,8 @@ fun detailedTrackie(
 
                                         else -> {
 
-                                            detailedTrackieWeeklyRegularityChartLoadedSuccessFully(
-                                                trackieViewState = trackieViewState,
+                                            detailedTrackieWeeklyRegularityChart(
+                                                trackieModel = trackieViewState,
                                                 sharedViewModelUiState = sharedViewModelUiState
                                             )
                                         }

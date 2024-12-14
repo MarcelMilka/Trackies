@@ -37,11 +37,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.EnumMeasuringUnits
+import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.globalConstants.MeasuringUnits
 import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
@@ -58,7 +57,7 @@ import kotlinx.coroutines.launch
     enabledToAddNewTrackie: Boolean,
     addNewTrackieViewModel: AddNewTrackieViewModel,
 
-    updateMeasuringUnit: (EnumMeasuringUnits) -> Unit,
+    updateMeasuringUnit: (MeasuringUnit) -> Unit,
     updateDose: (Int) -> Unit,
 
     activate: () -> Unit,
@@ -68,22 +67,32 @@ import kotlinx.coroutines.launch
 ) {
 
 //  AddNewTrackieModel-data:
-    var measuringUnit: EnumMeasuringUnits? by remember { mutableStateOf(null) }
-    var dose by remember { mutableIntStateOf(0) }
+    var measuringUnit: MeasuringUnit? by remember {
+
+        mutableStateOf(null)
+    }
+    var dose by remember {
+
+        mutableIntStateOf(0)
+    }
 
 
 //  DailyDoseViewState-data:
     var mlIsChosen by remember {
+
         mutableStateOf(false)
     }
     var gIsChosen by remember {
+
         mutableStateOf(false)
     }
     var pcsIsChosen by remember {
+
         mutableStateOf(false)
     }
 
     var targetHeightOfTheSurface by remember {
+
         mutableIntStateOf(
             DailyDoseHeightOptions.displayUnactivatedComponent
         )
@@ -99,16 +108,20 @@ import kotlinx.coroutines.launch
     )
 
     var displayFieldWithInsertedDose by remember {
+
         mutableStateOf(false)
     }
     var displayFieldWithMeasuringUnits by remember {
+
         mutableStateOf(false)
     }
     var displayFieldWithTextField by remember {
+
         mutableStateOf(false)
     }
 
     var hint by remember {
+
         mutableStateOf(
             DailyDoseHintOptions.insertDailyDosage
         )
@@ -117,6 +130,7 @@ import kotlinx.coroutines.launch
 
 //  Segment-specific values
     val focusRequester = remember {
+
         FocusRequester()
     }
 
@@ -136,25 +150,25 @@ import kotlinx.coroutines.launch
 
             addNewTrackieViewModel.addNewTrackieModel.collect { addNewTrackieModel ->
 
-                measuringUnit = addNewTrackieModel.measuringUnit.also {
+                measuringUnit = addNewTrackieModel.measuringUnit.also { measuringUnit ->
 
-                    when (it) {
+                    when (measuringUnit) {
 
-                        EnumMeasuringUnits.ml -> {
+                        MeasuringUnit.ml -> {
 
                             mlIsChosen = true
                             gIsChosen = false
                             pcsIsChosen = false
                         }
 
-                        EnumMeasuringUnits.g -> {
+                        MeasuringUnit.g -> {
 
                             mlIsChosen = false
                             gIsChosen = true
                             pcsIsChosen = false
                         }
 
-                        EnumMeasuringUnits.pcs -> {
+                        MeasuringUnit.pcs -> {
 
                             mlIsChosen = false
                             gIsChosen = false
@@ -343,35 +357,35 @@ import kotlinx.coroutines.launch
 
                                         content = {
 
-                                            mediumRadioTextButton(text = MeasuringUnits.ml, isSelected = mlIsChosen) {
+                                            mediumRadioTextButton(text = "${MeasuringUnit.ml}", isSelected = mlIsChosen) {
 
                                                 mlIsChosen = true
                                                 gIsChosen = false
                                                 pcsIsChosen = false
 
-                                                updateMeasuringUnit(EnumMeasuringUnits.ml)
+                                                updateMeasuringUnit(MeasuringUnit.ml)
                                             }
 
                                             verticalSpacerS()
 
-                                            mediumRadioTextButton(text = MeasuringUnits.g, isSelected = gIsChosen) {
+                                            mediumRadioTextButton(text = "${MeasuringUnit.g}", isSelected = gIsChosen) {
 
                                                 mlIsChosen = false
                                                 gIsChosen = true
                                                 pcsIsChosen = false
 
-                                                updateMeasuringUnit(EnumMeasuringUnits.g)
+                                                updateMeasuringUnit(MeasuringUnit.g)
                                             }
 
                                             verticalSpacerS()
 
-                                            mediumRadioTextButton(text = MeasuringUnits.pcs, isSelected = pcsIsChosen) {
+                                            mediumRadioTextButton(text = "${MeasuringUnit.pcs}", isSelected = pcsIsChosen) {
 
                                                 mlIsChosen = false
                                                 gIsChosen = false
                                                 pcsIsChosen = true
 
-                                                updateMeasuringUnit(EnumMeasuringUnits.pcs)
+                                                updateMeasuringUnit(MeasuringUnit.pcs)
                                             }
                                         }
                                     )

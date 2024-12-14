@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.entities.Trackie
 import junit.framework.TestCase.assertEquals
@@ -45,7 +46,7 @@ class TrackieDaoTest {
     private val wholeWeekTrackie1 = Trackie(
         name = "Whole week trackie 1",
         totalDose = 5,
-        measuringUnit = "g",
+        measuringUnit = MeasuringUnit.g,
         monday = true,
         tuesday = true,
         wednesday = true,
@@ -57,7 +58,7 @@ class TrackieDaoTest {
     private val wholeWeekTrackie2 = Trackie(
         name = "WholeweekTrackie 2",
         totalDose = 100,
-        measuringUnit = "ml",
+        measuringUnit = MeasuringUnit.pcs,
         monday = true,
         tuesday = true,
         wednesday = true,
@@ -69,7 +70,7 @@ class TrackieDaoTest {
     private val weekendTrackie = Trackie(
         name = "WeekendTrackie",
         totalDose = 100,
-        measuringUnit = "ml",
+        measuringUnit = MeasuringUnit.pcs,
         monday = false,
         tuesday = false,
         wednesday = false,
@@ -81,7 +82,7 @@ class TrackieDaoTest {
     private val mondayTrackie = Trackie(
         name = "Monday Trackie",
         totalDose = 100,
-        measuringUnit = "ml",
+        measuringUnit = MeasuringUnit.ml,
         monday = true,
         tuesday = false,
         wednesday = false,
@@ -177,7 +178,7 @@ class TrackieDaoTest {
         val theSameTrackieOne = Trackie(
             name = "Trackie",
             totalDose = 1,
-            measuringUnit = "g",
+            measuringUnit = MeasuringUnit.g,
             monday = true,
             tuesday = true,
             wednesday = true,
@@ -201,7 +202,7 @@ class TrackieDaoTest {
         val theSameTrackieTwo = Trackie(
             name = "Trackie",
             totalDose = 1000,
-            measuringUnit = "ml",
+            measuringUnit = MeasuringUnit.g,
             monday = true,
             tuesday = true,
             wednesday = true,

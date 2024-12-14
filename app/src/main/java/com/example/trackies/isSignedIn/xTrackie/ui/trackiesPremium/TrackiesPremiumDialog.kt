@@ -4,13 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AllInclusive
@@ -34,7 +32,6 @@ import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.PrimaryColor
 import com.example.trackies.ui.theme.White50
 import com.example.trackies.ui.theme.quickSandBold
-import com.google.android.gms.common.Feature
 
 @Composable
 fun trackiesPremiumDialog(onReturn: () -> Unit) {

@@ -3,6 +3,7 @@ package com.example.trackies.testsOfAuthenticationServices
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.globalConstants.Destinations
+import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.aRoom.di.RoomDatabaseProvider
 import com.example.trackies.auth.data.AuthenticationService
@@ -371,7 +372,7 @@ class RoomAuthenticationServiceTest {
                     trackie = Trackie(
                         name = "TODO()",
                         totalDose = 1,
-                        measuringUnit = "g",
+                        measuringUnit = MeasuringUnit.g,
                         monday = true,
                         tuesday = true ,
                         wednesday = true,

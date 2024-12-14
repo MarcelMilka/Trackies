@@ -3,13 +3,14 @@ package com.example.trackies.isSignedIn.user.buisness.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.globalConstants.DaysOfWeek
+import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 
 @Entity(tableName = "Trackies")
 data class Trackie(
     @PrimaryKey val name: String,
     val totalDose: Int,
-    val measuringUnit: String,
+    val measuringUnit: MeasuringUnit,
     val monday: Boolean,
     val tuesday: Boolean,
     val wednesday: Boolean,

@@ -34,8 +34,8 @@ import com.example.trackies.ui.theme.fonts
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun detailedTrackieWeeklyRegularityChartLoadedSuccessFully(
-    trackieViewState: TrackieModel,
+fun detailedTrackieWeeklyRegularityChart(
+    trackieModel: TrackieModel,
     sharedViewModelUiState: SharedViewModelViewState.LoadedSuccessfully
 ) {
 

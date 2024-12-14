@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.example.globalConstants.MeasuringUnit
+import com.example.globalConstants.turnIntoString
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.PrimaryColor
@@ -43,7 +45,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun magicButton(
     totalDose: Int,
-    measuringUnit: String,
+    measuringUnit: MeasuringUnit,
     onMarkAsIngested: () -> Unit
 ) {
 
@@ -186,7 +188,7 @@ fun magicButton(
 
                                     textTitleMedium(content = "+$totalDose")
 
-                                    textTitleSmall(content = measuringUnit)
+                                    textTitleSmall(content = measuringUnit.turnIntoString())
 
                                 }
                             )

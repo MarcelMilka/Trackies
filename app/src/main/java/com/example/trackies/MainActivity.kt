@@ -36,7 +36,7 @@ import com.example.trackies.auth.data.FirebaseAuthenticationService
 import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
-import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.schedueTimeDialog
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.scheduleTimeDialog
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
 import com.example.trackies.isSignedIn.allTrackies.vm.AllTrackiesViewModel
@@ -695,7 +695,7 @@ class MainActivity : ComponentActivity() {
                             var addNewTrackieViewModel: AddNewTrackieViewModel =
                                 hiltViewModel(it)
 
-                            schedueTimeDialog(
+                            scheduleTimeDialog(
 
                                 onConfirm = {
 
