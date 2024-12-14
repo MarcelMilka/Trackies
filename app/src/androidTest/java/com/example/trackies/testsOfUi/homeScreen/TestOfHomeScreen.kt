@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
 import com.example.trackies.isSignedIn.homeScreen.ui.homeScreen
+import com.example.trackies.isSignedIn.user.buisness.SharedViewModelErrors
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
@@ -149,9 +150,9 @@ class TestOfHomeScreen {
     }
 
     @Test
-    fun uiStateIs_FailedToLoadData() = runBlocking {
+    fun uiStateIs_FailedToLoadData_isFirstTimeInTheAppReturnedError() = runBlocking {
 
-        manipulatorOfHomeScreensViewStates.setFailedToLoadData()
+        manipulatorOfHomeScreensViewStates.setFailedToLoadData_isFirstTimeInTheAppReturnedError()
 
         loadingPreviewOfListOfTrackies.assertIsNotDisplayed()
         previewOfListOfTrackies.assertIsNotDisplayed()
@@ -172,6 +173,123 @@ class TestOfHomeScreen {
 
         composeTestRule.onNodeWithText(text = "Whoops...").assertIsDisplayed()
         composeTestRule.onNodeWithText(text = "An error occurred while loading your data. Try again later.").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = SharedViewModelErrors.isFirstTimeInTheAppReturnedNull).assertIsDisplayed()
+
+        assertNull(null)
+    }
+
+    @Test
+    fun uiStateIs_FailedToLoadData_needToResetPastWeekRegularityReturnedError() = runBlocking {
+
+        manipulatorOfHomeScreensViewStates.setFailedToLoadData_needToResetPastWeekRegularityReturnedError()
+
+        loadingPreviewOfListOfTrackies.assertIsNotDisplayed()
+        previewOfListOfTrackies.assertIsNotDisplayed()
+
+        loadingButtonDisplayAllTrackies.assertIsNotDisplayed()
+        buttonDisplayAllTrackies.assertIsNotDisplayed()
+
+        loadingButtonAddAnotherTrackie.assertIsNotDisplayed()
+        buttonAddNewTrackie.assertIsNotDisplayed()
+
+        loadingRowWithRadioButtons.assertIsNotDisplayed()
+        rowWithRadioButtons.assertIsNotDisplayed()
+
+        loadingRegularityChart.assertIsNotDisplayed()
+        homeScreenWeeklyRegularityChart.assertIsNotDisplayed()
+        homeScreenMonthlyRegularityChart.assertIsNotDisplayed()
+        yearlyRegularityChartLoadedSuccessfully.assertIsNotDisplayed()
+
+        composeTestRule.onNodeWithText(text = "Whoops...").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = "An error occurred while loading your data. Try again later.").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = SharedViewModelErrors.needToResetPastWeekRegularityReturnedNull).assertIsDisplayed()
+
+        assertNull(null)
+    }
+
+    @Test
+    fun uiStateIs_FailedToLoadData_resetWeeklyRegularityReturnedError() = runBlocking {
+
+        manipulatorOfHomeScreensViewStates.setFailedToLoadData_resetWeeklyRegularityReturnedError()
+
+        loadingPreviewOfListOfTrackies.assertIsNotDisplayed()
+        previewOfListOfTrackies.assertIsNotDisplayed()
+
+        loadingButtonDisplayAllTrackies.assertIsNotDisplayed()
+        buttonDisplayAllTrackies.assertIsNotDisplayed()
+
+        loadingButtonAddAnotherTrackie.assertIsNotDisplayed()
+        buttonAddNewTrackie.assertIsNotDisplayed()
+
+        loadingRowWithRadioButtons.assertIsNotDisplayed()
+        rowWithRadioButtons.assertIsNotDisplayed()
+
+        loadingRegularityChart.assertIsNotDisplayed()
+        homeScreenWeeklyRegularityChart.assertIsNotDisplayed()
+        homeScreenMonthlyRegularityChart.assertIsNotDisplayed()
+        yearlyRegularityChartLoadedSuccessfully.assertIsNotDisplayed()
+
+        composeTestRule.onNodeWithText(text = "Whoops...").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = "An error occurred while loading your data. Try again later.").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = SharedViewModelErrors.resetWeeklyRegularityReturnedNull).assertIsDisplayed()
+
+        assertNull(null)
+    }
+
+    @Test
+    fun uiStateIs_FailedToLoadData_atLeastOneFinalMethodReturnedError() = runBlocking {
+
+        manipulatorOfHomeScreensViewStates.setFailedToLoadData_atLeastOneFinalMethodReturnedError()
+
+        loadingPreviewOfListOfTrackies.assertIsNotDisplayed()
+        previewOfListOfTrackies.assertIsNotDisplayed()
+
+        loadingButtonDisplayAllTrackies.assertIsNotDisplayed()
+        buttonDisplayAllTrackies.assertIsNotDisplayed()
+
+        loadingButtonAddAnotherTrackie.assertIsNotDisplayed()
+        buttonAddNewTrackie.assertIsNotDisplayed()
+
+        loadingRowWithRadioButtons.assertIsNotDisplayed()
+        rowWithRadioButtons.assertIsNotDisplayed()
+
+        loadingRegularityChart.assertIsNotDisplayed()
+        homeScreenWeeklyRegularityChart.assertIsNotDisplayed()
+        homeScreenMonthlyRegularityChart.assertIsNotDisplayed()
+        yearlyRegularityChartLoadedSuccessfully.assertIsNotDisplayed()
+
+        composeTestRule.onNodeWithText(text = "Whoops...").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = "An error occurred while loading your data. Try again later.").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull).assertIsDisplayed()
+
+        assertNull(null)
+    }
+
+    @Test
+    fun uiStateIs_FailedToLoadData_unidentifiedError() = runBlocking {
+
+        manipulatorOfHomeScreensViewStates.setFailedToLoadData_unidentifiedError()
+
+        loadingPreviewOfListOfTrackies.assertIsNotDisplayed()
+        previewOfListOfTrackies.assertIsNotDisplayed()
+
+        loadingButtonDisplayAllTrackies.assertIsNotDisplayed()
+        buttonDisplayAllTrackies.assertIsNotDisplayed()
+
+        loadingButtonAddAnotherTrackie.assertIsNotDisplayed()
+        buttonAddNewTrackie.assertIsNotDisplayed()
+
+        loadingRowWithRadioButtons.assertIsNotDisplayed()
+        rowWithRadioButtons.assertIsNotDisplayed()
+
+        loadingRegularityChart.assertIsNotDisplayed()
+        homeScreenWeeklyRegularityChart.assertIsNotDisplayed()
+        homeScreenMonthlyRegularityChart.assertIsNotDisplayed()
+        yearlyRegularityChartLoadedSuccessfully.assertIsNotDisplayed()
+
+        composeTestRule.onNodeWithText(text = "Whoops...").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = "An error occurred while loading your data. Try again later.").assertIsDisplayed()
+        composeTestRule.onNodeWithText(text = SharedViewModelErrors.unidentifiedError).assertIsDisplayed()
 
         assertNull(null)
     }
@@ -401,7 +519,7 @@ class TestOfHomeScreen {
         homeScreenMonthlyRegularityChart.assertIsNotDisplayed()
         yearlyRegularityChartLoadedSuccessfully.assertIsNotDisplayed()
 
-        manipulatorOfHomeScreensViewStates.setFailedToLoadData()
+        manipulatorOfHomeScreensViewStates.setFailedToLoadData_unidentifiedError()
 
         loadingPreviewOfListOfTrackies.assertIsNotDisplayed()
         previewOfListOfTrackies.assertIsNotDisplayed()

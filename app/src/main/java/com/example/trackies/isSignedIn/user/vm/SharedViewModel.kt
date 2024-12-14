@@ -1,6 +1,5 @@
 package com.example.trackies.isSignedIn.user.vm
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.globalConstants.CurrentDateTime
@@ -28,8 +27,6 @@ class SharedViewModel @Inject constructor(
 
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
     val uiState = _uiState.asStateFlow()
-
-    var error: SharedViewModelErrors? = null
 
 //  @Tested
     init {
@@ -91,20 +88,21 @@ class SharedViewModel @Inject constructor(
 
                                 else {
 
-                                    error = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-
                                     _uiState.update {
-                                        SharedViewModelViewState.FailedToLoadData
+                                        SharedViewModelViewState.FailedToLoadData(
+                                            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
+                                        )
                                     }
                                 }
                             }
 
                             false -> {
 
-                                error = SharedViewModelErrors.ResetWeeklyRegularityReturnedError
-
                                 _uiState.update {
-                                    SharedViewModelViewState.FailedToLoadData
+
+                                    SharedViewModelViewState.FailedToLoadData(
+                                        errorMessage = SharedViewModelErrors.resetWeeklyRegularityReturnedNull
+                                    )
                                 }
                             }
                         }
@@ -147,10 +145,11 @@ class SharedViewModel @Inject constructor(
 
                         else {
 
-                            error = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-
                             _uiState.update {
-                                SharedViewModelViewState.FailedToLoadData
+
+                                SharedViewModelViewState.FailedToLoadData(
+                                    errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
+                                )
                             }
                         }
                     }
@@ -158,20 +157,22 @@ class SharedViewModel @Inject constructor(
 
                 else {
 
-                    error = SharedViewModelErrors.NeedToResetPastWeekRegularityReturnedError
-
                     _uiState.update {
-                        SharedViewModelViewState.FailedToLoadData
+
+                        SharedViewModelViewState.FailedToLoadData(
+                            errorMessage = SharedViewModelErrors.needToResetPastWeekRegularityReturnedNull
+                        )
                     }
                 }
             }
 
             else {
 
-                error = SharedViewModelErrors.IsFirstTimeInTheAppReturnedError
-
                 _uiState.update {
-                    SharedViewModelViewState.FailedToLoadData
+
+                    SharedViewModelViewState.FailedToLoadData(
+                        errorMessage = SharedViewModelErrors.isFirstTimeInTheAppReturnedNull
+                    )
                 }
             }
         }

@@ -6,32 +6,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardReturn
-import androidx.compose.material.icons.rounded.AllInclusive
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.globalConstants.TrackiesPremium
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.convertIntoTrackieModel
@@ -43,7 +30,6 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.u
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.ui.nameOfTrackieLoading
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.ui.scheduleDays
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.ui.scheduleDaysLoading
-import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.timeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
@@ -51,13 +37,12 @@ import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
+import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
+import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
-import com.example.trackies.ui.theme.PrimaryColor
-import com.example.trackies.ui.theme.White50
-import com.example.trackies.ui.theme.quickSandBold
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -302,10 +287,45 @@ fun addNewTrackie(
                                     )
                                 }
 
-                                SharedViewModelViewState.FailedToLoadData -> {
-                                    textTitleMedium("Failed to load data")
-                                }
+                                is SharedViewModelViewState.FailedToLoadData -> {
 
+//                                  big text 'Whoops...'
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .fillMaxHeight(Dimensions.heightOfUpperFragment),
+
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Bottom,
+
+                                        content = {
+
+                                            textHeadlineLarge(
+                                                content = "Whoops..."
+                                            )
+                                        }
+                                    )
+
+//                                  smaller text 'An error occurred while loading your data. Try again later.' and cause of error
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize(),
+
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.SpaceAround,
+
+                                        content = {
+
+                                            textHeadlineSmall(
+                                                content = "An error occurred while loading your data. Try again later."
+                                            )
+
+                                            textTitleMedium(
+                                                content = sharedViewModelUiState.errorMessage
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     )

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,8 +26,12 @@ import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetwee
 import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
+import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
+import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
+import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
+import com.example.trackies.ui.theme.Dimensions
 
 @Composable
 fun displayAllTrackies(
@@ -167,8 +172,45 @@ fun displayAllTrackies(
                             }
                         }
 
-                        SharedViewModelViewState.FailedToLoadData -> {}
+                        is SharedViewModelViewState.FailedToLoadData -> {
 
+//                          big text 'Whoops...'
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(Dimensions.heightOfUpperFragment),
+
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Bottom,
+
+                                content = {
+
+                                    textHeadlineLarge(
+                                        content = "Whoops..."
+                                    )
+                                }
+                            )
+
+//                          smaller text 'An error occurred while loading your data. Try again later.' and cause of error
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.SpaceAround,
+
+                                content = {
+
+                                    textHeadlineSmall(
+                                        content = "An error occurred while loading your data. Try again later."
+                                    )
+
+                                    textTitleMedium(
+                                        content = sharedViewModelUiState.errorMessage
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             )

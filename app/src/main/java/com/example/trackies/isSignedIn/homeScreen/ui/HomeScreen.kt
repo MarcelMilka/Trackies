@@ -36,6 +36,7 @@ import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.homeScreenWeeklyRegularityChart
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.homeScreenMonthlyRegularityChart
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.yearlyRegularityChartLoadedSuccessfully
+import com.example.trackies.ui.sharedUI.customText.centeredTextTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
@@ -147,7 +148,7 @@ fun homeScreen(
                                     }
                                 }
 
-                                SharedViewModelViewState.FailedToLoadData -> {
+                                is SharedViewModelViewState.FailedToLoadData -> {
 
 //                                  big text 'Whoops...'
                                     Column(
@@ -166,7 +167,7 @@ fun homeScreen(
                                         }
                                     )
 
-//                                  smaller text 'An error occurred while loading your data. Try again later.'
+//                                  smaller text 'An error occurred while loading your data. Try again later.' and cause of error
                                     Column(
                                         modifier = Modifier
                                             .fillMaxSize(),
@@ -179,7 +180,12 @@ fun homeScreen(
                                             textHeadlineSmall(
                                                 content = "An error occurred while loading your data. Try again later."
                                             )
+
+                                            centeredTextTitleMedium(
+                                                content = sharedViewModelUiState.errorMessage
+                                            )
                                         }
+
                                     )
                                 }
                             }
@@ -251,7 +257,7 @@ fun homeScreen(
                                     }
                                 }
 
-                                SharedViewModelViewState.FailedToLoadData -> {}
+                                is SharedViewModelViewState.FailedToLoadData -> {}
                             }
                         }
                     )

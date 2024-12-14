@@ -5,6 +5,7 @@ import com.example.trackies.isSignedIn.homeScreen.buisness.HeightOfLazyColumn
 import com.example.trackies.isSignedIn.homeScreen.buisness.HomeScreenChartToDisplay
 import com.example.trackies.isSignedIn.homeScreen.viewState.HomeScreenViewState
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
+import com.example.trackies.isSignedIn.user.buisness.SharedViewModelErrors
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -312,11 +313,53 @@ class ManipulatorOfHomeScreen {
         }
     }
 
-    fun setFailedToLoadData() {
+    fun setFailedToLoadData_isFirstTimeInTheAppReturnedError() {
 
         _sharedViewModelViewState.update {
 
-            SharedViewModelViewState.FailedToLoadData
+            SharedViewModelViewState.FailedToLoadData(
+                errorMessage = SharedViewModelErrors.isFirstTimeInTheAppReturnedNull
+            )
+        }
+    }
+
+    fun setFailedToLoadData_needToResetPastWeekRegularityReturnedError() {
+
+        _sharedViewModelViewState.update {
+
+            SharedViewModelViewState.FailedToLoadData(
+                errorMessage = SharedViewModelErrors.needToResetPastWeekRegularityReturnedNull
+            )
+        }
+    }
+
+    fun setFailedToLoadData_resetWeeklyRegularityReturnedError() {
+
+        _sharedViewModelViewState.update {
+
+            SharedViewModelViewState.FailedToLoadData(
+                errorMessage = SharedViewModelErrors.resetWeeklyRegularityReturnedNull
+            )
+        }
+    }
+
+    fun setFailedToLoadData_atLeastOneFinalMethodReturnedError() {
+
+        _sharedViewModelViewState.update {
+
+            SharedViewModelViewState.FailedToLoadData(
+                errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
+            )
+        }
+    }
+
+    fun setFailedToLoadData_unidentifiedError() {
+
+        _sharedViewModelViewState.update {
+
+            SharedViewModelViewState.FailedToLoadData(
+                errorMessage = SharedViewModelErrors.unidentifiedError
+            )
         }
     }
 

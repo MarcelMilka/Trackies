@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="buttonDisplayAllTrackies_calls_onSwitchChart_weekly()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="buttonDisplayAllTrackies_calls_switchingBetweenCharts()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="clickingBarsOfTheChart()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="TestOfHomeScreen">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="uiStateIs_Loading()">
+      <SelectionState runConfigName="uiStateIs_FailedToLoadData_needToResetPastWeekRegularityReturnedError()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="uiStateIs_FailedToLoadData_resetWeeklyRegularityReturnedError()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="uiStateIs_FailedToLoadData_atLeastOneFinalMethodReturnedError()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="uiStateIs_FailedToLoadData_unidentifiedError()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

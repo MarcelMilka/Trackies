@@ -86,15 +86,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.IsFirstTimeInTheAppReturnedError
-        val actualError = sharedViewModel.error
-
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.isFirstTimeInTheAppReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
 
         assertEquals(
@@ -121,14 +115,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.NeedToResetPastWeekRegularityReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.needToResetPastWeekRegularityReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -157,14 +146,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.ResetWeeklyRegularityReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.resetWeeklyRegularityReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -199,13 +183,6 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = null
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
-        )
-
         val expectedSharedViewModelViewState = SharedViewModelViewState.LoadedSuccessfully::class
         val actualSharedViewModelViewState = sharedViewModel.uiState.value::class
         assertEquals(
@@ -258,14 +235,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -317,14 +289,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -376,14 +343,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -435,14 +397,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -494,14 +451,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -553,13 +505,6 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = null
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
-        )
-
         val expectedSharedViewModelViewState = SharedViewModelViewState.LoadedSuccessfully::class
         val actualSharedViewModelViewState = sharedViewModel.uiState.value::class
         assertEquals(
@@ -614,14 +559,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -675,14 +615,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -736,14 +671,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -797,14 +727,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,
@@ -858,14 +783,9 @@ class SharedViewModelUnitTest {
         advanceUntilIdle()
 
 //      Assertions:
-        val expectedError = SharedViewModelErrors.AtLeastOneFinalMethodReturnedError
-        val actualError = sharedViewModel.error
-        assertEquals(
-            expectedError,
-            actualError
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
         )
-
-        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
         assertEquals(
             expectedSharedViewModelViewState,

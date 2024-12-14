@@ -15,5 +15,5 @@ sealed class SharedViewModelViewState {
         var allTrackies: List<TrackieModel>?
     ): SharedViewModelViewState()
 
-    object FailedToLoadData: SharedViewModelViewState()
+    data class FailedToLoadData(val errorMessage: String): SharedViewModelViewState()
 }
