@@ -54,7 +54,10 @@ fun welcomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom,
 
-                        content = { textHeadlineLarge(content = "Hey there!") }
+                        content = {
+
+                            textHeadlineLarge(content = "Hey there!")
+                        }
                     )
 
                     Column(
@@ -67,12 +70,14 @@ fun welcomeScreen(
                         content = {
 
                             BigPrimaryButton(textToDisplay = "Sign up") {
+
                                 onNavigateSignUp()
                             }
 
                             verticalSpacerS()
 
                             BigPrimaryButton(textToDisplay = "Sign in") {
+
                                 onNavigateSignIn()
                             }
 
@@ -83,9 +88,9 @@ fun welcomeScreen(
                             verticalSpacerM()
 
                             smallStaticSecondaryButton(textToDisplay = "continue as guest") {
+
                                 onContinueAsGuest()
                             }
-
                         }
                     )
                 }
