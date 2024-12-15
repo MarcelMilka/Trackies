@@ -9,6 +9,7 @@ import com.example.trackies.isSignedOut.presentation.ui.signUp.signUp.SignUpErro
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
+@Tested
 @RoomAuthenticator
 class RoomAuthenticationService @Inject constructor(
     val roomDatabase: RoomDatabase

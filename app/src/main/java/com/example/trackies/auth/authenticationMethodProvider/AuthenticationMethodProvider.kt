@@ -1,12 +1,14 @@
-package com.example.trackies.auth.providerOfAuthenticationMethod
+package com.example.trackies.auth.authenticationMethodProvider
 
 import com.example.globalConstants.Destinations
+import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.di.FirebaseAuthenticator
 import com.example.trackies.di.RoomAuthenticator
 import javax.inject.Inject
 
+@Tested
 class AuthenticationMethodProvider @Inject constructor(
     @FirebaseAuthenticator private val firebaseAuthService: AuthenticationService,
     @RoomAuthenticator private val roomAuthService: AuthenticationService
@@ -14,10 +16,12 @@ class AuthenticationMethodProvider @Inject constructor(
 
     private var currentMode: AuthenticationMethod = AuthenticationMethod.Firebase
 
+    @Tested
     fun setAuthenticationMethod(mode: AuthenticationMethod) {
         currentMode = mode
     }
 
+    @Tested
     fun getAuthenticationService(): AuthenticationService {
 
         return when (currentMode) {
@@ -32,14 +36,15 @@ class AuthenticationMethodProvider @Inject constructor(
         }
     }
 
-    fun getAuthenticationMethod(): AuthenticationMethod =
-        currentMode
+    @Tested
+    fun getAuthenticationMethod(): AuthenticationMethod = currentMode
 
+    @Tested
     fun getInitialDestination(): String {
 
         val firebaseInitialDestination = firebaseAuthService.initialDestination // ( Destinations.IsSignedOut / Destinations.IsSignedIn )
 
-        val roomInitialDestination = roomAuthService.initialDestination // ( true / false )
+        val roomInitialDestination = roomAuthService.initialDestination // ( Destinations.IsSignedOut / Destinations.IsSignedIn )
 
         return if (firebaseInitialDestination == Destinations.IsSignedIn) {
 
@@ -61,6 +66,6 @@ class AuthenticationMethodProvider @Inject constructor(
         }
     }
 
+    @Tested
     fun getFirebaseUniqueID(): String? = firebaseAuthService.getSignedInUser()
-
 }

@@ -5,11 +5,11 @@ import androidx.test.core.app.ApplicationProvider
 import com.example.globalConstants.Destinations
 import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.aRoom.db.RoomDatabase
-import com.example.trackies.aRoom.di.RoomDatabaseProvider
+import com.example.trackies.aRoom.di.RoomDatabaseModule
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.auth.data.FirebaseAuthenticationService
 import com.example.trackies.auth.data.RoomAuthenticationService
-import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProviderModule
+import com.example.trackies.auth.authenticationMethodProvider.AuthenticationMethodProviderModule
 import com.example.trackies.di.FirebaseAuthenticator
 import com.example.trackies.di.RoomAuthenticator
 import com.example.trackies.isSignedIn.user.buisness.entities.License
@@ -36,7 +36,7 @@ import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@UninstallModules(RoomDatabaseProvider::class, AuthenticationMethodProviderModule::class)
+@UninstallModules(RoomDatabaseModule::class, AuthenticationMethodProviderModule::class)
 @HiltAndroidTest
 class RoomAuthenticationServiceTest {
 

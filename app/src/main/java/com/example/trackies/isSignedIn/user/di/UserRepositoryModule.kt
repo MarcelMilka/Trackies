@@ -1,9 +1,8 @@
 package com.example.trackies.isSignedIn.user.di
 
-import android.util.Log
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.auth.buisness.AuthenticationMethod
-import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
+import com.example.trackies.auth.authenticationMethodProvider.AuthenticationMethodProvider
 import com.example.trackies.di.Named
 import com.example.trackies.isSignedIn.user.data.FirebaseUserRepository
 import com.example.trackies.isSignedIn.user.data.RoomUserRepository
@@ -31,8 +30,6 @@ class UserRepositoryModule {
         @Named("uniqueIdentifier") lazyUniqueIdentifier: Lazy<String>,
         lazyRoomDatabase: Lazy<RoomDatabase>
     ): UserRepository {
-
-        Log.d("Magnetic Man", "$this provides user repository")
 
         val authenticationMethod =
             authenticationMethodProvider.getAuthenticationMethod()

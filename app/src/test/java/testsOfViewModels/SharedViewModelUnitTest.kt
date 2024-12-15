@@ -2,6 +2,7 @@ package testsOfViewModels
 
 import MainCoroutineRule
 import com.example.globalConstants.DaysOfWeek
+import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelErrors
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
@@ -46,7 +47,7 @@ class SharedViewModelUnitTest {
     private val wholeWeekTrackieModel = TrackieModel(
         name = "A",
         totalDose = 3000,
-        measuringUnit = "ml",
+        measuringUnit = MeasuringUnit.ml,
         repeatOn = listOf(DaysOfWeek.monday, DaysOfWeek.tuesday, DaysOfWeek.wednesday, DaysOfWeek.thursday, DaysOfWeek.friday, DaysOfWeek.saturday, DaysOfWeek.sunday),
         ingestionTime = null
     )
@@ -54,7 +55,7 @@ class SharedViewModelUnitTest {
     private val mondayToFridayTrackieModel = TrackieModel(
         name = "B",
         totalDose = 1,
-        measuringUnit = "pcs",
+        measuringUnit = MeasuringUnit.pcs,
         repeatOn = listOf(DaysOfWeek.monday, DaysOfWeek.tuesday, DaysOfWeek.wednesday, DaysOfWeek.thursday, DaysOfWeek.friday),
         ingestionTime = null
     )
@@ -62,7 +63,7 @@ class SharedViewModelUnitTest {
     private val mondayTrackieModel = TrackieModel(
         name = "C",
         totalDose = 1,
-        measuringUnit = "g",
+        measuringUnit = MeasuringUnit.g,
         repeatOn = listOf(DaysOfWeek.monday),
         ingestionTime = null
     )
@@ -70,7 +71,7 @@ class SharedViewModelUnitTest {
     private val saturdaySundayTrackieModel = TrackieModel(
         name = "D",
         totalDose = 400,
-        measuringUnit = "ml",
+        measuringUnit = MeasuringUnit.ml,
         repeatOn = listOf(DaysOfWeek.saturday, DaysOfWeek.sunday),
         ingestionTime = null
     )

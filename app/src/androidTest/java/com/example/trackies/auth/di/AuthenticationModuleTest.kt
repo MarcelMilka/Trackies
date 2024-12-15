@@ -6,8 +6,8 @@ import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.auth.data.FirebaseAuthenticationService
 import com.example.trackies.auth.data.RoomAuthenticationService
-import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
-import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProviderModule
+import com.example.trackies.auth.authenticationMethodProvider.AuthenticationMethodProvider
+import com.example.trackies.auth.authenticationMethodProvider.AuthenticationMethodProviderModule
 import com.example.trackies.di.FirebaseAuthenticator
 import com.example.trackies.di.Named
 import com.example.trackies.di.RoomAuthenticator
@@ -24,10 +24,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
-import junit.framework.TestCase.assertSame
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -38,7 +35,7 @@ import javax.inject.Singleton
 @HiltAndroidTest
 @UninstallModules(
     AuthenticationMethodProviderModule::class,
-    AuthenticationModule::class,
+    AuthenticationServiceModule::class,
     UserRepositoryModule::class
 )
 class AuthenticationModuleTest {

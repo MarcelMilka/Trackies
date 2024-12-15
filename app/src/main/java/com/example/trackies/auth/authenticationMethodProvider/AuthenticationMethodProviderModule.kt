@@ -1,5 +1,6 @@
-package com.example.trackies.auth.providerOfAuthenticationMethod
+package com.example.trackies.auth.authenticationMethodProvider
 
+import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.auth.data.FirebaseAuthenticationService
@@ -13,6 +14,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+@Tested
 @Module
 @InstallIn(SingletonComponent::class)
 class AuthenticationMethodProviderModule {

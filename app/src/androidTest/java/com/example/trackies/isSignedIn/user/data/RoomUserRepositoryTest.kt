@@ -3,7 +3,7 @@ package com.example.trackies.isSignedIn.user.data
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.trackies.aRoom.db.RoomDatabase
-import com.example.trackies.aRoom.di.RoomDatabaseProvider
+import com.example.trackies.aRoom.di.RoomDatabaseModule
 import com.example.trackies.isSignedIn.user.buisness.entities.License
 import com.example.trackies.isSignedIn.user.di.UserRepositoryModule
 import dagger.Lazy
@@ -29,7 +29,7 @@ import javax.inject.Singleton
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
-@UninstallModules(UserRepositoryModule::class, RoomDatabaseProvider::class)
+@UninstallModules(UserRepositoryModule::class, RoomDatabaseModule::class)
 class RoomUserRepositoryTest {
 
     @get:Rule

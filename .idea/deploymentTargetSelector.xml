@@ -13,19 +13,16 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="TestOfHomeScreen">
+      <SelectionState runConfigName="AuthenticationMethodProviderModuleTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="uiStateIs_FailedToLoadData_unidentifiedError()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="LicenseDaoTest">
+      <SelectionState runConfigName="AuthenticationServiceModuleTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="RoomAuthenticationServiceTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="TestOfWelcomeScreen">
+      <SelectionState runConfigName="UserRepositoryModuleTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

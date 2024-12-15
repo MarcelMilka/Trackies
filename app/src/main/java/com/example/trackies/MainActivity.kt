@@ -33,7 +33,7 @@ import com.example.trackies.isSignedIn.settings.dialogs.changePassword.yourPassw
 import com.example.globalConstants.Destinations
 import com.example.trackies.auth.buisness.AuthenticationMethod
 import com.example.trackies.auth.data.FirebaseAuthenticationService
-import com.example.trackies.auth.providerOfAuthenticationMethod.AuthenticationMethodProvider
+import com.example.trackies.auth.authenticationMethodProvider.AuthenticationMethodProvider
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.scheduleTimeDialog

@@ -23,7 +23,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @HiltAndroidTest
-@UninstallModules(RoomDatabaseProvider::class)
+@UninstallModules(RoomDatabaseModule::class)
 class RoomDatabaseProviderTest {
 
     @get:Rule(order = 0)

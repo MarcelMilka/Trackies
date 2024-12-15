@@ -2,7 +2,7 @@ package com.example.trackies.di
 
 import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.auth.data.FirebaseAuthenticationService
-import com.example.trackies.auth.di.AuthenticationModule
+import com.example.trackies.auth.di.AuthenticationServiceModule
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +17,7 @@ import org.junit.Test
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@UninstallModules(AuthenticationModule::class) // uninstalls the PRODUCTION module
+@UninstallModules(AuthenticationServiceModule::class) // uninstalls the PRODUCTION module
 @HiltAndroidTest // generates Hilt components for each test
 class AuthenticationModuleTest {
 
