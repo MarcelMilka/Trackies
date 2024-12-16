@@ -13,16 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="AuthenticationMethodProviderModuleTest">
+      <SelectionState runConfigName="isLoadedSuccessfully_ListOfTrackiesToDisplayForToday_isDisplayedByDefault_noTrackies()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="AuthenticationServiceModuleTest">
+      <SelectionState runConfigName="isLoadedSuccessfully_ListOfTrackiesToDisplayForToday_areDisplayedByDefault()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RoomAuthenticationServiceTest">
+      <SelectionState runConfigName="listOfTrackiesToDisplayToday_ListOfTrackiesToDisplayWholeWeek_switchingBetweenListsOfTrackies()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="UserRepositoryModuleTest">
+      <SelectionState runConfigName="listOfTrackiesToDisplayWholeWeek_isDisplayedProperly()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="TestOfAllTrackies">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

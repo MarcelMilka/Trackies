@@ -15,7 +15,11 @@ import com.example.trackies.ui.theme.PrimaryColor
 import com.example.trackies.ui.theme.fonts
 
 @Composable
-fun mediumRadioTextButton(text: String, isSelected: Boolean, onClick: (Boolean) -> Unit ) {
+fun mediumRadioTextButton(
+    text: String,
+    isSelected: Boolean,
+    onClick: (Boolean) -> Unit
+) {
 
     var textColor by remember { mutableStateOf(PrimaryColor) }
     textColor = when(isSelected) {
@@ -36,6 +40,7 @@ fun mediumRadioTextButton(text: String, isSelected: Boolean, onClick: (Boolean) 
             .clickable(
                 enabled = !isSelected,
                 onClick = {
+
                     onClick(!isSelected)
                 }
             )

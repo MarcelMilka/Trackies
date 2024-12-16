@@ -1,4 +1,4 @@
-package com.example.trackies.testsOfUi.homeScreen
+package userInterface.homeScreen
 
 import com.example.globalConstants.DaysOfWeek
 import com.example.globalConstants.MeasuringUnit
@@ -48,11 +48,35 @@ object Models {
         ingestionTime = null
     )
 
-    val wholeWeekTrackieModel6 = TrackieModel(
-        name = "F",
+    val weekendTrackieModel1 = TrackieModel(
+        name = "Aaa",
         totalDose = 1231,
+        measuringUnit = MeasuringUnit.pcs,
+        repeatOn = listOf(DaysOfWeek.saturday, DaysOfWeek.sunday),
+        ingestionTime = null
+    )
+
+    val weekendTrackieModel2 = TrackieModel(
+        name = "Bbb",
+        totalDose = 4564,
+        measuringUnit = MeasuringUnit.pcs,
+        repeatOn = listOf(DaysOfWeek.saturday, DaysOfWeek.sunday),
+        ingestionTime = null
+    )
+
+    val weekendTrackieModel3 = TrackieModel(
+        name = "Ccc",
+        totalDose = 4564,
+        measuringUnit = MeasuringUnit.pcs,
+        repeatOn = listOf(DaysOfWeek.saturday, DaysOfWeek.sunday),
+        ingestionTime = null
+    )
+
+    val fridayTrackieModel = TrackieModel(
+        name = "Ddd",
+        totalDose = 222,
         measuringUnit = MeasuringUnit.g,
-        repeatOn = listOf(DaysOfWeek.monday, DaysOfWeek.tuesday, DaysOfWeek.wednesday, DaysOfWeek.thursday, DaysOfWeek.friday, DaysOfWeek.saturday, DaysOfWeek.sunday),
+        repeatOn = listOf(DaysOfWeek.friday),
         ingestionTime = null
     )
 }

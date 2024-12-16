@@ -1,4 +1,4 @@
-package com.example.trackies.testsOfUi.homeScreen
+package userInterface.homeScreen
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

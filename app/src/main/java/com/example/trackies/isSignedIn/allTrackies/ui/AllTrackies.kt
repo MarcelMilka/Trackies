@@ -34,14 +34,15 @@ import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
 @Composable
-fun displayAllTrackies(
-    listToDisplay: ListOfTrackiesToDisplay,
-    onChangeListToDisplay: (ListOfTrackiesToDisplay) -> Unit,
-    sharedViewModelUiState: SharedViewModelViewState,
-    fetchAllUsersTrackies: () -> Unit,
+fun allTrackies(
+    listOfTrackiesToDisplay: ListOfTrackiesToDisplay,
+    sharedViewModelViewState: SharedViewModelViewState,
+
     onReturn: () -> Unit,
+    onChangeListOfTrackiesToDisplay: (ListOfTrackiesToDisplay) -> Unit,
     onMarkTrackieAsIngested: (TrackieModel) -> Unit,
-    onDisplayDetailedTrackie: (TrackieModel) -> Unit
+    onDisplayDetailedTrackie: (TrackieModel) -> Unit,
+    onFetchAllUsersTrackies: () -> Unit
 ) {
 
     Box(
@@ -64,6 +65,7 @@ fun displayAllTrackies(
                 content = {
 
                     iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.KeyboardReturn) {
+
                         onReturn()
                     }
 
@@ -73,6 +75,7 @@ fun displayAllTrackies(
 
                     verticalSpacerS()
 
+//                  radio buttons 'whole week' and 'today'
                     Row(
 
                         modifier = Modifier
@@ -86,25 +89,25 @@ fun displayAllTrackies(
 
                             mediumRadioTextButton(
                                 text = "whole week",
-                                isSelected = listToDisplay == ListOfTrackiesToDisplay.WholeWeek
+                                isSelected = listOfTrackiesToDisplay == ListOfTrackiesToDisplay.WholeWeek
                             ) {
 
-                                onChangeListToDisplay(ListOfTrackiesToDisplay.WholeWeek)
+                                onChangeListOfTrackiesToDisplay(ListOfTrackiesToDisplay.WholeWeek)
                             }
 
                             mediumRadioTextButton(
                                 text = "today",
-                                isSelected = listToDisplay == ListOfTrackiesToDisplay.Today
+                                isSelected = listOfTrackiesToDisplay == ListOfTrackiesToDisplay.Today
                             ) {
 
-                                onChangeListToDisplay(ListOfTrackiesToDisplay.Today)
+                                onChangeListOfTrackiesToDisplay(ListOfTrackiesToDisplay.Today)
                             }
                         }
                     )
 
                     verticalSpacerS()
 
-                    when (sharedViewModelUiState) {
+                    when (sharedViewModelViewState) {
 
                         SharedViewModelViewState.Loading -> {
 
@@ -113,15 +116,16 @@ fun displayAllTrackies(
 
                         is SharedViewModelViewState.LoadedSuccessfully -> {
 
-                            when(listToDisplay) {
+                            when(listOfTrackiesToDisplay) {
 
+//                              list of all the user's Trackies
                                 ListOfTrackiesToDisplay.Today -> {
 
                                     displayAllTrackiesForToday(
 
-                                        listOfTrackies = sharedViewModelUiState.trackiesForToday,
+                                        listOfTrackies = sharedViewModelViewState.trackiesForToday,
 
-                                        statesOfTrackiesForToday = sharedViewModelUiState.statesOfTrackiesForToday,
+                                        statesOfTrackiesForToday = sharedViewModelViewState.statesOfTrackiesForToday,
 
                                         onMarkAsIngested = {
 
@@ -135,26 +139,27 @@ fun displayAllTrackies(
                                     )
                                 }
 
+//                              list of all Trackies for today
                                 ListOfTrackiesToDisplay.WholeWeek -> {
 
-                                    when(sharedViewModelUiState.allTrackies) {
+                                    when(sharedViewModelViewState.allTrackies) {
 
                                         null -> {
 
                                             loadingPreviewOfListOfTrackies()
 
-                                            fetchAllUsersTrackies()
+                                            onFetchAllUsersTrackies()
                                         }
 
                                         else -> {
 
                                             displayAllTrackies(
 
-                                                listOfTrackies = sharedViewModelUiState.allTrackies!!,
+                                                listOfTrackies = sharedViewModelViewState.allTrackies!!,
 
-                                                listOfTrackiesForToday = sharedViewModelUiState.trackiesForToday,
+                                                listOfTrackiesForToday = sharedViewModelViewState.trackiesForToday,
 
-                                                statesOfTrackiesForToday = sharedViewModelUiState.statesOfTrackiesForToday,
+                                                statesOfTrackiesForToday = sharedViewModelViewState.statesOfTrackiesForToday,
 
                                                 onMarkAsIngested = {
 
@@ -206,7 +211,7 @@ fun displayAllTrackies(
                                     )
 
                                     textTitleMedium(
-                                        content = sharedViewModelUiState.errorMessage
+                                        content = sharedViewModelViewState.errorMessage
                                     )
                                 }
                             )

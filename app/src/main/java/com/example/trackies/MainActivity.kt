@@ -38,7 +38,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegme
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.scheduleTimeDialog
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
-import com.example.trackies.isSignedIn.allTrackies.ui.displayAllTrackies
+import com.example.trackies.isSignedIn.allTrackies.ui.allTrackies
 import com.example.trackies.isSignedIn.allTrackies.vm.AllTrackiesViewModel
 import com.example.trackies.isSignedIn.detailedTrackie.ui.confirmDeletionOfTheTrackie
 import com.example.trackies.isSignedIn.detailedTrackie.ui.detailedTrackie
@@ -534,25 +534,20 @@ class MainActivity : ComponentActivity() {
 
                         val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
 
-                        displayAllTrackies(
+                        allTrackies(
 
-                            listToDisplay = listToDisplay,
+                            listOfTrackiesToDisplay = listToDisplay,
 
-                            onChangeListToDisplay = {
-
-                                allTrackiesViewModel.switchListToDisplay(it)
-                            },
-
-                            sharedViewModelUiState = sharedViewModelUiState,
-
-                            fetchAllUsersTrackies = {
-
-                                sharedViewModel.fetchAllTrackies {}
-                            },
+                            sharedViewModelViewState = sharedViewModelUiState,
 
                             onReturn = {
 
                                 navigationController.navigateUp()
+                            },
+
+                            onChangeListOfTrackiesToDisplay = {
+
+                                allTrackiesViewModel.switchListToDisplay(it)
                             },
 
                             onMarkTrackieAsIngested = {
@@ -570,8 +565,12 @@ class MainActivity : ComponentActivity() {
                                     trackieViewState = it)
 
                                 navigationController.navigate(route = Destinations.DisplayDetailedTrackieRoute)
-                            }
+                            },
 
+                            onFetchAllUsersTrackies = {
+
+                                sharedViewModel.fetchAllTrackies {}
+                            }
                         )
                     }
 

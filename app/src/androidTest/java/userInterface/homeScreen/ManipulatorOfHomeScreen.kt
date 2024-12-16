@@ -1,4 +1,4 @@
-package com.example.trackies.testsOfUi.homeScreen
+package userInterface.homeScreen
 
 import com.example.globalConstants.DaysOfWeek
 import com.example.trackies.isSignedIn.homeScreen.buisness.HeightOfLazyColumn
