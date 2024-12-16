@@ -177,6 +177,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -202,6 +203,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerifySequence {
@@ -214,6 +216,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -229,6 +232,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -256,6 +260,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerifySequence {
@@ -268,6 +273,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -283,6 +289,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -310,6 +317,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerifySequence {
@@ -322,6 +330,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -337,6 +346,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -364,6 +374,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerifySequence {
@@ -376,6 +387,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -391,6 +403,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns null
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -418,6 +431,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerifySequence {
@@ -430,6 +444,64 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
+        }
+    }
+
+    @Test
+    fun `init - repository's needToResetPastWeekRegularity() returns true, repository's resetWeeklyRegularity() returns true, fetchNamesOfAllTrackies() returns null, SharedViewModelViewState is FailedToLoadData`() = runTest {
+
+//      Preparation:
+        coEvery { userRepository.isFirstTimeInTheApp() } returns true
+        coEvery { userRepository.needToResetPastWeekRegularity(any()) } returns true
+        coEvery { userRepository.resetWeeklyRegularity(any()) } returns true
+
+        coEvery { userRepository.fetchUsersLicense() } returns mockk()
+        coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
+        coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
+        coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns null
+
+        val sharedViewModel = SharedViewModel(repository = userRepository)
+
+//      Waiting for all tasks to complete:
+        advanceUntilIdle()
+
+//      Assertions:
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
+        )
+        val actualSharedViewModelViewState = sharedViewModel.uiState.value
+        assertEquals(
+            expectedSharedViewModelViewState,
+            actualSharedViewModelViewState
+        )
+
+//      Verifications:
+        coVerify(exactly = 1) {
+
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity(any())
+            userRepository.resetWeeklyRegularity(any())
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday(any())
+            userRepository.fetchStatesOfTrackiesForToday(any())
+            userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
+        }
+
+        coVerifySequence {
+
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity(any())
+            userRepository.resetWeeklyRegularity(any())
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday(any())
+            userRepository.fetchStatesOfTrackiesForToday(any())
+            userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -445,6 +517,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchWeeklyRegularity() } returns null
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns null
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -472,6 +545,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerifySequence {
@@ -484,6 +558,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -499,6 +574,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -523,6 +599,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerify(exactly = 0) {
@@ -539,6 +616,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -553,6 +631,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -579,6 +658,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerify(exactly = 0) {
@@ -595,6 +675,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -609,6 +690,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -635,6 +717,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerify(exactly = 0) {
@@ -651,6 +734,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -665,6 +749,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -691,6 +776,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerify(exactly = 0) {
@@ -707,6 +793,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -721,6 +808,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
         coEvery { userRepository.fetchWeeklyRegularity() } returns null
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns mockk()
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -747,6 +835,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerify(exactly = 0) {
@@ -763,6 +852,66 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
+        }
+    }
+
+    @Test
+    fun `init - repository's needToResetPastWeekRegularity() returns false, fetchFetchNamesOfAllTrackies() returns null, SharedViewModelViewState is FailedToLoadData`() = runTest {
+
+//      Preparation:
+        coEvery { userRepository.isFirstTimeInTheApp() } returns true
+        coEvery { userRepository.needToResetPastWeekRegularity(any()) } returns false
+
+        coEvery { userRepository.fetchUsersLicense() } returns mockk()
+        coEvery { userRepository.fetchTrackiesForToday(any()) } returns mockk()
+        coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mockk()
+        coEvery { userRepository.fetchWeeklyRegularity() } returns mockk()
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns null
+
+        val sharedViewModel = SharedViewModel(repository = userRepository)
+
+//      Waiting for all tasks to complete:
+        advanceUntilIdle()
+
+//      Assertions:
+        val expectedSharedViewModelViewState = SharedViewModelViewState.FailedToLoadData(
+            errorMessage = SharedViewModelErrors.atLeastOneFinalMethodReturnedNull
+        )
+        val actualSharedViewModelViewState = sharedViewModel.uiState.value
+        assertEquals(
+            expectedSharedViewModelViewState,
+            actualSharedViewModelViewState
+        )
+
+//      Verifications:
+        coVerify(exactly = 1) {
+
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity(any())
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday(any())
+            userRepository.fetchStatesOfTrackiesForToday(any())
+            userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
+        }
+
+        coVerify(exactly = 0) {
+
+            userRepository.resetWeeklyRegularity(any())
+        }
+
+        coVerifySequence {
+
+            userRepository.isFirstTimeInTheApp()
+            userRepository.needToResetPastWeekRegularity(any())
+
+            userRepository.fetchUsersLicense()
+            userRepository.fetchTrackiesForToday(any())
+            userRepository.fetchStatesOfTrackiesForToday(any())
+            userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -777,6 +926,7 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.fetchTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns null
         coEvery { userRepository.fetchWeeklyRegularity() } returns null
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns null
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
 
@@ -803,6 +953,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
 
         coVerify(exactly = 0) {
@@ -819,6 +970,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
         }
     }
 
@@ -881,6 +1033,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(0 to 0),
             DaysOfWeek.sunday to mapOf(0 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf<String>()
 
         coEvery { userRepository.addNewTrackie(wholeWeekTrackieModel) } returns true
 
@@ -918,7 +1071,7 @@ class SharedViewModelUnitTest {
                 DaysOfWeek.saturday to mapOf(1 to 0),
                 DaysOfWeek.sunday to mapOf(1 to 0),
             ),
-            namesOfAllTrackies = null,
+            namesOfAllTrackies = listOf("A"),
             allTrackies = null
         )
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
@@ -950,6 +1103,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
 
             userRepository.addNewTrackie(wholeWeekTrackieModel)
         }
@@ -974,6 +1128,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(1 to 0),
             DaysOfWeek.sunday to mapOf(1 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf("A")
 
         coEvery { userRepository.addNewTrackie(mondayTrackieModel) } returns true
 
@@ -1011,7 +1166,7 @@ class SharedViewModelUnitTest {
                 DaysOfWeek.saturday to mapOf(1 to 0),
                 DaysOfWeek.sunday to mapOf(1 to 0),
             ),
-            namesOfAllTrackies = null,
+            namesOfAllTrackies = listOf("A", "C"),
             allTrackies = null
         )
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
@@ -1043,6 +1198,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
 
             userRepository.addNewTrackie(mondayTrackieModel)
         }
@@ -1055,20 +1211,21 @@ class SharedViewModelUnitTest {
         coEvery { userRepository.isFirstTimeInTheApp() } returns true
         coEvery { userRepository.needToResetPastWeekRegularity(any()) } returns false
 
-        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(active = false, validUntil = null, totalAmountOfTrackies = 1)
-        coEvery { userRepository.fetchTrackiesForToday(any()) } returns listOf<TrackieModel>(wholeWeekTrackieModel)
-        coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mapOf<String, Boolean>("A" to false)
+        coEvery { userRepository.fetchUsersLicense() } returns LicenseModel(active = false, validUntil = null, totalAmountOfTrackies = 2)
+        coEvery { userRepository.fetchTrackiesForToday(any()) } returns listOf<TrackieModel>(wholeWeekTrackieModel, mondayToFridayTrackieModel)
+        coEvery { userRepository.fetchStatesOfTrackiesForToday(any()) } returns mapOf<String, Boolean>("A" to false, "B" to false)
         coEvery { userRepository.fetchWeeklyRegularity() } returns mapOf<String, Map<Int, Int>>(
-            DaysOfWeek.monday to mapOf(1 to 0),
-            DaysOfWeek.tuesday to mapOf(1 to 0),
-            DaysOfWeek.wednesday to mapOf(1 to 0),
-            DaysOfWeek.thursday to mapOf(1 to 0),
-            DaysOfWeek.friday to mapOf(1 to 0),
+            DaysOfWeek.monday to mapOf(2 to 0),
+            DaysOfWeek.tuesday to mapOf(2 to 0),
+            DaysOfWeek.wednesday to mapOf(2 to 0),
+            DaysOfWeek.thursday to mapOf(2 to 0),
+            DaysOfWeek.friday to mapOf(2 to 0),
             DaysOfWeek.saturday to mapOf(1 to 0),
             DaysOfWeek.sunday to mapOf(1 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf("A", "B")
 
-        coEvery { userRepository.fetchAllTrackies() } returns listOf(wholeWeekTrackieModel)
+        coEvery { userRepository.fetchAllTrackies() } returns listOf(wholeWeekTrackieModel, mondayToFridayTrackieModel)
         coEvery { userRepository.addNewTrackie(mondayTrackieModel) } returns true
 
         val sharedViewModel = SharedViewModel(repository = userRepository)
@@ -1077,20 +1234,20 @@ class SharedViewModelUnitTest {
 
 //      Assertions:
         val expectedSharedViewModelViewState1 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(active = false, validUntil = null, totalAmountOfTrackies = 1),
-            trackiesForToday = listOf(wholeWeekTrackieModel),
-            statesOfTrackiesForToday = mapOf<String, Boolean>("A" to false),
+            license = LicenseModel(active = false, validUntil = null, totalAmountOfTrackies = 2),
+            trackiesForToday = listOf(wholeWeekTrackieModel, mondayToFridayTrackieModel),
+            statesOfTrackiesForToday = mapOf<String, Boolean>("A" to false, "B" to false),
             weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(1 to 0),
-                DaysOfWeek.tuesday to mapOf(1 to 0),
-                DaysOfWeek.wednesday to mapOf(1 to 0),
-                DaysOfWeek.thursday to mapOf(1 to 0),
-                DaysOfWeek.friday to mapOf(1 to 0),
+                DaysOfWeek.monday to mapOf(2 to 0),
+                DaysOfWeek.tuesday to mapOf(2 to 0),
+                DaysOfWeek.wednesday to mapOf(2 to 0),
+                DaysOfWeek.thursday to mapOf(2 to 0),
+                DaysOfWeek.friday to mapOf(2 to 0),
                 DaysOfWeek.saturday to mapOf(1 to 0),
                 DaysOfWeek.sunday to mapOf(1 to 0),
             ),
-            namesOfAllTrackies = mutableListOf("A"),
-            allTrackies = listOf(wholeWeekTrackieModel)
+            namesOfAllTrackies = mutableListOf("A", "B"),
+            allTrackies = listOf(wholeWeekTrackieModel, mondayToFridayTrackieModel)
         )
         val actualSharedViewModelViewState1 = sharedViewModel.uiState.value
 
@@ -1116,20 +1273,20 @@ class SharedViewModelUnitTest {
         )
 
         val expectedSharedViewModelViewState2 = SharedViewModelViewState.LoadedSuccessfully(
-            license = LicenseModel(active = false, validUntil = null, totalAmountOfTrackies = 2),
-            trackiesForToday = listOf(wholeWeekTrackieModel),
-            statesOfTrackiesForToday = mapOf<String, Boolean>("A" to false),
+            license = LicenseModel(active = false, validUntil = null, totalAmountOfTrackies = 3),
+            trackiesForToday = listOf(wholeWeekTrackieModel, mondayToFridayTrackieModel),
+            statesOfTrackiesForToday = mapOf<String, Boolean>("A" to false, "B" to false),
             weeklyRegularity = mapOf<String, Map<Int, Int>>(
-                DaysOfWeek.monday to mapOf(2 to 0),
-                DaysOfWeek.tuesday to mapOf(1 to 0),
-                DaysOfWeek.wednesday to mapOf(1 to 0),
-                DaysOfWeek.thursday to mapOf(1 to 0),
-                DaysOfWeek.friday to mapOf(1 to 0),
+                DaysOfWeek.monday to mapOf(3 to 0),
+                DaysOfWeek.tuesday to mapOf(2 to 0),
+                DaysOfWeek.wednesday to mapOf(2 to 0),
+                DaysOfWeek.thursday to mapOf(2 to 0),
+                DaysOfWeek.friday to mapOf(2 to 0),
                 DaysOfWeek.saturday to mapOf(1 to 0),
                 DaysOfWeek.sunday to mapOf(1 to 0),
             ),
-            namesOfAllTrackies = mutableListOf("A", "C"),
-            allTrackies = listOf(wholeWeekTrackieModel, mondayTrackieModel)
+            namesOfAllTrackies = mutableListOf("A", "B", "C"),
+            allTrackies = listOf(wholeWeekTrackieModel, mondayToFridayTrackieModel, mondayTrackieModel)
         )
         val actualSharedViewModelViewState2 = sharedViewModel.uiState.value
 
@@ -1160,6 +1317,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
 
             userRepository.fetchAllTrackies()
             userRepository.addNewTrackie(mondayTrackieModel)
@@ -1225,6 +1383,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(1 to 0),
             DaysOfWeek.sunday to mapOf(1 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf("A", "B", "C")
 
         coEvery { userRepository.deleteTrackie(mondayTrackieModel) } returns true
 
@@ -1262,7 +1421,7 @@ class SharedViewModelUnitTest {
                 DaysOfWeek.saturday to mapOf(1 to 0),
                 DaysOfWeek.sunday to mapOf(1 to 0),
             ),
-            namesOfAllTrackies = null,
+            namesOfAllTrackies = listOf("A", "B"),
             allTrackies = null
         )
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
@@ -1294,6 +1453,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
 
             userRepository.deleteTrackie(mondayTrackieModel)
         }
@@ -1318,6 +1478,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(1 to 0),
             DaysOfWeek.sunday to mapOf(1 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf("A", "B")
 
         coEvery { userRepository.deleteTrackie(mondayToFridayTrackieModel) } returns true
 
@@ -1355,7 +1516,7 @@ class SharedViewModelUnitTest {
                 DaysOfWeek.saturday to mapOf(1 to 0),
                 DaysOfWeek.sunday to mapOf(1 to 0),
             ),
-            namesOfAllTrackies = null,
+            namesOfAllTrackies = listOf("A"),
             allTrackies = null
         )
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
@@ -1387,6 +1548,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
 
             userRepository.deleteTrackie(mondayToFridayTrackieModel)
         }
@@ -1411,6 +1573,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(1 to 0),
             DaysOfWeek.sunday to mapOf(1 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf("A")
 
         coEvery { userRepository.deleteTrackie(wholeWeekTrackieModel) } returns true
 
@@ -1448,7 +1611,7 @@ class SharedViewModelUnitTest {
                 DaysOfWeek.saturday to mapOf(0 to 0),
                 DaysOfWeek.sunday to mapOf(0 to 0),
             ),
-            namesOfAllTrackies = null,
+            namesOfAllTrackies = listOf(),
             allTrackies = null
         )
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
@@ -1480,6 +1643,7 @@ class SharedViewModelUnitTest {
             userRepository.fetchTrackiesForToday(any())
             userRepository.fetchStatesOfTrackiesForToday(any())
             userRepository.fetchWeeklyRegularity()
+            userRepository.fetchNamesOfAllTrackies()
 
             userRepository.deleteTrackie(wholeWeekTrackieModel)
         }
@@ -1505,6 +1669,8 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(0 to 0),
             DaysOfWeek.sunday to mapOf(0 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf<String>()
+
 
         coEvery { userRepository.fetchAllTrackies() } returns null
 
@@ -1543,6 +1709,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(0 to 0),
             DaysOfWeek.sunday to mapOf(0 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf<String>()
 
         coEvery { userRepository.fetchAllTrackies() } returns listOf<TrackieModel>()
 
@@ -1604,6 +1771,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(1 to 0),
             DaysOfWeek.sunday to mapOf(1 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf("A", "B", "C")
 
         coEvery { userRepository.fetchAllTrackies() } returns listOf<TrackieModel>(wholeWeekTrackieModel, mondayToFridayTrackieModel, mondayTrackieModel)
         coEvery { userRepository.addNewTrackie(saturdaySundayTrackieModel) } returns true
@@ -1723,6 +1891,7 @@ class SharedViewModelUnitTest {
             DaysOfWeek.saturday to mapOf(1 to 0),
             DaysOfWeek.sunday to mapOf(1 to 0)
         )
+        coEvery { userRepository.fetchNamesOfAllTrackies() } returns listOf("A", "B")
 
         coEvery { userRepository.markTrackieAsIngested(trackieModel = mondayToFridayTrackieModel, currentDayOfWeek = DaysOfWeek.wednesday) } returns true
 
@@ -1757,7 +1926,7 @@ class SharedViewModelUnitTest {
                 DaysOfWeek.saturday to mapOf(1 to 0),
                 DaysOfWeek.sunday to mapOf(1 to 0)
             ),
-            namesOfAllTrackies = null,
+            namesOfAllTrackies = listOf("A", "B"),
             allTrackies = null
         )
         val actualSharedViewModelViewState = sharedViewModel.uiState.value
@@ -1771,5 +1940,25 @@ class SharedViewModelUnitTest {
 
             userRepository.markTrackieAsIngested(trackieModel = mondayToFridayTrackieModel, currentDayOfWeek = DaysOfWeek.wednesday)
         }
+    }
+
+    @Test
+    fun x() {
+
+        val namesOfAllTrackies = listOf("A", "B")
+
+        fun updateNamesOfAllTrackies(): List<String> {
+
+            var namesOfAllTrackies = namesOfAllTrackies.toMutableList()
+
+            namesOfAllTrackies.add(element = "C")
+
+            return namesOfAllTrackies
+        }
+
+        assertEquals(
+            updateNamesOfAllTrackies(),
+            listOf("A", "B", "C")
+        )
     }
 }

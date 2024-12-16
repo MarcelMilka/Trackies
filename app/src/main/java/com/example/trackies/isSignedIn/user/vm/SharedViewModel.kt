@@ -55,22 +55,21 @@ class SharedViewModel @Inject constructor(
                             true -> {
 
                                 val licenseInformation = repository.fetchUsersLicense()
-
                                 val trackiesForToday = repository.fetchTrackiesForToday(
                                     currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
                                 )
-
                                 val statesOfTrackiesForToday = repository.fetchStatesOfTrackiesForToday(
                                     currentDayOfWeek = CurrentDateTime.getCurrentDayOfWeek()
                                 )
-
                                 val weeklyRegularity = repository.fetchWeeklyRegularity()
+                                val namesOfAllTrackies = repository.fetchNamesOfAllTrackies()
 
                                 if (
                                     licenseInformation != null &&
                                     trackiesForToday != null &&
                                     statesOfTrackiesForToday != null &&
-                                    weeklyRegularity != null
+                                    weeklyRegularity != null &&
+                                    namesOfAllTrackies != null
                                 ) {
 
                                     _uiState.update {
@@ -80,7 +79,7 @@ class SharedViewModel @Inject constructor(
                                             trackiesForToday = trackiesForToday,
                                             statesOfTrackiesForToday = statesOfTrackiesForToday,
                                             weeklyRegularity = weeklyRegularity,
-                                            namesOfAllTrackies = null,
+                                            namesOfAllTrackies = namesOfAllTrackies,
                                             allTrackies = null
                                         )
                                     }
@@ -123,11 +122,14 @@ class SharedViewModel @Inject constructor(
 
                         val weeklyRegularity = repository.fetchWeeklyRegularity()
 
+                        val namesOfAllTrackies = repository.fetchNamesOfAllTrackies()
+
                         if (
                             licenseInformation != null &&
                             trackiesForToday != null &&
                             statesOfTrackiesForToday != null &&
-                            weeklyRegularity != null
+                            weeklyRegularity != null &&
+                            namesOfAllTrackies != null
                         ) {
 
                             _uiState.update {
@@ -137,7 +139,7 @@ class SharedViewModel @Inject constructor(
                                     trackiesForToday = trackiesForToday,
                                     statesOfTrackiesForToday = statesOfTrackiesForToday,
                                     weeklyRegularity = weeklyRegularity,
-                                    namesOfAllTrackies = null,
+                                    namesOfAllTrackies = namesOfAllTrackies,
                                     allTrackies = null
                                 )
                             }
@@ -284,19 +286,13 @@ class SharedViewModel @Inject constructor(
                         return newWeeklyRegularity
                     }
 
-                    fun updateNamesOfAllTrackies(): MutableList<String>? {
+                    fun updateNamesOfAllTrackies(): List<String> {
 
-                        var namesOfAllTrackies: MutableList<String>? = copyOfViewState.namesOfAllTrackies
+                        var namesOfAllTrackies = copyOfViewState.namesOfAllTrackies.toMutableList()
 
-                        return if (namesOfAllTrackies != null) {
+                        namesOfAllTrackies.add(element = trackieModel.name)
 
-                            namesOfAllTrackies.add(trackieModel.name)
-                            namesOfAllTrackies
-                        }
-
-                        else {
-                            null
-                        }
+                        return namesOfAllTrackies
                     }
 
                     fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
@@ -398,19 +394,13 @@ class SharedViewModel @Inject constructor(
                         return newStatesOfTrackiesForToday
                     }
 
-                    fun updateNamesOfAllTrackies(): MutableList<String>? {
+                    fun updateNamesOfAllTrackies(): List<String> {
 
-                        var namesOfAllTrackies: MutableList<String>? = copyOfViewState.namesOfAllTrackies
+                        var namesOfAllTrackies = copyOfViewState.namesOfAllTrackies.toMutableList()
 
-                        return if (namesOfAllTrackies != null) {
+                        namesOfAllTrackies.remove(element = trackieModel.name)
 
-                            namesOfAllTrackies.remove(element = trackieModel.name)
-                            namesOfAllTrackies
-                        }
-
-                        else {
-                            null
-                        }
+                        return namesOfAllTrackies
                     }
 
                     fun updateListOfAllTrackies(): MutableList<TrackieModel>? {
@@ -555,6 +545,7 @@ class SharedViewModel @Inject constructor(
                 }
 
                 false -> {
+
                     onFailedToDeleteTrackie()
                 }
             }
@@ -576,21 +567,6 @@ class SharedViewModel @Inject constructor(
             if (listOfAllTrackies != null) {
 
                 val copyOfViewState = _uiState.value as SharedViewModelViewState.LoadedSuccessfully
-                val namesOfAllTrackies = if (copyOfViewState.namesOfAllTrackies != null) {
-
-                    val namesOfAllTrackies = listOfAllTrackies.map { it.name }
-
-                    copyOfViewState.namesOfAllTrackies!!.addAll(namesOfAllTrackies)
-
-                    copyOfViewState.namesOfAllTrackies
-                }
-
-                else {
-
-                    listOfAllTrackies
-                        .map { it.name }
-                        .toMutableList()
-                }
 
                 _uiState.update {
 
@@ -599,7 +575,7 @@ class SharedViewModel @Inject constructor(
                         trackiesForToday = copyOfViewState.trackiesForToday,
                         statesOfTrackiesForToday = copyOfViewState.statesOfTrackiesForToday,
                         weeklyRegularity = copyOfViewState.weeklyRegularity,
-                        namesOfAllTrackies = namesOfAllTrackies,
+                        namesOfAllTrackies = copyOfViewState.namesOfAllTrackies,
                         allTrackies = listOfAllTrackies
                     )
                 }

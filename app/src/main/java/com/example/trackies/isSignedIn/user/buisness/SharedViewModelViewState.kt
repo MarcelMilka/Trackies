@@ -11,7 +11,7 @@ sealed class SharedViewModelViewState {
         var trackiesForToday: List<TrackieModel>,
         var statesOfTrackiesForToday: Map<String,Boolean>,
         var weeklyRegularity: Map<String, Map<Int, Int>>,
-        var namesOfAllTrackies: MutableList<String>?,
+        var namesOfAllTrackies: List<String>,
         var allTrackies: List<TrackieModel>?
     ): SharedViewModelViewState()
 
