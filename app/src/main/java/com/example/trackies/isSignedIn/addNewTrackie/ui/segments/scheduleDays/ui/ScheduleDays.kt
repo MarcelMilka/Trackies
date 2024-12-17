@@ -134,7 +134,7 @@ import kotlinx.coroutines.launch
 
             addNewTrackieViewModel.addNewTrackieModel.collect { addNewTrackieModel ->
 
-                repeatOn = addNewTrackieModel.repeatOn
+                repeatOn = addNewTrackieModel.repeatOn.toMutableSet()
             }
         }
 

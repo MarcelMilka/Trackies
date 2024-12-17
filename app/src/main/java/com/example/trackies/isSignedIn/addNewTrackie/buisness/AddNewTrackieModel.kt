@@ -8,7 +8,7 @@ data class AddNewTrackieModel(
     var name: String = "",
     var dose: Int = 0,
     var measuringUnit: MeasuringUnit? = null,
-    var repeatOn: MutableSet<String> = mutableSetOf<String>(),
+    var repeatOn: Set<String> = setOf<String>(),
     var ingestionTime: TimeOfIngestion? = null
 )
 

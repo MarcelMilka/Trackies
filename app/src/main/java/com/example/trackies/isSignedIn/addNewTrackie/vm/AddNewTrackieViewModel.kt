@@ -3,6 +3,7 @@ package com.example.trackies.isSignedIn.addNewTrackie.vm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.globalConstants.MeasuringUnit
+import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieModel
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestionEntity
@@ -40,6 +41,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     var scheduleDaysViewState = MutableStateFlow(ScheduleDaysViewState())
     var timeOfIngestionViewState = MutableStateFlow(TimeOfIngestionViewState())
 
+    @Tested
     fun importNamesOfAllTrackies(namesOfAllTrackies: List<String>) {
 
         namesOfAllExistingTrackies.update {
@@ -61,13 +63,23 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
                         it.name != "" &&
                         it.dose != 0 &&
                         it.measuringUnit != null &&
-                        it.repeatOn.count() != 0
+                        it.repeatOn.count() != 0 &&
+                        activityStatesOfSegments.value.nameOfTrackieIsActive == false &&
+                        activityStatesOfSegments.value.dailyDoseIsActive == false &&
+                        activityStatesOfSegments.value.scheduleDaysIsActive == false &&
+                        activityStatesOfSegments.value.timeOfIngestionIsActive == false
                     ) {
-                        buttonAddNewTrackieIsEnabled.emit(value = true)
+
+                        buttonAddNewTrackieIsEnabled.emit(
+                            value = true
+                        )
                     }
 
                     else {
-                        buttonAddNewTrackieIsEnabled.emit(value = false)
+
+                        buttonAddNewTrackieIsEnabled.emit(
+                            value = false
+                        )
                     }
                 }
             }
@@ -228,6 +240,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     }
 
 //  Operators of 'AddNewTrackieViewState'
+    @Tested
     fun updateName(name: String) {
 
         addNewTrackieModel.update {
@@ -237,6 +250,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    @Tested
     fun updateDose(dose: Int) {
 
         addNewTrackieModel.update {
@@ -246,6 +260,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    @Tested
     fun updateMeasuringUnit(measuringUnit: MeasuringUnit) {
 
         addNewTrackieModel.update {
@@ -255,7 +270,8 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
     }
 
-    fun updateRepeatOn(repeatOn: MutableSet<String>) {
+    @Tested
+    fun updateRepeatOn(repeatOn: Set<String>) {
 
         addNewTrackieModel.update {
             it.copy(
@@ -264,6 +280,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    @Tested
     fun updateTimeOfIngestion(ingestionTimeEntity: TimeOfIngestionEntity?) {
 
         val ingestionTime = ingestionTimeEntity?.convertIntoTimeOfIngestion()
@@ -276,6 +293,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    @Tested
     fun clearAll() {
 
         addNewTrackieModel.update {
@@ -344,6 +362,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    @Tested
     fun activateSegment(segmentToActivate: AddNewTrackieSegments) {
 
         when (segmentToActivate) {
@@ -395,6 +414,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    @Tested
     fun deactivateSegment(segmentToDeactivate: AddNewTrackieSegments) {
 
         when (segmentToDeactivate) {
