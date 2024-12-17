@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color.Companion.Red
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHeightOptions
@@ -267,7 +270,6 @@ import kotlinx.coroutines.launch
 
                                     colors = TextFieldDefaults.textFieldColors(
 
-//                                      textColor = if (error) {Red} else {White},
                                         cursorColor = White,
                                         unfocusedLabelColor = White,
                                         focusedLabelColor = Transparent,
@@ -281,7 +283,13 @@ import kotlinx.coroutines.launch
                                         errorIndicatorColor = Transparent
                                     ),
 
-                                    textStyle = TextStyle.Default.copy(fontSize = 20.sp),
+                                    textStyle = TextStyle
+                                        .Default
+                                        .copy(
+                                            fontSize = 20.sp,
+                                            color = White,
+                                            textMotion = TextMotion.Animated,
+                                        ),
 
                                     modifier = Modifier
                                         .focusRequester(focusRequester)

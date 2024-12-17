@@ -590,13 +590,19 @@ class MainActivity : ComponentActivity() {
                             var sharedViewModel: SharedViewModel = hiltViewModel(viewModelEntry)
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
-                            var addNewTrackieViewModel: AddNewTrackieViewModel =
-                                hiltViewModel(it)
+                            var addNewTrackieViewModel: AddNewTrackieViewModel = hiltViewModel(it)
 
                             addNewTrackie(
 
                                 sharedViewModelUiState = sharedViewModelUiState,
                                 addNewTrackieViewModel = addNewTrackieViewModel,
+
+                                importNamesOfAllTrackies = {
+
+                                    addNewTrackieViewModel.importNamesOfAllTrackies(
+                                        namesOfAllTrackies = it
+                                    )
+                                },
 
                                 onReturn = {
                                     navigationController.navigateUp()

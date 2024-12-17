@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.globalConstants.MeasuringUnit
@@ -444,8 +445,6 @@ import kotlinx.coroutines.launch
                                         enabled = true,
 
                                         colors = TextFieldDefaults.textFieldColors(
-
-//                                          textColor = White,
                                             cursorColor = White,
                                             unfocusedLabelColor = Color.Transparent,
                                             focusedLabelColor = Color.Transparent,
@@ -456,7 +455,13 @@ import kotlinx.coroutines.launch
                                             focusedIndicatorColor = Color.Transparent
                                         ),
 
-                                        textStyle = TextStyle.Default.copy(fontSize = 20.sp),
+                                        textStyle = TextStyle
+                                            .Default
+                                            .copy(
+                                                fontSize = 20.sp,
+                                                color = White,
+                                                textMotion = TextMotion.Animated,
+                                            ),
 
                                         keyboardOptions = KeyboardOptions(
                                             keyboardType = KeyboardType.Number

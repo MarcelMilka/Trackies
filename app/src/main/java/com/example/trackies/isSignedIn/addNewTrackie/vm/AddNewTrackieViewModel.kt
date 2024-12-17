@@ -20,7 +20,6 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.st
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
-import com.example.trackies.isSignedIn.user.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,11 +27,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddNewTrackieViewModel @Inject constructor(
-    private var repository: UserRepository
-): ViewModel() {
+class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
-    val namesOfAllExistingTrackies = mutableListOf<String>()
+    var namesOfAllExistingTrackies = MutableStateFlow<List<String>>(listOf())
 
     var addNewTrackieModel = MutableStateFlow(AddNewTrackieModel())
     var activityStatesOfSegments = MutableStateFlow(ActivityStatesOfSegments())
@@ -42,6 +39,14 @@ class AddNewTrackieViewModel @Inject constructor(
     var dailyDoseViewState = MutableStateFlow(DailyDoseViewState())
     var scheduleDaysViewState = MutableStateFlow(ScheduleDaysViewState())
     var timeOfIngestionViewState = MutableStateFlow(TimeOfIngestionViewState())
+
+    fun importNamesOfAllTrackies(namesOfAllTrackies: List<String>) {
+
+        namesOfAllExistingTrackies.update {
+
+            namesOfAllTrackies
+        }
+    }
 
     init {
 
@@ -449,7 +454,7 @@ class AddNewTrackieViewModel @Inject constructor(
         var hint = ""
         var error = false
 
-        if (namesOfAllExistingTrackies.contains(currentNameOfTrackie)) {
+        if (namesOfAllExistingTrackies.value.contains(currentNameOfTrackie)) {
             hint = NameOfTrackieHintOptions.nameAlreadyExists
             error = true
         }
@@ -477,7 +482,7 @@ class AddNewTrackieViewModel @Inject constructor(
         var hint = ""
         var error = false
 
-        if (namesOfAllExistingTrackies.contains(currentNameOfTrackie)) {
+        if (namesOfAllExistingTrackies.value.contains(currentNameOfTrackie)) {
             hint = NameOfTrackieHintOptions.nameAlreadyExists
             error = true
         }

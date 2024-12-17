@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardReturn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,8 @@ fun addNewTrackie(
     sharedViewModelUiState: SharedViewModelViewState,
     addNewTrackieViewModel: AddNewTrackieViewModel,
 
+    importNamesOfAllTrackies: (List<String>) -> Unit,
+
     onReturn: () -> Unit,
 
     onUpdateName: (String) -> Unit,
@@ -69,6 +72,13 @@ fun addNewTrackie(
 
     onDisplayTrackiesPremiumDialog: () -> Unit
 ) {
+
+    LaunchedEffect(true) {
+
+        importNamesOfAllTrackies(
+            (sharedViewModelUiState as SharedViewModelViewState.LoadedSuccessfully).namesOfAllTrackies
+        )
+    }
 
     Scaffold(
 
