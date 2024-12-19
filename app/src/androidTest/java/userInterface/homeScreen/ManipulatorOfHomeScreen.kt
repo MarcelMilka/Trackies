@@ -61,7 +61,7 @@ class ManipulatorOfHomeScreen {
                     DaysOfWeek.sunday to mapOf(0 to 0),
                 ),
 
-                namesOfAllTrackies = null,
+                namesOfAllTrackies = listOf(),
 
                 allTrackies = null
             )
@@ -103,7 +103,7 @@ class ManipulatorOfHomeScreen {
                     DaysOfWeek.sunday to mapOf(1 to 0),
                 ),
 
-                namesOfAllTrackies = null,
+                namesOfAllTrackies = listOf("A"),
 
                 allTrackies = null
             )
@@ -149,7 +149,7 @@ class ManipulatorOfHomeScreen {
                     DaysOfWeek.sunday to mapOf(2 to 0),
                 ),
 
-                namesOfAllTrackies = null,
+                namesOfAllTrackies = listOf("A", "B"),
 
                 allTrackies = null
             )
@@ -197,7 +197,7 @@ class ManipulatorOfHomeScreen {
                     DaysOfWeek.sunday to mapOf(3 to 0),
                 ),
 
-                namesOfAllTrackies = null,
+                namesOfAllTrackies = listOf("A", "B", "C"),
 
                 allTrackies = null
             )
@@ -247,7 +247,7 @@ class ManipulatorOfHomeScreen {
                     DaysOfWeek.sunday to mapOf(4 to 0),
                 ),
 
-                namesOfAllTrackies = null,
+                namesOfAllTrackies = listOf("A", "B", "C", "D"),
 
                 allTrackies = null
             )
@@ -299,7 +299,7 @@ class ManipulatorOfHomeScreen {
                     DaysOfWeek.sunday to mapOf(5 to 0),
                 ),
 
-                namesOfAllTrackies = null,
+                namesOfAllTrackies = listOf("A", "B", "C", "D", "E"),
 
                 allTrackies = null
             )

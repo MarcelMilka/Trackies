@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -27,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color.Companion.Red
@@ -35,7 +33,10 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,6 +93,14 @@ import kotlinx.coroutines.launch
 
 //  Segment-specific values
     val keyboardController = LocalSoftwareKeyboardController.current
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = name,
+                selection = TextRange.Zero
+            )
+        )
+    }
     val focusRequester = remember {
         FocusRequester()
     }
@@ -149,7 +158,8 @@ import kotlinx.coroutines.launch
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(heightOfTheSurface.dp),
+            .height(heightOfTheSurface.dp)
+            .testTag("nameOfTrackie"),
 
         color = SecondaryColor,
         shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
@@ -232,13 +242,14 @@ import kotlinx.coroutines.launch
                             verticalArrangement = Arrangement.Center,
 
                             content = {
+
                                 textTitleMedium(content = name)
                             }
                         )
                     }
                 )
 
-//              Depending on a value of displayFieldWithTextField, display a text field
+//              text field
                 AnimatedVisibility(
 
                     visible = displayFieldWithTextField,
@@ -260,10 +271,12 @@ import kotlinx.coroutines.launch
 
                                 TextField(
 
-                                    value = name,
+                                    value = textFieldValue,
                                     onValueChange = {
 
-                                        updateName(it)
+                                        textFieldValue = it
+
+                                        updateName(textFieldValue.text)
                                     },
 
                                     singleLine = true,
@@ -296,6 +309,7 @@ import kotlinx.coroutines.launch
                                         .onGloballyPositioned {
                                             focusRequester.requestFocus()
                                         }
+                                        .testTag("nameOfTrackie - textField")
                                 )
                             }
                         )

@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextMotion
@@ -207,14 +208,16 @@ import kotlinx.coroutines.launch
 
             addNewTrackieViewModel.activityStatesOfSegments.collect {
 
-                when (it.dailyDoseIsActive) {
+                thisSegmentIsActive = when (it.dailyDoseIsActive) {
 
                     true -> {
-                        thisSegmentIsActive = true
+
+                        true
                     }
 
                     false -> {
-                        thisSegmentIsActive = false
+
+                        false
                     }
                 }
             }
@@ -227,7 +230,8 @@ import kotlinx.coroutines.launch
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(heightOfTheSurface.dp),
+            .height(heightOfTheSurface.dp)
+            .testTag("dailyDose"),
 
         color = SecondaryColor,
         shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),

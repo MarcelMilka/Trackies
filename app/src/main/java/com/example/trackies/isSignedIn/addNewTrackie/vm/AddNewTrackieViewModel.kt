@@ -113,6 +113,39 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
                 }
             }
 
+            this.launch {
+
+                addNewTrackieModel.collect {
+
+                    if (activityStatesOfSegments.value.nameOfTrackieIsActive) {
+
+                        if (it.name == "") {
+
+                            nameOfTrackieChangeHint(
+                                targetHint = NameOfTrackieHintOptions.nameCannotBeEmpty
+                            )
+                        }
+
+                        else {
+
+                            if (namesOfAllExistingTrackies.value.contains(it.name)) {
+
+                                nameOfTrackieChangeHint(
+                                    targetHint = NameOfTrackieHintOptions.nameAlreadyExists
+                                )
+                            }
+
+                            else {
+
+                                nameOfTrackieChangeHint(
+                                    targetHint = NameOfTrackieHintOptions.confirmNewName
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
 
 
 //          Following and updating UI state of the segment 'DailyDose'
@@ -478,8 +511,19 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
             hint = NameOfTrackieHintOptions.nameAlreadyExists
             error = true
         }
+
         else {
-            hint = NameOfTrackieHintOptions.confirmNewName
+
+            hint = if (currentNameOfTrackie == "") {
+
+                NameOfTrackieHintOptions.nameCannotBeEmpty
+            }
+
+            else {
+
+                NameOfTrackieHintOptions.confirmNewName
+            }
+
             error = false
         }
 
@@ -508,7 +552,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         }
 
         else {
-            hint = NameOfTrackieHintOptions.confirmNewName
+            hint = NameOfTrackieHintOptions.editNewName
             error = false
         }
 
@@ -520,6 +564,16 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
                 displayFieldWithTextField = false,
                 hint = hint,
                 error = error
+            )
+        }
+    }
+
+    private fun nameOfTrackieChangeHint(targetHint: String) {
+
+        nameOfTrackieViewState.update {
+
+            it.copy(
+                hint = targetHint,
             )
         }
     }

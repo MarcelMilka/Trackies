@@ -1,9 +1,7 @@
 package com.example.trackies
 
-import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.trackies.auth.data.AuthenticationService
-import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.user.data.FirebaseUserRepository
 import com.example.trackies.isSignedIn.user.data.UserRepository
 import com.example.trackies.isSignedIn.user.di.UserRepositoryModule
@@ -16,10 +14,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import junit.framework.TestCase.assertNotNull
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
@@ -36,9 +32,6 @@ class MainActivityTest {
 
     @Inject
     lateinit var sharedViewModel: SharedViewModel
-
-    @Inject
-    lateinit var addNewTrackieViewModel: AddNewTrackieViewModel
 
     @Before
     fun setUp() {
