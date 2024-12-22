@@ -34,8 +34,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +51,7 @@ import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.SecondaryColor
+import com.example.trackies.ui.theme.White50
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,7 +99,7 @@ import kotlinx.coroutines.launch
     var targetHeightOfTheSurface by remember {
 
         mutableIntStateOf(
-            DailyDoseHeightOptions.displayUnactivatedComponent
+            DailyDoseHeightOptions.displayUnactivatedSegment
         )
     }
     val heightOfTheSurface by animateIntAsState(
@@ -125,12 +128,20 @@ import kotlinx.coroutines.launch
     var hint by remember {
 
         mutableStateOf(
-            DailyDoseHintOptions.insertDailyDosage
+            DailyDoseHintOptions.insertDailyDose
         )
     }
 
 
 //  Segment-specific values
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = if (dose == 0) {""} else {"$dose"},
+                selection = TextRange.Zero
+            )
+        )
+    }
     val focusRequester = remember {
 
         FocusRequester()
@@ -347,6 +358,7 @@ import kotlinx.coroutines.launch
                                         verticalAlignment = Alignment.Bottom,
 
                                         content = {
+
                                             textTitleSmall(content = "choose the measuring unit")
                                         }
                                     )
@@ -429,20 +441,20 @@ import kotlinx.coroutines.launch
                                         verticalAlignment = Alignment.Bottom,
 
                                         content = {
-                                            textTitleSmall(content = "choose the total daily dose")
+                                            textTitleSmall(content = "insert the daily dose")
                                         }
                                     )
 
                                     TextField(
 
-                                        value = if (dose == 0) "" else "$dose $measuringUnit",
+                                        value = textFieldValue,
                                         onValueChange = {
 
-                                            val newValue = it.filter { char ->
-                                                char.isDigit()
-                                            }
 
-                                            updateDose(newValue.toIntOrNull() ?: 0)
+                                            val filteredText = it.text.filter { it.isDigit() }
+                                            textFieldValue = it.copy(text = filteredText)
+
+                                            updateDose(textFieldValue.text.toIntOrNull() ?: 0)
                                         },
 
                                         singleLine = true,
@@ -476,6 +488,7 @@ import kotlinx.coroutines.launch
                                             .onGloballyPositioned {
                                                 focusRequester.requestFocus()
                                             }
+                                            .testTag("dailyDose - text field")
                                     )
                                 }
                             )

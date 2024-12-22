@@ -1,23 +1,23 @@
 package com.example.trackies
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.trackies.auth.data.AuthenticationService
 import com.example.trackies.isSignedIn.user.data.FirebaseUserRepository
-import com.example.trackies.isSignedIn.user.data.UserRepository
 import com.example.trackies.isSignedIn.user.di.UserRepositoryModule
+import com.example.trackies.isSignedIn.user.data.UserRepository
 import com.example.trackies.isSignedIn.user.vm.SharedViewModel
-import dagger.Module
-import dagger.Provides
-import dagger.Reusable
-import dagger.hilt.InstallIn
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import com.example.trackies.auth.data.AuthenticationService
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.components.SingletonComponent
-import org.junit.Before
-import org.junit.Rule
 import org.junit.runner.RunWith
+import dagger.hilt.InstallIn
 import javax.inject.Inject
+import org.junit.Before
+import dagger.Reusable
+import dagger.Provides
+import org.junit.Rule
+import dagger.Module
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest

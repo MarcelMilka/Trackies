@@ -2,8 +2,9 @@ package com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.stat
 
 object DailyDoseHintOptions {
 
-    val insertDailyDosage = "click to insert daily dose"
+    val insertDailyDose = "click to insert daily dose"
     val confirmDailyDosage = "click to confirm daily dosage"
     val editDailyDosage = "click to edit daily dosage"
     val chooseMeasuringUnitAndInsertDose = "select the unit of measurement, then enter the dose"
+    val dailyDoseCannotBeZero = "daily dosage can not be empty or equal to 0"
 }

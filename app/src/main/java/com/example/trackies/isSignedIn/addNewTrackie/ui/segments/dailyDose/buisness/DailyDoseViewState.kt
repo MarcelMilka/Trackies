@@ -5,12 +5,12 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.stati
 
 data class DailyDoseViewState(
 
-    var targetHeightOfTheSurface: Int = DailyDoseHeightOptions.displayUnactivatedComponent,
+    var targetHeightOfTheSurface: Int = DailyDoseHeightOptions.displayUnactivatedSegment,
 
     var displayFieldWithInsertedDose: Boolean = false,
     var displayFieldWithMeasuringUnits: Boolean = false,
     var displayFieldWithTextField: Boolean = false,
-    var hint: String = DailyDoseHintOptions.insertDailyDosage,
+    var hint: String = DailyDoseHintOptions.insertDailyDose,
 
     var error: Boolean = false
 )

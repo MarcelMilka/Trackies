@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="nameOfTrackie()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="segmentNameOfTrackie_behavesAppropriatelyDependingOnData()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="segmentNameOfTrackie_behavesAppropriately()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="segmentDailyDose_behavesAppropriately()">
+      <SelectionState runConfigName="dailyDose_behavesAppropriately()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="x()">
+      <SelectionState runConfigName="TestOfAddNewTrackie">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="dailyDose_buttonMl_DoesNotCauseErrors()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="nameOfTrackie_behavesAppropriately()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
