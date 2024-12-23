@@ -31,12 +31,14 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.compose.ui.input.key.Key
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.pressKey
 import userInterface.homeScreen.Models
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.update
 import androidx.compose.ui.unit.dp
-import junit.framework.TestCase.assertEquals
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHintOptions
 import kotlinx.coroutines.delay
 import kotlin.collections.Map
 import org.junit.Before
@@ -665,6 +667,231 @@ class TestOfAddNewTrackie {
         assertTrue(addNewTrackieViewModel.dailyDoseViewState.value.hint == DailyDoseHintOptions.insertDailyDose)
     }
 
+    @Test
+    fun scheduleDays_behavesAppropriately() = runBlocking {
+
+//      segment is deactivated by default
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.scheduleDaysOfIngestion).assertIsDisplayed()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displayDeactivated.dp)
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn.isEmpty())
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == false)
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayDeactivated)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == false)
+
+//      activate segment, display chips
+        scheduleDays.performClick()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displayRadioButtons.dp)
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.selectAtLeastOneDayOfWeek).assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn.isEmpty())
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == true)
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayRadioButtons)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == true)
+
+        chipMon.assertIsDisplayed()
+        chipTue.assertIsDisplayed()
+        chipWed.assertIsDisplayed()
+        chipThu.assertIsDisplayed()
+        chipFri.assertIsDisplayed()
+        chipSat.assertIsDisplayed()
+        chipSun.assertIsDisplayed()
+
+//      deactivate segment
+        scheduleDays.performTouchInput {
+
+            this.down(topCenter)
+            this.up()
+        }
+
+        composeTestRule.awaitIdle()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displayDeactivated.dp)
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.scheduleDaysOfIngestion).assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn.isEmpty())
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == false)
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayDeactivated)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == false)
+
+        chipMon.assertIsNotDisplayed()
+        chipTue.assertIsNotDisplayed()
+        chipWed.assertIsNotDisplayed()
+        chipThu.assertIsNotDisplayed()
+        chipFri.assertIsNotDisplayed()
+        chipSat.assertIsNotDisplayed()
+        chipSun.assertIsNotDisplayed()
+
+//      activate segment, check “mon”,
+        scheduleDays.performClick()
+
+        composeTestRule.awaitIdle()
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.selectAtLeastOneDayOfWeek).assertIsDisplayed()
+
+        chipMon.performClick()
+
+        composeTestRule.awaitIdle()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displayRadioButtons.dp)
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.confirmScheduledDays).assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn == setOf(DaysOfWeek.monday))
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == true )
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayRadioButtons)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == true)
+
+//      activate segment, uncheck “mon”,
+        chipMon.performClick()
+
+        composeTestRule.awaitIdle()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displayRadioButtons.dp)
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.selectAtLeastOneDayOfWeek).assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn.isEmpty())
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == true )
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayRadioButtons)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == true)
+
+//      check all chips
+        chipThu.performClick()
+
+        composeTestRule.awaitIdle()
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.confirmScheduledDays).assertIsDisplayed()
+
+        chipWed.performClick()
+        chipMon.performClick()
+        chipTue.performClick()
+        chipSun.performClick()
+        chipSat.performClick()
+        chipFri.performClick()
+
+        composeTestRule.awaitIdle()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn == setOf(
+            DaysOfWeek.monday,
+            DaysOfWeek.tuesday,
+            DaysOfWeek.wednesday,
+            DaysOfWeek.thursday,
+            DaysOfWeek.friday,
+            DaysOfWeek.saturday,
+            DaysOfWeek.sunday
+            )
+        )
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == true )
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayRadioButtons)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == true)
+
+//      deactivate the segment via pressing another segment
+        dailyDose.performClick()
+
+        composeTestRule.awaitIdle()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displaySchedule.dp)
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.editScheduledDays).assertIsDisplayed()
+
+        composeTestRule.onNodeWithText("mon, tue, wed, thu, fri, sat, sun").assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == false)
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displaySchedule)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == true)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == false)
+
+//      deactivate segment via clicking the button 'clear all'
+        composeTestRule.onNodeWithText("clear all").performClick()
+
+        composeTestRule.awaitIdle()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displayDeactivated.dp)
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.scheduleDaysOfIngestion).assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn.isEmpty())
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == false)
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayDeactivated)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == false)
+
+//      activate segment, check chips from monday to friday
+        scheduleDays.performClick()
+
+        composeTestRule.awaitIdle()
+
+        chipMon.performClick()
+        chipTue.performClick()
+        chipWed.performClick()
+        chipThu.performClick()
+        chipFri.performClick()
+
+        composeTestRule.awaitIdle()
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.confirmScheduledDays).assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn == setOf(
+            DaysOfWeek.monday,
+            DaysOfWeek.tuesday,
+            DaysOfWeek.wednesday,
+            DaysOfWeek.thursday,
+            DaysOfWeek.friday,
+            )
+        )
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == true)
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayRadioButtons)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == true)
+
+        delay(5000L)
+
+//      deactivate segment via clicking the button 'clear all'
+        composeTestRule.onNodeWithText("clear all").performClick()
+
+        composeTestRule.awaitIdle()
+
+        scheduleDays.assertHeightIsEqualTo(ScheduleDaysHeightOptions.displayDeactivated.dp)
+
+        composeTestRule.onNodeWithText(ScheduleDaysHintOptions.scheduleDaysOfIngestion).assertIsDisplayed()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn.isEmpty())
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.scheduleDaysIsActive == false)
+
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayDeactivated)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
+        assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == false)
+    }
+
     private val nameOfTrackie = composeTestRule.onNodeWithTag("nameOfTrackie")
     private val nameOfTrackieTextField = composeTestRule.onNodeWithTag("nameOfTrackie - textField")
 
@@ -673,6 +900,15 @@ class TestOfAddNewTrackie {
     private val dailyDoseG = composeTestRule.onNodeWithText("g")
     private val dailyDosePcs = composeTestRule.onNodeWithText("pcs")
     private val dailyDoseTextField = composeTestRule.onNodeWithTag("dailyDose - text field")
+
+    private val scheduleDays = composeTestRule.onNodeWithTag("scheduleDays")
+    private val chipMon = composeTestRule.onNodeWithText("mon")
+    private val chipTue = composeTestRule.onNodeWithText("tue")
+    private val chipWed = composeTestRule.onNodeWithText("wed")
+    private val chipThu = composeTestRule.onNodeWithText("thu")
+    private val chipFri = composeTestRule.onNodeWithText("fri")
+    private val chipSat = composeTestRule.onNodeWithText("sat")
+    private val chipSun = composeTestRule.onNodeWithText("sun")
 }
 
 private object TestHelpingObject {

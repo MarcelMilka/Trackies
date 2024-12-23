@@ -1,6 +1,5 @@
 package com.example.trackies.isSignedIn.addNewTrackie.vm
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.globalConstants.MeasuringUnit
@@ -26,7 +25,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -316,6 +314,54 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
                 }
             }
 
+            this.launch {
+
+                addNewTrackieModel
+                    .combine(activityStatesOfSegments) { model, states ->
+
+                        CombinedModelAndStates(model, states)
+                    }
+                    .collect {
+
+                        when (it.states.scheduleDaysIsActive) {
+
+                            true -> {
+
+                                if (it.model.repeatOn.isEmpty()) {
+
+                                    scheduleDaysChangeHint(
+                                        targetHint = ScheduleDaysHintOptions.selectAtLeastOneDayOfWeek
+                                    )
+                                }
+
+                                else {
+
+                                    scheduleDaysChangeHint(
+                                        targetHint = ScheduleDaysHintOptions.confirmScheduledDays
+                                    )
+                                }
+                            }
+
+                            false -> {
+
+                                if (it.model.repeatOn.isEmpty()) {
+
+                                    scheduleDaysChangeHint(
+                                        targetHint = ScheduleDaysHintOptions.scheduleDaysOfIngestion
+                                    )
+                                }
+
+                                else {
+
+                                    scheduleDaysChangeHint(
+                                        targetHint = ScheduleDaysHintOptions.editScheduledDays
+                                    )
+                                }
+                            }
+                        }
+                    }
+            }
+
 
 //          Following and updating UI state of the segment 'TimeOfIngestion'
             this.launch {
@@ -474,10 +520,10 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         scheduleDaysViewState.update {
 
             it.copy(
-                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
-                displayFieldWithChosenDaysOfWeek = false,
-                displayFieldWithSelectableButtons = false,
-                hint = ScheduleDaysHintOptions.selectDaysOfWeek
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayDeactivated,
+                displayScheduledDaysOfWeek = false,
+                displayChips = false,
+                hint = ScheduleDaysHintOptions.scheduleDaysOfIngestion
             )
         }
 
@@ -744,18 +790,16 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //  'ScheduleDays' operators
     private fun scheduleDaysDisplayCollapsed() {
 
-    scheduleDaysViewState.update {
+        scheduleDaysViewState.update {
 
-        it.copy(
-            targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayUnactivatedComponent,
+            it.copy(
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayDeactivated,
 
-            displayFieldWithChosenDaysOfWeek = false,
-            displayFieldWithSelectableButtons = false,
-
-            hint = ScheduleDaysHintOptions.selectDaysOfWeek
-        )
+                displayScheduledDaysOfWeek = false,
+                displayChips = false,
+            )
+        }
     }
-}
 
     private fun scheduleDaysDisplayDaysToSchedule() {
 
@@ -764,10 +808,8 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
             it.copy(
                 targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayRadioButtons,
 
-                displayFieldWithChosenDaysOfWeek = false,
-                displayFieldWithSelectableButtons = true,
-
-                hint = ScheduleDaysHintOptions.confirmSelectedDaysOfWeek
+                displayScheduledDaysOfWeek = false,
+                displayChips = true,
             )
         }
     }
@@ -777,16 +819,23 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         scheduleDaysViewState.update {
 
             it.copy(
-                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displayChosenDaysOfWeek,
+                targetHeightOfTheSurface = ScheduleDaysHeightOptions.displaySchedule,
 
-                displayFieldWithChosenDaysOfWeek = true,
-                displayFieldWithSelectableButtons = false,
-
-                hint = ScheduleDaysHintOptions.editSelectedDaysOfWeek
+                displayScheduledDaysOfWeek = true,
+                displayChips = false,
             )
         }
     }
 
+    private fun scheduleDaysChangeHint(targetHint: String) {
+
+        scheduleDaysViewState.update {
+
+            it.copy(
+                hint = targetHint,
+            )
+        }
+    }
 
 //  'TimeOfIngestion' operators
     private fun scheduleTimeDisplayUnactivated() {

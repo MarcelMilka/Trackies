@@ -5,10 +5,10 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.st
 
 data class ScheduleDaysViewState(
 
-    var targetHeightOfTheSurface: Int = ScheduleDaysHeightOptions.displayUnactivatedComponent,
+    var targetHeightOfTheSurface: Int = ScheduleDaysHeightOptions.displayDeactivated,
 
-    var displayFieldWithChosenDaysOfWeek: Boolean = false,
-    var displayFieldWithSelectableButtons: Boolean = false,
+    var displayScheduledDaysOfWeek: Boolean = false,
+    var displayChips: Boolean = false,
 
-    var hint: String = ScheduleDaysHintOptions.selectDaysOfWeek
+    var hint: String = ScheduleDaysHintOptions.scheduleDaysOfIngestion
 )

@@ -2,8 +2,8 @@ package com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.s
 
 object ScheduleDaysHintOptions {
 
-    val selectDaysOfWeek: String = "click to choose when you want to ingest the substance"
-    val confirmSelectedDaysOfWeek: String = "click to confirm the choice"
-    val editSelectedDaysOfWeek: String = "click to edit when you want to ingest the substance"
+    val scheduleDaysOfIngestion: String = "click to schedule days of ingestion"
+    val confirmScheduledDays: String = "click to confirm the schedule"
+    val editScheduledDays: String = "click to edit the schedule"
     val selectAtLeastOneDayOfWeek: String = "select at least one day of week"
 }

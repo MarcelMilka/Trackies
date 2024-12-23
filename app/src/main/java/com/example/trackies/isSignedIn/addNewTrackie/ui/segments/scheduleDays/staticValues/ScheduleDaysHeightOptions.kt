@@ -2,7 +2,7 @@ package com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.s
 
 object ScheduleDaysHeightOptions {
 
-    val displayUnactivatedComponent: Int = 50
-    val displayChosenDaysOfWeek: Int = 80
+    val displayDeactivated: Int = 50
+    val displaySchedule: Int = 80
     val displayRadioButtons: Int = 106
 }

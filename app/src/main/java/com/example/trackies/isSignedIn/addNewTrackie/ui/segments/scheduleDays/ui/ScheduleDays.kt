@@ -9,11 +9,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
@@ -50,7 +52,7 @@ import kotlinx.coroutines.launch
 ) {
 
 //  AddNewTrackieModel-data:
-    var repeatOn by remember {
+    var scheduledDaysOfWeek by remember {
         mutableStateOf(
             mutableSetOf<String>()
         )
@@ -60,7 +62,7 @@ import kotlinx.coroutines.launch
 //  ScheduleDaysViewState-data:
     var targetHeightOfTheSurface by remember {
         mutableIntStateOf(
-            ScheduleDaysHeightOptions.displayUnactivatedComponent
+            ScheduleDaysHeightOptions.displayDeactivated
         )
     }
     val heightOfTheSurface by animateIntAsState(
@@ -82,43 +84,9 @@ import kotlinx.coroutines.launch
 
     var hint by remember {
         mutableStateOf(
-            ScheduleDaysHintOptions.selectDaysOfWeek
+            ScheduleDaysHintOptions.scheduleDaysOfIngestion
         )
     }
-
-
-//  Segment-specific data
-    var monday by remember {
-        mutableStateOf(false)
-    }
-    var tuesday by remember {
-        mutableStateOf(false)
-    }
-    var wednesday by remember {
-        mutableStateOf(false)
-    }
-    var thursday by remember {
-        mutableStateOf(false)
-    }
-    var friday by remember {
-        mutableStateOf(false)
-    }
-    var saturday by remember {
-        mutableStateOf(false)
-    }
-    var sunday by remember {
-        mutableStateOf(false)
-    }
-
-    val correctOrder = listOf(
-        DaysOfWeek.monday,
-        DaysOfWeek.tuesday,
-        DaysOfWeek.wednesday,
-        DaysOfWeek.thursday,
-        DaysOfWeek.friday,
-        DaysOfWeek.saturday,
-        DaysOfWeek.sunday,
-    )
 
 //  Control whether this segment is active
     var thisSegmentIsActive by remember {
@@ -134,7 +102,7 @@ import kotlinx.coroutines.launch
 
             addNewTrackieViewModel.addNewTrackieModel.collect { addNewTrackieModel ->
 
-                repeatOn = addNewTrackieModel.repeatOn.toMutableSet()
+                scheduledDaysOfWeek = addNewTrackieModel.repeatOn.toMutableSet()
             }
         }
 
@@ -145,8 +113,8 @@ import kotlinx.coroutines.launch
 
                 targetHeightOfTheSurface = scheduleDaysViewState.targetHeightOfTheSurface
 
-                displayFieldWithChosenDaysOfWeek = scheduleDaysViewState.displayFieldWithChosenDaysOfWeek
-                displayFieldWithSelectableButtons = scheduleDaysViewState.displayFieldWithSelectableButtons
+                displayFieldWithChosenDaysOfWeek = scheduleDaysViewState.displayScheduledDaysOfWeek
+                displayFieldWithSelectableButtons = scheduleDaysViewState.displayChips
 
                 hint = scheduleDaysViewState.hint
             }
@@ -177,7 +145,8 @@ import kotlinx.coroutines.launch
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(heightOfTheSurface.dp),
+            .height(heightOfTheSurface.dp)
+            .testTag("scheduleDays"),
 
         color = SecondaryColor,
         shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
@@ -257,10 +226,12 @@ import kotlinx.coroutines.launch
 
                                 content = {
 
-                                    val abbreviatedDays = repeatOn.map {
+                                    val abbreviatedChosenDaysOfWeek = scheduledDaysOfWeek.map {
                                         it.take(3)
                                     }
-                                    textTitleMedium(content = abbreviatedDays.joinToString(separator = ", "))
+                                    textTitleMedium(
+                                        content = abbreviatedChosenDaysOfWeek.joinToString(separator = ", ")
+                                    )
                                 }
                             )
                         }
@@ -274,7 +245,7 @@ import kotlinx.coroutines.launch
 
                         content = {
 
-                            Row(
+                            LazyRow(
 
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -285,113 +256,51 @@ import kotlinx.coroutines.launch
 
                                 content = {
 
-
-                                    mediumSelectableTextButton(
-                                        text = DaysOfWeek.monday.substring(0, 3),
-                                        isSelected = monday,
-                                        onAddToScheduledDays = {
-                                            monday = true
-                                            repeatOn.add(DaysOfWeek.monday)
-                                            updateRepeatOn(repeatOn)
-                                        },
-                                        onRemoveFromScheduledDays = {
-                                            monday = false
-                                            repeatOn.remove(DaysOfWeek.monday)
-                                            updateRepeatOn(repeatOn)
-                                        }
+                                    val daysOfWeek = listOf(
+                                        DaysOfWeek.monday,
+                                        DaysOfWeek.tuesday,
+                                        DaysOfWeek.wednesday,
+                                        DaysOfWeek.thursday,
+                                        DaysOfWeek.friday,
+                                        DaysOfWeek.saturday,
+                                        DaysOfWeek.sunday
                                     )
 
-                                    mediumSelectableTextButton(
-                                        text = DaysOfWeek.tuesday.substring(0, 3),
-                                        isSelected = tuesday,
-                                        onAddToScheduledDays = {
-                                            tuesday = true
-                                            repeatOn.add(DaysOfWeek.tuesday)
-                                            updateRepeatOn(repeatOn)
-                                        },
-                                        onRemoveFromScheduledDays = {
-                                            tuesday = false
-                                            repeatOn.remove(DaysOfWeek.tuesday)
-                                            updateRepeatOn(repeatOn)
-                                        }
-                                    )
+                                    this.items(daysOfWeek) { dayOfWeek ->
 
-                                    mediumSelectableTextButton(
-                                        text = DaysOfWeek.wednesday.substring(0, 3),
-                                        isSelected = wednesday,
-                                        onAddToScheduledDays = {
-                                            wednesday = true
-                                            repeatOn.add(DaysOfWeek.wednesday)
-                                            updateRepeatOn(repeatOn)
-                                        },
-                                        onRemoveFromScheduledDays = {
-                                            wednesday = false
-                                            repeatOn.remove(DaysOfWeek.wednesday)
-                                            updateRepeatOn(repeatOn)
-                                        }
-                                    )
+                                        mediumInputChip(
 
-                                    mediumSelectableTextButton(
-                                        text = DaysOfWeek.thursday.substring(0, 3),
-                                        isSelected = thursday,
-                                        onAddToScheduledDays = {
-                                            thursday = true
-                                            repeatOn.add(DaysOfWeek.thursday)
-                                            updateRepeatOn(repeatOn)
-                                        },
-                                        onRemoveFromScheduledDays = {
-                                            thursday = false
-                                            repeatOn.remove(DaysOfWeek.thursday)
-                                            updateRepeatOn(repeatOn)
-                                        }
-                                    )
+                                            text = dayOfWeek.substring(0, 3),
 
-                                    mediumSelectableTextButton(
-                                        text = DaysOfWeek.friday.substring(0, 3),
-                                        isSelected = friday,
-                                        onAddToScheduledDays = {
-                                            friday = true
-                                            repeatOn.add(DaysOfWeek.friday)
-                                            updateRepeatOn(repeatOn)
-                                        },
-                                        onRemoveFromScheduledDays = {
-                                            friday = false
-                                            repeatOn.remove(DaysOfWeek.friday)
-                                            updateRepeatOn(repeatOn)
-                                        }
-                                    )
+                                            isSelected = scheduledDaysOfWeek.contains(dayOfWeek),
 
-                                    mediumSelectableTextButton(
-                                        text = DaysOfWeek.saturday.substring(0, 3),
-                                        isSelected = saturday,
-                                        onAddToScheduledDays = {
-                                            saturday = true
-                                            repeatOn.add(DaysOfWeek.saturday)
-                                            updateRepeatOn(repeatOn)
-                                        },
-                                        onRemoveFromScheduledDays = {
-                                            saturday = false
-                                            repeatOn.remove(DaysOfWeek.saturday)
-                                            updateRepeatOn(repeatOn)
-                                        }
-                                    )
+                                            onClick = {
 
-                                    mediumSelectableTextButton(
-                                        text = DaysOfWeek.sunday.substring(0, 3),
-                                        isSelected = sunday,
-                                        onAddToScheduledDays = {
-                                            sunday = true
-                                            repeatOn.add(DaysOfWeek.sunday)
-                                            updateRepeatOn(repeatOn)
-                                        },
-                                        onRemoveFromScheduledDays = {
-                                            sunday = false
-                                            repeatOn.remove(DaysOfWeek.sunday)
-                                            updateRepeatOn(repeatOn)
-                                        }
-                                    )
+                                                scheduledDaysOfWeek = scheduledDaysOfWeek
+                                                    .toMutableSet()
+                                                    .apply {
 
 
+                                                        if (contains(dayOfWeek)) {
+
+                                                            remove(dayOfWeek)
+                                                        }
+
+                                                        else {
+
+                                                            add(dayOfWeek)
+                                                        }
+                                                    }
+                                                    .sortedBy {
+
+                                                        daysOfWeek.indexOf(it)
+                                                    }
+                                                    .toMutableSet()
+
+                                                updateRepeatOn(scheduledDaysOfWeek)
+                                            }
+                                        )
+                                    }
                                 }
                             )
                         }
