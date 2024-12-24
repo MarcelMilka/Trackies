@@ -13,19 +13,16 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="dailyDose_behavesAppropriately()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="TestOfAddNewTrackie">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="dailyDose_buttonMl_DoesNotCauseErrors()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="nameOfTrackie_behavesAppropriately()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="scheduleDays_behavesAppropriately()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="buttonAdd_isEnabledWhenAllRequiredInformationAreFilled()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="buttonClearAll_properlyResetsInsertedValues()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

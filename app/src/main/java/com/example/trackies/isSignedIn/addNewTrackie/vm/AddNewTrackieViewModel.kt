@@ -58,31 +58,37 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //          Enabling/disabling button responsible for adding new Trackie
             this.launch {
 
-                addNewTrackieModel.collect {
+                addNewTrackieModel
+                    .combine(activityStatesOfSegments) { model, states ->
 
-                    if (
-                        it.name != "" &&
-                        it.dose != 0 &&
-                        it.measuringUnit != null &&
-                        it.repeatOn.count() != 0 &&
-                        activityStatesOfSegments.value.nameOfTrackieIsActive == false &&
-                        activityStatesOfSegments.value.dailyDoseIsActive == false &&
-                        activityStatesOfSegments.value.scheduleDaysIsActive == false &&
-                        activityStatesOfSegments.value.timeOfIngestionIsActive == false
-                    ) {
-
-                        buttonAddNewTrackieIsEnabled.emit(
-                            value = true
-                        )
+                        CombinedModelAndStates(model, states)
                     }
+                    .collect {
 
-                    else {
+                        if (
+                            it.model.name != "" &&
+                            it.model.dose != 0 &&
+                            it.model.measuringUnit != null &&
+                            it.model.repeatOn.count() != 0 &&
 
-                        buttonAddNewTrackieIsEnabled.emit(
-                            value = false
-                        )
+                            it.states.nameOfTrackieIsActive == false &&
+                            it.states.dailyDoseIsActive == false &&
+                            it.states.scheduleDaysIsActive == false &&
+                            it.states.timeOfIngestionIsActive == false
+                        ) {
+
+                            buttonAddNewTrackieIsEnabled.emit(
+                                value = true
+                            )
+                        }
+
+                        else {
+
+                            buttonAddNewTrackieIsEnabled.emit(
+                                value = false
+                            )
+                        }
                     }
-                }
             }
 
 

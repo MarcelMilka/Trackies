@@ -31,15 +31,18 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.compose.ui.input.key.Key
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.pressKey
 import userInterface.homeScreen.Models
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.update
 import androidx.compose.ui.unit.dp
+import com.example.trackies.isSignedIn.addNewTrackie.buisness.ActivityStatesOfSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHintOptions
-import kotlinx.coroutines.delay
+import junit.framework.TestCase.assertEquals
 import kotlin.collections.Map
 import org.junit.Before
 import org.junit.Rule
@@ -872,8 +875,6 @@ class TestOfAddNewTrackie {
         assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
         assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == true)
 
-        delay(5000L)
-
 //      deactivate segment via clicking the button 'clear all'
         composeTestRule.onNodeWithText("clear all").performClick()
 
@@ -890,6 +891,133 @@ class TestOfAddNewTrackie {
         assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.targetHeightOfTheSurface == ScheduleDaysHeightOptions.displayDeactivated)
         assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayScheduledDaysOfWeek == false)
         assertTrue(addNewTrackieViewModel.scheduleDaysViewState.value.displayChips == false)
+    }
+
+    @Test
+    fun buttonAdd_isEnabledWhenAllRequiredInformationAreFilled() = runBlocking {
+
+//      Insert name of trackie
+        nameOfTrackie.performClick()
+
+        composeTestRule.awaitIdle()
+
+        nameOfTrackieTextField.performTextInput("Lorem ipsum dolor")
+
+//      Insert measuring unit
+        dailyDose.performClick()
+
+        composeTestRule.awaitIdle()
+
+        dailyDoseG.performClick()
+
+//      Insert dose
+
+        composeTestRule.awaitIdle()
+
+        dailyDoseTextField.performTextInput("1")
+//
+        composeTestRule.awaitIdle()
+
+//      Schedule days, button add is not enabled when the segment is active
+        scheduleDays.performClick()
+
+        composeTestRule.awaitIdle()
+
+        chipMon.performClick()
+        chipTue.performClick()
+        chipWed.performClick()
+        chipThu.performClick()
+        chipFri.performClick()
+        chipSat.performClick()
+        chipSun.performClick()
+
+        composeTestRule.awaitIdle()
+
+        buttonAdd.assertIsNotEnabled()
+
+//      Deactivate schedule days, button add is enabled when the segment is active
+        scheduleDays.performTouchInput {
+
+            this.down(topCenter)
+            this.up()
+        }
+
+        composeTestRule.awaitIdle()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.name == "Lorem ipsum dolor")
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.measuringUnit == MeasuringUnit.g)
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.dose == 1)
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn == setOf(
+                DaysOfWeek.monday,
+                DaysOfWeek.tuesday,
+                DaysOfWeek.wednesday,
+                DaysOfWeek.thursday,
+                DaysOfWeek.friday,
+                DaysOfWeek.saturday,
+                DaysOfWeek.sunday,
+            )
+        )
+
+        composeTestRule.awaitIdle()
+
+        buttonAdd.assertIsEnabled()
+
+        assertNull(null)
+    }
+
+    @Test
+    fun buttonClearAll_properlyResetsInsertedValues() = runBlocking {
+
+//      Insert name of trackie
+        nameOfTrackie.performClick()
+
+        composeTestRule.awaitIdle()
+
+        nameOfTrackieTextField.performTextInput("Lorem ipsum dolor")
+
+//      Insert measuring unit
+        dailyDose.performClick()
+
+        composeTestRule.awaitIdle()
+
+        dailyDoseG.performClick()
+
+//      Insert dose
+        composeTestRule.awaitIdle()
+
+        dailyDoseTextField.performTextInput("1")
+//
+        composeTestRule.awaitIdle()
+
+//      Schedule days
+        scheduleDays.performClick()
+
+        composeTestRule.awaitIdle()
+
+        chipMon.performClick()
+        chipTue.performClick()
+        chipWed.performClick()
+        chipThu.performClick()
+        chipFri.performClick()
+        chipSat.performClick()
+        chipSun.performClick()
+
+        composeTestRule.awaitIdle()
+
+//      Click clear all
+        buttonClearAll.performClick()
+
+        composeTestRule.awaitIdle()
+
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.name == "")
+        assertNull(addNewTrackieViewModel.addNewTrackieModel.value.measuringUnit)
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.dose == 0)
+        assertTrue(addNewTrackieViewModel.addNewTrackieModel.value.repeatOn.isEmpty())
+
+        assertEquals(
+            ActivityStatesOfSegments(),
+            addNewTrackieViewModel.activityStatesOfSegments.value
+        )
     }
 
     private val nameOfTrackie = composeTestRule.onNodeWithTag("nameOfTrackie")
@@ -909,6 +1037,9 @@ class TestOfAddNewTrackie {
     private val chipFri = composeTestRule.onNodeWithText("fri")
     private val chipSat = composeTestRule.onNodeWithText("sat")
     private val chipSun = composeTestRule.onNodeWithText("sun")
+
+    private val buttonClearAll = composeTestRule.onNodeWithText("clear all")
+    private val buttonAdd = composeTestRule.onNodeWithText("add")
 }
 
 private object TestHelpingObject {

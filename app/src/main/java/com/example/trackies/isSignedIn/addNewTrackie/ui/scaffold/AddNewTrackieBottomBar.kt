@@ -32,7 +32,10 @@ fun addNewTrackieBottomBar(
     onAdd: () -> Unit
 ) {
 
-    var buttonAddNewTrackieIsEnabled by remember { mutableStateOf(false) }
+    var buttonAddNewTrackieIsEnabled by remember {
+
+        mutableStateOf(false)
+    }
 
     CoroutineScope(Dispatchers.IO).launch {
 
