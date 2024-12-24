@@ -11,18 +11,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.theme.Dimensions
 import com.example.trackies.ui.theme.SecondaryColor
 
 @Composable
-fun upperPartLoading () {
+fun loadingUpperPartOfDetailedTrackie () {
 
     Column(
 
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .testTag("loadingUpperPartOfDetailedTrackie"),
 
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top,

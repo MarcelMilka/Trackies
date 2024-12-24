@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.update
 
 class DetailedTrackieViewModel: ViewModel() {
 
-    private var _uiState = MutableStateFlow<TrackieModel?>(null)
-    val uiState = _uiState.asStateFlow()
+    private var _trackieModel = MutableStateFlow<TrackieModel?>(null)
+    val trackieModel = _trackieModel.asStateFlow()
 
-    fun setTrackieToDisplayDetailsOf(trackieViewState: TrackieModel) {
+    fun setTrackieToDisplayDetailsOf(trackieModel: TrackieModel) {
 
-        _uiState.update {
-            trackieViewState
+        _trackieModel.update {
+            trackieModel
         }
     }
 }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,27 +12,24 @@ import androidx.compose.material.icons.rounded.KeyboardReturn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.lowerPart.detailedTrackieWeeklyRegularityChart
-import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart.upperPartLoadedSuccessfully
-import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart.upperPartLoading
+import com.example.trackies.isSignedIn.detailedTrackie.ui.loadedSuccessfully.lowerPart.detailedTrackieRegularityChart
+import com.example.trackies.isSignedIn.detailedTrackie.ui.loadedSuccessfully.upperPart.detailedTrackieUpperPart
+import com.example.trackies.isSignedIn.detailedTrackie.ui.loading.upperPart.loadingUpperPartOfDetailedTrackie
 import com.example.trackies.isSignedIn.xTrackie.buisness.TrackieModel
 import com.example.trackies.isSignedIn.user.buisness.SharedViewModelViewState
 import com.example.trackies.ui.sharedUI.customButtons.iconButtonToNavigateBetweenActivities
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerL
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
-import com.example.trackies.ui.sharedUI.loadingText.loadingText
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingRegularityChart
-import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
-import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
-import com.example.trackies.ui.sharedUI.customText.textTitleMedium
+import com.example.trackies.ui.sharedUI.loadingText.loadingText
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
 @Composable
 fun detailedTrackie(
-    sharedViewModelUiState: SharedViewModelViewState,
-    trackieViewState: TrackieModel?,
+    sharedViewModelViewState: SharedViewModelViewState,
+    trackieModel: TrackieModel?,
     onReturn: () -> Unit,
     onDelete: (TrackieModel) -> Unit
 ) {
@@ -69,26 +65,28 @@ fun detailedTrackie(
                         content = {
 
                             iconButtonToNavigateBetweenActivities(icon = Icons.Rounded.KeyboardReturn) {
+
                                 onReturn()
                             }
 
                             verticalSpacerL()
 
-                            when (trackieViewState) {
+                            when (trackieModel) {
 
                                 null -> {
 
-                                    upperPartLoading()
+                                    loadingUpperPartOfDetailedTrackie()
                                 }
 
                                 else -> {
 
-                                    upperPartLoadedSuccessfully(
+                                    detailedTrackieUpperPart(
 
-                                        trackieViewState = trackieViewState,
+                                        trackieModel = trackieModel,
 
                                         onDelete = {
-                                            onDelete(trackieViewState)
+
+                                            onDelete(trackieModel)
                                         }
                                     )
                                 }
@@ -107,79 +105,35 @@ fun detailedTrackie(
 
                         content = {
 
-                            when (sharedViewModelUiState) {
+                            when (sharedViewModelViewState) {
 
-                                SharedViewModelViewState.Loading -> {
-
-                                    loadingText()
-
-                                    verticalSpacerS()
-
-                                    loadingRegularityChart()
-                                }
+                                SharedViewModelViewState.Loading -> {}
 
                                 is SharedViewModelViewState.LoadedSuccessfully -> {
 
-                                    textHeadlineMedium(content = "Regularity")
-
-                                    verticalSpacerS()
-
-                                    when (trackieViewState) {
+                                    when (trackieModel) {
 
                                         null -> {
+
+                                            loadingText()
+
+                                            verticalSpacerS()
 
                                             loadingRegularityChart()
                                         }
 
                                         else -> {
 
-                                            detailedTrackieWeeklyRegularityChart(
-                                                trackieModel = trackieViewState,
-                                                sharedViewModelUiState = sharedViewModelUiState
-                                            )
+                                            textHeadlineMedium(content = "Regularity")
+
+                                            verticalSpacerS()
+
+                                            detailedTrackieRegularityChart()
                                         }
                                     }
                                 }
 
-                                is SharedViewModelViewState.FailedToLoadData -> {
-
-//                                  big text 'Whoops...'
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .fillMaxHeight(Dimensions.heightOfUpperFragment),
-
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Bottom,
-
-                                        content = {
-
-                                            textHeadlineLarge(
-                                                content = "Whoops..."
-                                            )
-                                        }
-                                    )
-
-//                                  smaller text 'An error occurred while loading your data. Try again later.' and cause of error
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxSize(),
-
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.SpaceAround,
-
-                                        content = {
-
-                                            textHeadlineSmall(
-                                                content = "An error occurred while loading your data. Try again later."
-                                            )
-
-                                            textTitleMedium(
-                                                content = sharedViewModelUiState.errorMessage
-                                            )
-                                        }
-                                    )
-                                }
+                                is SharedViewModelViewState.FailedToLoadData -> {}
                             }
                         }
                     )

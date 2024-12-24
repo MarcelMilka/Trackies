@@ -423,7 +423,7 @@ class MainActivity : ComponentActivity() {
                             onDisplayDetailedTrackie = {
 
                                 detailedTrackieViewModel.setTrackieToDisplayDetailsOf(
-                                    trackieViewState = it
+                                    trackieModel = it
                                 )
 
                                 navigationController.navigate(
@@ -562,7 +562,7 @@ class MainActivity : ComponentActivity() {
                             onDisplayDetailedTrackie = {
 
                                 detailedTrackieViewModel.setTrackieToDisplayDetailsOf(
-                                    trackieViewState = it)
+                                    trackieModel = it)
 
                                 navigationController.navigate(route = Destinations.DisplayDetailedTrackieRoute)
                             },
@@ -742,15 +742,21 @@ class MainActivity : ComponentActivity() {
                             val sharedViewModelUiState by sharedViewModel.uiState.collectAsState()
 
                             val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
-                            val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
+                            val detailedTrackieUiState by detailedTrackieViewModel.trackieModel.collectAsState()
 
                             detailedTrackie(
-                                sharedViewModelUiState = sharedViewModelUiState,
-                                trackieViewState = detailedTrackieUiState,
+
+                                sharedViewModelViewState = sharedViewModelUiState,
+
+                                trackieModel = detailedTrackieUiState,
+
                                 onReturn = {
+
                                     navigationController.navigateUp()
                                 },
+
                                 onDelete = {
+
                                     navigationController.navigate(route = Destinations.ConfirmDeletionOfTheTrackie)
                                 }
                             )
@@ -764,7 +770,7 @@ class MainActivity : ComponentActivity() {
                             var sharedViewModel = hiltViewModel<SharedViewModel>(viewModelEntry)
 
                             val detailedTrackieViewModel = hiltViewModel<DetailedTrackieViewModel>(viewModelEntry)
-                            val detailedTrackieUiState by detailedTrackieViewModel.uiState.collectAsState()
+                            val detailedTrackieUiState by detailedTrackieViewModel.trackieModel.collectAsState()
 
 
                             confirmDeletionOfTheTrackie(

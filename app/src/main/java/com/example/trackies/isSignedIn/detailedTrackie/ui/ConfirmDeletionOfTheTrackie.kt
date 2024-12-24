@@ -67,32 +67,39 @@ fun confirmDeletionOfTheTrackie(
                             }
 
                             Row (
+
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
+                                horizontalArrangement = Arrangement.SpaceBetween,
 
-                                Button(
+                                content = {
 
-                                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                                    content = {
-                                        textTitleMedium(content = "Confirm")
-                                    },
-                                    onClick = {
-                                        onConfirm()
-                                    }
-                                )
+                                    Button(
 
-                                Button(
+                                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
 
-                                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                                    content = {
-                                        textTitleMedium(content = "Decline")
-                                    },
-                                    onClick = {
-                                        onDecline()
-                                    }
-                                )
-                            }
+                                        content = {
+                                            textTitleMedium(content = "Confirm")
+                                        },
+
+                                        onClick = {
+                                            onConfirm()
+                                        }
+                                    )
+
+                                    Button(
+
+                                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+
+                                        content = {
+                                            textTitleMedium(content = "Decline")
+                                        },
+
+                                        onClick = {
+                                            onDecline()
+                                        }
+                                    )
+                                }
+                            )
                         }
                     )
                 }

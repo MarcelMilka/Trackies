@@ -18,6 +18,9 @@ fun iconButtonToNavigateBetweenActivities (
 
     IconButton(
 
+        modifier = Modifier
+            .testTag("iconButtonToNavigateBetweenActivities"),
+
         onClick = {
             onClick()
         },
@@ -26,7 +29,7 @@ fun iconButtonToNavigateBetweenActivities (
 
             Icon(
                 imageVector = icon,
-                contentDescription = "iconButtonToNavigateBetweenActivities",
+                contentDescription = null,
                 tint = White,
             )
         }
@@ -40,6 +43,9 @@ fun iconButton(
 ) {
 
     IconButton(
+
+        modifier = Modifier
+            .testTag("iconButton"),
 
         onClick = {
 

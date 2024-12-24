@@ -13,16 +13,13 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="TestOfAddNewTrackie">
+      <SelectionState runConfigName="loadingUiIsDisplayed_whenTrackieModelIsNull()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="scheduleDays_behavesAppropriately()">
+      <SelectionState runConfigName="TestOfDetailedTrackie">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="buttonAdd_isEnabledWhenAllRequiredInformationAreFilled()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="buttonClearAll_properlyResetsInsertedValues()">
+      <SelectionState runConfigName="loadingUI_TrackieModelIsFetched_LoadedSuccessfullyUI()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
