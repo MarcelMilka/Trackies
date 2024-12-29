@@ -25,8 +25,8 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
-import com.example.trackies.ui.sharedUI.customTextFields.EmailInputTextField
-import com.example.trackies.ui.sharedUI.customTextFields.PasswordInputTextField
+import com.example.trackies.ui.sharedUI.customTextFields.emailInputTextField
+import com.example.trackies.ui.sharedUI.customTextFields.passwordInputTextField
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
@@ -101,7 +101,7 @@ fun signIn(
                                 verticalArrangement = Arrangement.Center,
                                 content = {
 
-                                    EmailInputTextField(
+                                    emailInputTextField(
                                         insertedValue = {
                                             email = it
 
@@ -132,7 +132,7 @@ fun signIn(
                                 verticalArrangement = Arrangement.Center,
                                 content = {
 
-                                    PasswordInputTextField(
+                                    passwordInputTextField(
                                         insertedValue = {
                                             password = it
 

@@ -8,6 +8,7 @@ import com.example.globalConstants.MeasuringUnit
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.entities.Trackie
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -43,68 +44,19 @@ class TrackieDaoTest {
         database.close()
     }
 
-    private val wholeWeekTrackie1 = Trackie(
-        name = "Whole week trackie 1",
-        totalDose = 5,
-        measuringUnit = MeasuringUnit.g,
-        monday = true,
-        tuesday = true,
-        wednesday = true,
-        thursday = true,
-        friday = true,
-        saturday = true,
-        sunday = true
-    )
-    private val wholeWeekTrackie2 = Trackie(
-        name = "WholeweekTrackie 2",
-        totalDose = 100,
-        measuringUnit = MeasuringUnit.pcs,
-        monday = true,
-        tuesday = true,
-        wednesday = true,
-        thursday = true,
-        friday = true,
-        saturday = true,
-        sunday = true
-    )
-    private val weekendTrackie = Trackie(
-        name = "WeekendTrackie",
-        totalDose = 100,
-        measuringUnit = MeasuringUnit.pcs,
-        monday = false,
-        tuesday = false,
-        wednesday = false,
-        thursday = false,
-        friday = true,
-        saturday = true,
-        sunday = true
-    )
-    private val mondayTrackie = Trackie(
-        name = "Monday Trackie",
-        totalDose = 100,
-        measuringUnit = MeasuringUnit.ml,
-        monday = true,
-        tuesday = false,
-        wednesday = false,
-        thursday = false,
-        friday = false,
-        saturday = false,
-        sunday = false
-    )
-
     @Test
     fun addingTrackieWorksProperly() = runTest {
 
         // run test works similarly to runBlockingTest - skips any delays saving testing time.
 
         trackieDAO.addNewTrackie(
-            trackie = wholeWeekTrackie1
+            trackie = TestHelperTrackieDAO.wholeWeekTrackie1
         )
 
         val allTrackies = trackieDAO.getAllTrackies()
 
         assertEquals(
-            listOf(wholeWeekTrackie1),
+            listOf(TestHelperTrackieDAO.wholeWeekTrackie1),
             allTrackies
         )
     }
@@ -113,30 +65,30 @@ class TrackieDaoTest {
     fun deletingTrackieWorksProperly() = runTest {
 
         trackieDAO.addNewTrackie(
-            trackie = wholeWeekTrackie1
+            trackie = TestHelperTrackieDAO.wholeWeekTrackie1
         )
 
         trackieDAO.addNewTrackie(
-            trackie = wholeWeekTrackie2
+            trackie = TestHelperTrackieDAO.wholeWeekTrackie2
         )
 
         trackieDAO.addNewTrackie(
-            trackie = weekendTrackie
+            trackie = TestHelperTrackieDAO.weekendTrackie
         )
 
         trackieDAO.addNewTrackie(
-            trackie = mondayTrackie
+            trackie = TestHelperTrackieDAO.mondayTrackie
         )
 
 
         trackieDAO.deleteTrackie(
-            nameOfTrackie = mondayTrackie.name
+            nameOfTrackie = TestHelperTrackieDAO.mondayTrackie.name
         )
 
         val allTrackies = trackieDAO.getAllTrackies()
 
         assertEquals(
-            listOf(wholeWeekTrackie1, wholeWeekTrackie2, weekendTrackie),
+            listOf(TestHelperTrackieDAO.wholeWeekTrackie1, TestHelperTrackieDAO.wholeWeekTrackie2, TestHelperTrackieDAO.weekendTrackie),
             allTrackies
         )
     }
@@ -145,19 +97,19 @@ class TrackieDaoTest {
     fun gettingTrackiesForTodayWorksProperly() = runTest {
 
         trackieDAO.addNewTrackie(
-            trackie = wholeWeekTrackie1
+            trackie = TestHelperTrackieDAO.wholeWeekTrackie1
         )
 
         trackieDAO.addNewTrackie(
-            trackie = wholeWeekTrackie2
+            trackie = TestHelperTrackieDAO.wholeWeekTrackie2
         )
 
         trackieDAO.addNewTrackie(
-            trackie = weekendTrackie
+            trackie = TestHelperTrackieDAO.weekendTrackie
         )
 
         trackieDAO.addNewTrackie(
-            trackie = mondayTrackie
+            trackie = TestHelperTrackieDAO.mondayTrackie
         )
 
 
@@ -167,7 +119,7 @@ class TrackieDaoTest {
 
 
         assertEquals(
-            listOf(wholeWeekTrackie1, wholeWeekTrackie2),
+            listOf(TestHelperTrackieDAO.wholeWeekTrackie1, TestHelperTrackieDAO.wholeWeekTrackie2),
             trackiesForToday
         )
     }
@@ -223,4 +175,88 @@ class TrackieDaoTest {
             allTrackiesTwo
         )
     }
+
+    @Test
+    fun gettingNamesOfAllTrackiesWorksProperly() = runTest {
+
+        trackieDAO.addNewTrackie(
+            trackie = TestHelperTrackieDAO.wholeWeekTrackie1
+        )
+
+        trackieDAO.addNewTrackie(
+            trackie = TestHelperTrackieDAO.wholeWeekTrackie2
+        )
+
+        trackieDAO.addNewTrackie(
+            trackie = TestHelperTrackieDAO.weekendTrackie
+        )
+
+        trackieDAO.addNewTrackie(
+            trackie = TestHelperTrackieDAO.mondayTrackie
+        )
+
+        val expectedList = listOf(
+            "wholeWeekTrackie1",
+            "wholeWeekTrackie2",
+            "weekendTrackie",
+            "mondayTrackie"
+        )
+
+        val namesOfAllTrackies =
+            trackieDAO.getNamesOfAllTrackies()
+
+        assertTrue(expectedList.count() == namesOfAllTrackies.count())
+    }
+}
+
+private object TestHelperTrackieDAO {
+
+    val wholeWeekTrackie1 = Trackie(
+        name = "wholeWeekTrackie1",
+        totalDose = 5,
+        measuringUnit = MeasuringUnit.g,
+        monday = true,
+        tuesday = true,
+        wednesday = true,
+        thursday = true,
+        friday = true,
+        saturday = true,
+        sunday = true
+    )
+    val wholeWeekTrackie2 = Trackie(
+        name = "wholeWeekTrackie2",
+        totalDose = 100,
+        measuringUnit = MeasuringUnit.pcs,
+        monday = true,
+        tuesday = true,
+        wednesday = true,
+        thursday = true,
+        friday = true,
+        saturday = true,
+        sunday = true
+    )
+    val weekendTrackie = Trackie(
+        name = "weekendTrackie",
+        totalDose = 100,
+        measuringUnit = MeasuringUnit.pcs,
+        monday = false,
+        tuesday = false,
+        wednesday = false,
+        thursday = false,
+        friday = true,
+        saturday = true,
+        sunday = true
+    )
+    val mondayTrackie = Trackie(
+        name = "mondayTrackie",
+        totalDose = 100,
+        measuringUnit = MeasuringUnit.ml,
+        monday = true,
+        tuesday = false,
+        wednesday = false,
+        thursday = false,
+        friday = false,
+        saturday = false,
+        sunday = false
+    )
 }

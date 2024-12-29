@@ -21,7 +21,7 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
-import com.example.trackies.ui.sharedUI.customTextFields.EmailInputTextField
+import com.example.trackies.ui.sharedUI.customTextFields.emailInputTextField
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
@@ -76,7 +76,7 @@ fun recoverPassword(
                             verticalSpacerM()
                             verticalSpacerM()
 
-                            EmailInputTextField(
+                            emailInputTextField(
                                 insertedValue = {email = it},
                                 focusRequester = FocusRequester(),
                                 onFocusChanged = {},

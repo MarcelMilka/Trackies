@@ -23,6 +23,8 @@ interface TrackiesDAO {
         WHEN 'sunday' THEN sunday
     END = 1
     """)
+
+
     suspend fun getTrackiesForToday(currentDayOfWeek: String): List<Trackie>?
 
 
@@ -42,6 +44,10 @@ interface TrackiesDAO {
 //  This method gets all rows from the column "Trackies".
     @Query("SELECT * FROM Trackies")
     suspend fun getAllTrackies(): List<Trackie>
+
+
+    @Query("SELECT name FROM Trackies")
+    suspend fun getNamesOfAllTrackies(): List<String>
 
     @Query("DELETE FROM Trackies")
     suspend fun deleteUsersTrackies()
