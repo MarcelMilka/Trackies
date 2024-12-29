@@ -22,12 +22,6 @@
       <SelectionState runConfigName="loadingUI_TrackieModelIsFetched_LoadedSuccessfullyUI()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RoomUserRepositoryTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="gettingNamesOfAllTrackiesWorksProperly()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
     </selectionStates>
   </component>
 </project>

@@ -477,22 +477,9 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    override suspend fun fetchNamesOfAllTrackies(): List<String>? {
-
-        return try {
-
-            roomDatabase
-                .trackiesDAO()
-            listOf()
-        }
-
-        catch (e: Exception) {
-
-            null
-        }
-    }
-
     override suspend fun deleteUsersData() {}
 
     override suspend fun fetchNamesOfTrackies(dayOfWeek: String): List<String>? = null
+
+    override suspend fun fetchNamesOfAllTrackies(): MutableList<String>? = null
 }

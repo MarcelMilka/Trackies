@@ -29,8 +29,8 @@ import com.example.trackies.ui.sharedUI.customText.dynamicTextTitleSmallWhiteToG
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
-import com.example.trackies.ui.sharedUI.customTextFields.emailInputTextField
-import com.example.trackies.ui.sharedUI.customTextFields.passwordInputTextField
+import com.example.trackies.ui.sharedUI.customTextFields.EmailInputTextField
+import com.example.trackies.ui.sharedUI.customTextFields.PasswordInputTextField
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.trackies.ui.theme.Dimensions
 
@@ -138,7 +138,7 @@ fun signUp(
                                 verticalArrangement = Arrangement.Center,
                                 content = {
 
-                                    emailInputTextField(
+                                    EmailInputTextField(
                                         insertedValue = {
                                             email = it
 
@@ -164,7 +164,7 @@ fun signUp(
 
                             verticalSpacerS()
 
-                            passwordInputTextField(
+                            PasswordInputTextField(
                                 insertedValue = { password = it },
                                 assignedFocusRequester = passwordFocusRequester,
                                 onFocusChanged = {passwordTextFieldIsActive = it},
