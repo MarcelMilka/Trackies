@@ -13,13 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="loadingUiIsDisplayed_whenTrackieModelIsNull()">
+      <SelectionState runConfigName="getTrackiesForToday_trackiesExist_returnsListWithTrackie()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="TestOfDetailedTrackie">
+      <SelectionState runConfigName="getNamesOfAllTrackies_trackiesExist_returnsListWithStringValues()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="loadingUI_TrackieModelIsFetched_LoadedSuccessfullyUI()">
+      <SelectionState runConfigName="deleteTrackie_trackieIsDeletedProperly_noTrackiesLeft()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="TrackiesDaoTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="getAllTrackies_thereAreNotAnyTrackies_emptyListIsReturned()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

@@ -2,7 +2,6 @@ package com.example.trackies.isSignedIn.user.data
 
 import android.util.Log
 import com.example.globalConstants.DaysOfWeek
-import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.aRoom.db.RoomDatabase
 import com.example.trackies.isSignedIn.user.buisness.LicenseModel
 import com.example.trackies.isSignedIn.user.buisness.entities.License
@@ -42,7 +41,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
     override suspend fun isFirstTimeInTheApp(): Boolean? {
 
         val license = roomDatabase.licenseDAO().isFirstTimeInTheApp()
@@ -55,7 +53,6 @@ class RoomUserRepository @Inject constructor(
         return true
     }
 
-    @Tested
     override fun addNewUser() {
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -72,7 +69,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
     override suspend fun needToResetPastWeekRegularity(currentDayOfWeek: String): Boolean? {
 
         val weeklyRegularity =
@@ -137,7 +133,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
     override suspend fun resetWeeklyRegularity(currentDayOfWeek: String): Boolean {
 
         return try {
@@ -180,7 +175,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
     override suspend fun fetchUsersLicense(): LicenseModel? {
 
         val licenseEntity = roomDatabase.licenseDAO().getLicense()
@@ -190,7 +184,6 @@ class RoomUserRepository @Inject constructor(
         return nullableLicenseModel
     }
 
-    @Tested
     override suspend fun fetchTrackiesForToday(currentDayOfWeek: String): List<TrackieModel>? {
 
         val entitiesOfTrackiesForToday = roomDatabase
@@ -206,7 +199,6 @@ class RoomUserRepository @Inject constructor(
         return nullableListOfTrackiesForToday
     }
 
-    @Tested
     override suspend fun fetchAllTrackies(): List<TrackieModel>? {
 
         return try {
@@ -226,7 +218,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
     override suspend fun fetchStatesOfTrackiesForToday(currentDayOfWeek: String): Map<String, Boolean>? {
 
         val regularity = roomDatabase
@@ -254,7 +245,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
     override suspend fun fetchWeeklyRegularity(): Map<String, Map<Int, Int>>? {
 
         val regularity = roomDatabase
@@ -363,7 +353,6 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
     override suspend fun addNewTrackie(trackieModel: TrackieModel): Boolean {
 
         val license = roomDatabase
@@ -449,11 +438,7 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
-    @Tested
-    override suspend fun markTrackieAsIngested(
-        currentDayOfWeek: String,
-        trackieModel: TrackieModel
-    ): Boolean {
+    override suspend fun markTrackieAsIngested(currentDayOfWeek: String, trackieModel: TrackieModel): Boolean {
 
         return try {
 
@@ -477,9 +462,10 @@ class RoomUserRepository @Inject constructor(
         }
     }
 
+    override suspend fun fetchNamesOfAllTrackies(): List<String>? =
+        roomDatabase.trackiesDAO().getNamesOfAllTrackies()
+
     override suspend fun deleteUsersData() {}
 
     override suspend fun fetchNamesOfTrackies(dayOfWeek: String): List<String>? = null
-
-    override suspend fun fetchNamesOfAllTrackies(): MutableList<String>? = null
 }

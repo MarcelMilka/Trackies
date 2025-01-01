@@ -28,7 +28,6 @@ class SharedViewModel @Inject constructor(
     private var _uiState = MutableStateFlow<SharedViewModelViewState>(value = SharedViewModelViewState.Loading)
     val uiState = _uiState.asStateFlow()
 
-//  @Tested
     init {
 
         viewModelScope.launch {
