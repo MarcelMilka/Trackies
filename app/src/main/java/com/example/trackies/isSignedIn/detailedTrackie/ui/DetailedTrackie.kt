@@ -24,7 +24,7 @@ import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.isSignedIn.homeScreen.ui.loading.lowerPart.loadingRegularityChart
 import com.example.trackies.ui.sharedUI.loadingText.loadingText
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 
 @Composable
 fun detailedTrackie(

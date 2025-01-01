@@ -38,7 +38,7 @@ import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPar
 import com.example.trackies.isSignedIn.homeScreen.ui.loadedSuccessfully.lowerPart.yearlyRegularityChartLoadedSuccessfully
 import com.example.trackies.ui.sharedUI.customText.centeredTextTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 
 @Composable
 fun homeScreen(

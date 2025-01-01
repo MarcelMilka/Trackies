@@ -25,7 +25,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
 import com.example.trackies.ui.theme.SecondaryColor
 import com.example.trackies.ui.theme.White50

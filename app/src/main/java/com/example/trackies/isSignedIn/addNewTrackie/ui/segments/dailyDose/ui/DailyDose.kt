@@ -49,9 +49,8 @@ import com.example.trackies.ui.sharedUI.customButtons.mediumRadioTextButton
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.SecondaryColor
-import com.example.trackies.ui.theme.White50
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

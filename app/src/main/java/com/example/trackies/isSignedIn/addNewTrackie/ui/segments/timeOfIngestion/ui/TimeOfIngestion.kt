@@ -31,7 +31,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.xTrackie.ui.trackiesPremium.trackiesPremiumLogo
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.SecondaryColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

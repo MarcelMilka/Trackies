@@ -1,4 +1,4 @@
-package com.example.trackies.ui.theme
+package com.example.globalConstants
 
 import androidx.compose.ui.unit.dp
 
@@ -14,7 +14,6 @@ object Dimensions {
 
 //  Heights
     val heightOfUpperFragment = 0.2f
-    val heightOfLowerFragment = 0.2f
 
 //  Rounded corners
     val roundedCornersOfBigElements = 20.dp

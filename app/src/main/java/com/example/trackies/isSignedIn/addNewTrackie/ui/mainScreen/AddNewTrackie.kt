@@ -25,7 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import com.example.globalConstants.MeasuringUnit
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

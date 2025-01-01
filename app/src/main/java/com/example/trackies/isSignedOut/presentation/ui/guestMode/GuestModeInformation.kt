@@ -21,7 +21,7 @@ import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -26,47 +26,59 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
 import com.example.trackies.ui.theme.fonts
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailInputTextField (
+fun emailInputTextField (
     insertedValue: (String) -> Unit,
     focusRequester: FocusRequester,
     onFocusChanged: (Boolean) -> Unit,
     onDone: () -> Unit
 ) {
 
-    var insertedText by remember { mutableStateOf("") }
+    var insertedText by remember {
+
+        mutableStateOf("")
+    }
 
     TextField(
 
         value = insertedText,
         onValueChange = { newValue ->
-            insertedValue( newValue )
+
+            insertedValue(newValue)
             insertedText = newValue
         },
 
 
-        label = { Text(text = "Email", style = fonts.titleMedium) },
+        label = {
+
+            Text(text = "Email", style = fonts.titleMedium)
+        },
 
         modifier = Modifier
             .width(300.dp)
             .height(60.dp)
             .focusRequester(focusRequester)
             .onFocusChanged {
+
                 if (it.isFocused) {
+
                     onFocusChanged(true)
                 }
 
                 else if (!it.isFocused){
+
                     onFocusChanged(false)
                 }
             },
@@ -84,8 +96,12 @@ fun EmailInputTextField (
             focusedIndicatorColor = Color.Transparent
         ),
 
+        textStyle = TextStyle(
+            color = White,
+        ),
 
-        shape = RoundedCornerShape( 20.dp ),
+
+        shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
 
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Next,
@@ -94,9 +110,12 @@ fun EmailInputTextField (
         ),
 
         keyboardActions = KeyboardActions(
-            onDone = {onDone()},
-        ),
 
+            onDone = {
+
+                onDone()
+            },
+        ),
 
         singleLine = true,
     )
@@ -104,24 +123,37 @@ fun EmailInputTextField (
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordInputTextField (
+fun passwordInputTextField (
     insertedValue: (String) -> Unit,
     assignedFocusRequester: FocusRequester,
     onFocusChanged: (Boolean) -> Unit,
     onDone: () -> Unit ){
 
-    var insertedText by remember { mutableStateOf("") }
+    var insertedText by remember {
 
-    var passwordIsVisible by remember { mutableStateOf( false ) }
+        mutableStateOf("")
+    }
 
-    var icon by remember { mutableStateOf(Icons.Rounded.Visibility) }
+    var passwordIsVisible by remember {
+
+        mutableStateOf(false)
+    }
+
+    var icon by remember {
+
+        mutableStateOf(Icons.Rounded.Visibility)
+    }
     LaunchedEffect( passwordIsVisible ) {
+
         icon = when (passwordIsVisible) {
+
             true -> {
+
                 Icons.Rounded.Visibility
             }
 
             false -> {
+
                 Icons.Rounded.VisibilityOff
             }
         }
@@ -135,25 +167,29 @@ fun PasswordInputTextField (
             insertedText = newValue
         },
 
-        label = { Text(text = "Password", style = fonts.titleMedium) },
+        label = {
+
+            Text(text = "Password", style = fonts.titleMedium)
+        },
 
         modifier = Modifier
             .width(300.dp)
             .height(60.dp)
-            .focusRequester( assignedFocusRequester )
+            .focusRequester(assignedFocusRequester)
             .onFocusChanged {
+
                 if (it.isFocused) {
+
                     onFocusChanged(true)
                 }
 
                 else if (!it.isFocused){
+
                     onFocusChanged(false)
                 }
             },
 
         colors = TextFieldDefaults.textFieldColors(
-
-//            textColor = White,
 
             unfocusedLabelColor = White,
             focusedLabelColor = White,
@@ -166,7 +202,11 @@ fun PasswordInputTextField (
             focusedIndicatorColor = Color.Transparent
         ),
 
-        shape = RoundedCornerShape( 20.dp ),
+        textStyle = TextStyle(
+            color = White,
+        ),
+
+        shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
 
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
@@ -174,17 +214,25 @@ fun PasswordInputTextField (
             capitalization = KeyboardCapitalization.None
         ),
 
-        keyboardActions = KeyboardActions(onDone = {onDone()}),
+        keyboardActions = KeyboardActions(
+
+            onDone = {
+
+                onDone()
+            }
+        ),
 
         trailingIcon = {
 
             IconButton(
 
                 onClick = {
+
                     passwordIsVisible = !passwordIsVisible
                 },
 
                 content = {
+
                     Icon(
                         imageVector = icon,
                         contentDescription = null,

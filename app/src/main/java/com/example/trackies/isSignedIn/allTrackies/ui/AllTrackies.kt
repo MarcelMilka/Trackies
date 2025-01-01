@@ -31,7 +31,7 @@ import com.example.trackies.ui.sharedUI.customText.textHeadlineMedium
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 
 @Composable
 fun allTrackies(

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.trackies.ui.sharedUI.customButtons.iconButton
 import com.example.trackies.ui.sharedUI.customButtons.smallIconButton
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.SecondaryColor
 
 @Composable

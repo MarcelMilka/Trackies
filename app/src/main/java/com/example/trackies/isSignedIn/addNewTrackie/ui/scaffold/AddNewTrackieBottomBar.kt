@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.ui.sharedUI.customButtons.mediumButtonChangingColor
 import com.example.trackies.ui.sharedUI.customButtons.mediumTextButton
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.SecondaryColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

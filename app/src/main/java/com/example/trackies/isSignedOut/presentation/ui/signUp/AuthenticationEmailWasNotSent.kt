@@ -16,7 +16,7 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerM
 import com.example.trackies.ui.sharedUI.customText.textHeadlineLarge
 import com.example.trackies.ui.sharedUI.customText.textHeadlineSmall
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 
 @Composable
 fun authenticationEmailWasNotSent(onNavigate: () -> Unit) {

@@ -26,9 +26,9 @@ import com.example.trackies.ui.sharedUI.customButtons.mediumButtonChangingColor
 import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.sharedUI.customText.textTitleSmall
-import com.example.trackies.ui.sharedUI.customTextFields.PasswordInputTextField
+import com.example.trackies.ui.sharedUI.customTextFields.passwordInputTextField
 import com.example.trackies.ui.theme.BackgroundColor
-import com.example.trackies.ui.theme.Dimensions
+import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
 
 @Composable
@@ -105,7 +105,7 @@ fun verifyYourIdentityToDeleteAccount(
                                             horizontalAlignment = Alignment.Start,
                                             content = {
 
-                                                PasswordInputTextField(
+                                                passwordInputTextField(
                                                     insertedValue = {
                                                         password = it
 
