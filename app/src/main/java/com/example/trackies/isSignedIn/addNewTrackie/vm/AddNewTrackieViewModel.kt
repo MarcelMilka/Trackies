@@ -6,19 +6,18 @@ import com.example.globalConstants.MeasuringUnit
 import com.example.globalConstants.annotationClasses.Tested
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieModel
-import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestionEntity
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.buisness.DailyDoseViewState
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.buisness.NameOfTrackieViewState
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.buisness.ScheduleDaysViewState
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestionViewState
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ActivityStatesOfSegments
-import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.convertIntoTimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.dailyDose.staticValues.DailyDoseHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.nameOfTrackie.staticValues.NameOfTrackieHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,7 +57,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //          Enabling/disabling button responsible for adding new Trackie
             this.launch {
 
-                addNewTrackieModel
+                this@AddNewTrackieViewModel.timeOfIngestion
                     .combine(activityStatesOfSegments) { model, states ->
 
                         CombinedModelAndStates(model, states)
@@ -109,7 +108,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //                      Collapse
                         false -> {
 
-                            if (addNewTrackieModel.value.name != "") {
+                            if (this@AddNewTrackieViewModel.timeOfIngestion.value.name != "") {
 
                                 nameOfTrackieDisplayInsertedValue()
                             }
@@ -125,7 +124,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
             this.launch {
 
-                addNewTrackieModel.collect {
+                this@AddNewTrackieViewModel.timeOfIngestion.collect {
 
                     if (activityStatesOfSegments.value.nameOfTrackieIsActive) {
 
@@ -167,7 +166,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //                      Expand
                         true -> {
 
-                            if (addNewTrackieModel.value.measuringUnit == null) {
+                            if (this@AddNewTrackieViewModel.timeOfIngestion.value.measuringUnit == null) {
 
                                 dailyDoseDisplayMeasuringUnitsToChoose()
                             }
@@ -181,7 +180,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //                      Collapse
                         false -> {
 
-                            if (addNewTrackieModel.value.measuringUnit == null) {
+                            if (this@AddNewTrackieViewModel.timeOfIngestion.value.measuringUnit == null) {
 
                                 dailyDoseDisplayCollapsed()
                             }
@@ -197,7 +196,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
             this.launch {
 
-                addNewTrackieModel
+                this@AddNewTrackieViewModel.timeOfIngestion
                     .combine(activityStatesOfSegments) { model, states -> CombinedModelAndStates(model, states) }
                     .combine(dailyDoseViewState) { dataClass, viewState ->
 
@@ -281,7 +280,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
             this.launch {
 
-                addNewTrackieModel.collect {
+                this@AddNewTrackieViewModel.timeOfIngestion.collect {
 
                     if (it.measuringUnit != null && activityStatesOfSegments.value.dailyDoseIsActive) {
 
@@ -306,7 +305,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //                      Collapse
                         false -> {
 
-                            if (addNewTrackieModel.value.repeatOn.isEmpty()) {
+                            if (this@AddNewTrackieViewModel.timeOfIngestion.value.repeatOn.isEmpty()) {
 
                                 scheduleDaysDisplayCollapsed()
                             }
@@ -322,7 +321,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
             this.launch {
 
-                addNewTrackieModel
+                this@AddNewTrackieViewModel.timeOfIngestion
                     .combine(activityStatesOfSegments) { model, states ->
 
                         CombinedModelAndStates(model, states)
@@ -372,7 +371,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //          Following and updating UI state of the segment 'TimeOfIngestion'
             this.launch {
 
-                if (addNewTrackieModel.value.ingestionTime == null) {
+                if (this@AddNewTrackieViewModel.timeOfIngestion.value.timeOfIngestion == null) {
 
                     scheduleTimeDisplayUnactivated()
                 }
@@ -393,7 +392,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 //                      Collapse
                         false -> {
 
-                            if (addNewTrackieModel.value.ingestionTime == null) {
+                            if (this@AddNewTrackieViewModel.timeOfIngestion.value.timeOfIngestion == null) {
 
                                 scheduleTimeDisplayUnactivated()
                             }
@@ -424,7 +423,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     @Tested
     fun updateName(name: String) {
 
-        addNewTrackieModel.update {
+        this@AddNewTrackieViewModel.timeOfIngestion.update {
             it.copy(
                 name = name
             )
@@ -434,7 +433,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     @Tested
     fun updateDose(dose: Int) {
 
-        addNewTrackieModel.update {
+        this@AddNewTrackieViewModel.timeOfIngestion.update {
             it.copy(
                 dose = dose,
             )
@@ -444,7 +443,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     @Tested
     fun updateMeasuringUnit(measuringUnit: MeasuringUnit) {
 
-        addNewTrackieModel.update {
+        this@AddNewTrackieViewModel.timeOfIngestion.update {
             it.copy(
                 measuringUnit = measuringUnit
             )
@@ -454,7 +453,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     @Tested
     fun updateRepeatOn(repeatOn: Set<String>) {
 
-        addNewTrackieModel.update {
+        this@AddNewTrackieViewModel.timeOfIngestion.update {
             it.copy(
                 repeatOn = repeatOn,
             )
@@ -462,14 +461,12 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     }
 
     @Tested
-    fun updateTimeOfIngestion(ingestionTimeEntity: TimeOfIngestionEntity?) {
+    fun updateTimeOfIngestion(timeOfIngestion: TimeOfIngestion?) {
 
-        val ingestionTime = ingestionTimeEntity?.convertIntoTimeOfIngestion()
-
-        addNewTrackieModel.update {
+        this@AddNewTrackieViewModel.timeOfIngestion.update {
 
             it.copy(
-                ingestionTime = ingestionTime
+                timeOfIngestion = timeOfIngestion
             )
         }
     }
@@ -477,7 +474,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
     @Tested
     fun clearAll() {
 
-        addNewTrackieModel.update {
+        this@AddNewTrackieViewModel.timeOfIngestion.update {
 
             it.copy(
 
@@ -485,7 +482,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
                 dose = 0,
                 repeatOn = mutableSetOf(),
                 measuringUnit = null,
-                ingestionTime = null
+                timeOfIngestion = null
             )
         }
 
@@ -650,7 +647,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
     private fun nameOfTrackieDisplayTextField() {
 
-        val currentNameOfTrackie = addNewTrackieModel.value.name
+        val currentNameOfTrackie = this@AddNewTrackieViewModel.timeOfIngestion.value.name
 
         var hint = ""
         var error = false
@@ -689,7 +686,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
     private fun nameOfTrackieDisplayInsertedValue() {
 
-        val currentNameOfTrackie = addNewTrackieModel.value.name
+        val currentNameOfTrackie = this@AddNewTrackieViewModel.timeOfIngestion.value.name
 
         var hint = ""
         var error = false

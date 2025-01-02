@@ -145,7 +145,7 @@ class TestOfAddNewTrackie {
 
                     if (
                         segmentToActivate == AddNewTrackieSegments.TimeOfIngestion &&
-                        addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime == null
+                        addNewTrackieViewModel.addNewTrackieModel.value.timeOfIngestion == null
                     ) {
 
                         addNewTrackieViewModel.activateSegment(

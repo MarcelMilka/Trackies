@@ -25,16 +25,18 @@ import com.example.trackies.ui.sharedUI.customSpacers.verticalSpacerS
 import com.example.trackies.ui.sharedUI.customText.textTitleMedium
 import com.example.trackies.ui.theme.BackgroundColor
 import com.example.globalConstants.Dimensions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestion
 import com.example.trackies.ui.theme.PrimaryColor
 import com.example.trackies.ui.theme.SecondaryColor
 import com.example.trackies.ui.theme.White50
+import java.time.LocalTime
 import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun scheduleTimeDialog(
-    onConfirm: (TimeOfIngestionEntity) -> Unit,
+    onConfirm: (TimeOfIngestion) -> Unit,
     onDecline: () -> Unit,
 ) {
 
@@ -136,10 +138,14 @@ fun scheduleTimeDialog(
                                         },
 
                                         onClick = {
+                                            
                                             onConfirm(
-                                                TimeOfIngestionEntity(
-                                                    hour = timePickerState.hour,
-                                                    minute = timePickerState.minute
+
+                                                TimeOfIngestion(
+                                                    time = LocalTime.of(
+                                                        timePickerState.hour,
+                                                        timePickerState.minute
+                                                    )
                                                 )
                                             )
                                         }

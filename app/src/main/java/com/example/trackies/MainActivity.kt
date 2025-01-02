@@ -648,7 +648,7 @@ class MainActivity : ComponentActivity() {
 
                                     if (
                                         segmentToActivate == AddNewTrackieSegments.TimeOfIngestion &&
-                                        addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime == null
+                                        addNewTrackieViewModel.addNewTrackieModel.value.timeOfIngestion == null
                                     ) {
 
                                         navigationController.navigate(route = Destinations.ScheduleIngestionTime)

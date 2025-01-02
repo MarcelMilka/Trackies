@@ -418,28 +418,28 @@ class AddNewTrackieViewModelUnitTest {
     fun `updateTimeOfIngestion() - properly updates constructor 'ingestionTime' in AddNewTrackieModel`() = runBlocking {
 
 //      Making sure 'ingestionTime' is null by default:
-        val defaultValue = addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime
+        val defaultValue = addNewTrackieViewModel.addNewTrackieModel.value.timeOfIngestion
         assertNull(defaultValue)
 
 //      Inserting various values and making sure changes are made properly
         addNewTrackieViewModel.updateTimeOfIngestion(TimeOfIngestionEntity(10, 0))
         val expected1 = TimeOfIngestion("10", "00")
-        val actual1 = addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime
+        val actual1 = addNewTrackieViewModel.addNewTrackieModel.value.timeOfIngestion
         assertEquals(expected1, actual1)
 
         addNewTrackieViewModel.updateTimeOfIngestion(null)
         val expected2 = null
-        val actual2 = addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime
+        val actual2 = addNewTrackieViewModel.addNewTrackieModel.value.timeOfIngestion
         assertEquals(expected2, actual2)
 
         addNewTrackieViewModel.updateTimeOfIngestion(TimeOfIngestionEntity(13, 30))
         val expected3 = TimeOfIngestion("13", "30")
-        val actual3 = addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime
+        val actual3 = addNewTrackieViewModel.addNewTrackieModel.value.timeOfIngestion
         assertEquals(expected3, actual3)
 
         addNewTrackieViewModel.updateTimeOfIngestion(TimeOfIngestionEntity(6, 5))
         val expected4 = TimeOfIngestion("06", "05")
-        val actual4 = addNewTrackieViewModel.addNewTrackieModel.value.ingestionTime
+        val actual4 = addNewTrackieViewModel.addNewTrackieModel.value.timeOfIngestion
         assertEquals(expected4, actual4)
     }
 
@@ -506,7 +506,7 @@ class AddNewTrackieViewModelUnitTest {
         val actual1 = addNewTrackieViewModel.activityStatesOfSegments.value
         assertEquals(expected1, actual1)
 
-        val expected2 = AddNewTrackieModel(name= "Water", dose= 150, measuringUnit= MeasuringUnit.pcs, repeatOn= setOf(DaysOfWeek.monday, DaysOfWeek.tuesday, DaysOfWeek.wednesday), ingestionTime=TimeOfIngestion(hour="13", minute="30"))
+        val expected2 = AddNewTrackieModel(name= "Water", dose= 150, measuringUnit= MeasuringUnit.pcs, repeatOn= setOf(DaysOfWeek.monday, DaysOfWeek.tuesday, DaysOfWeek.wednesday), timeOfIngestion=TimeOfIngestion(hour="13", minute="30"))
         val actual2 = addNewTrackieViewModel.addNewTrackieModel.value
         assertEquals(expected2, actual2)
 
