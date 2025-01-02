@@ -9,7 +9,7 @@ data class AddNewTrackieModel(
     var dose: Int = 0,
     var measuringUnit: MeasuringUnit? = null,
     var repeatOn: Set<String> = setOf<String>(),
-    var timeOfIngestion: TimeOfIngestion? = null
+    var ingestionTime: TimeOfIngestion? = null
 )
 
 fun AddNewTrackieModel.convertIntoTrackieModel(): TrackieModel {

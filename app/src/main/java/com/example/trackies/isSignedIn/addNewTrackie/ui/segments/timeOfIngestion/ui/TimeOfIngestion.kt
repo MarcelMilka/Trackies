@@ -99,7 +99,7 @@ import kotlinx.coroutines.launch
 
             addNewTrackieViewModel.addNewTrackieModel.collect { addNewTrackieModel ->
 
-                timeOfIngestion = addNewTrackieModel.timeOfIngestion
+                timeOfIngestion = addNewTrackieModel.ingestionTime
             }
         }
 
