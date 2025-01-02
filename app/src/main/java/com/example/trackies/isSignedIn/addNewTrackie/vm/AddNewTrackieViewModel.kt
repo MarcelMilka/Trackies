@@ -536,7 +536,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
         timeOfIngestionViewState.update {
 
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayDeactivated,
                 hint = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
                 displayContentInTimeComponent = false
             )
@@ -848,7 +848,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
         timeOfIngestionViewState.update {
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedComponent,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayDeactivated,
                 hint = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
                 displayContentInTimeComponent = false
             )
@@ -859,7 +859,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
         timeOfIngestionViewState.update {
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayActivatedTimeComponent,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayActivated,
                 hint = TimeOfIngestionHintOptions.clickToConfirmIngestionTime,
                 displayContentInTimeComponent = true
             )
@@ -870,7 +870,7 @@ class AddNewTrackieViewModel @Inject constructor(): ViewModel() {
 
         timeOfIngestionViewState.update {
             it.copy(
-                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayUnactivatedTimeComponent,
+                targetHeightOfTheSurface = TimeOfIngestionHeightOptions.displayScheduledTime,
                 hint = TimeOfIngestionHintOptions.clickToEditOrDeleteTimeOfIngestion,
                 displayContentInTimeComponent = false
             )

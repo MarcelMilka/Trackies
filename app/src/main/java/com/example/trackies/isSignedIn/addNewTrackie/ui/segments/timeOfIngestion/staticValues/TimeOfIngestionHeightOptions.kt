@@ -2,9 +2,7 @@ package com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestio
 
 object TimeOfIngestionHeightOptions {
 
-    val displayUnactivatedComponent = 50
-
-    val displayActivatedTimeComponent = 120
-
-    val displayUnactivatedTimeComponent = 100
+    val displayDeactivated = 50
+    val displayActivated = 120
+    val displayScheduledTime = 100
 }

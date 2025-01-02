@@ -26,7 +26,7 @@ import com.example.trackies.isSignedIn.settings.dialogs.changePassword.insertNew
 import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.confirmDeletionOfTheAccount
 import com.example.trackies.isSignedIn.homeScreen.ui.homeScreen
 import com.example.trackies.isSignedIn.settings.settings
-import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.verifyYourIdentityToDeleteAccount
+import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.verifyYourIdentityToDeleteAccountDialog
 import com.example.trackies.isSignedIn.settings.dialogs.deleteAccount.yourAccountGotDeleted
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.verifyYourIdentityToChangePassword
 import com.example.trackies.isSignedIn.settings.dialogs.changePassword.yourPasswordGotChanged
@@ -861,7 +861,7 @@ class MainActivity : ComponentActivity() {
                             var anErrorOccurred by remember { mutableStateOf(false) }
                             var errorMessage by remember { mutableStateOf("") }
 
-                            verifyYourIdentityToDeleteAccount(
+                            verifyYourIdentityToDeleteAccountDialog(
 
                                 anErrorOccurred = anErrorOccurred,
                                 errorMessage = errorMessage,

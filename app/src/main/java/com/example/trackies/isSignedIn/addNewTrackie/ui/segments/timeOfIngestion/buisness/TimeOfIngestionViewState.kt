@@ -5,9 +5,7 @@ import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion
 
 data class TimeOfIngestionViewState(
 
-    var targetHeightOfTheSurface: Int = TimeOfIngestionHeightOptions.displayUnactivatedComponent,
-
+    var targetHeightOfTheSurface: Int = TimeOfIngestionHeightOptions.displayDeactivated,
     var hint: String = TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion,
-
     var displayContentInTimeComponent: Boolean = false
 )

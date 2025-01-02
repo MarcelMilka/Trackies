@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.buisness.TimeOfIngestion
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
@@ -59,7 +60,7 @@ import kotlinx.coroutines.launch
     var targetHeightOfTheSurface by remember {
 
         mutableIntStateOf(
-            TimeOfIngestionHeightOptions.displayUnactivatedComponent
+            TimeOfIngestionHeightOptions.displayDeactivated
         )
     }
     val heightOfTheSurface by animateIntAsState(
@@ -136,7 +137,8 @@ import kotlinx.coroutines.launch
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(height = heightOfTheSurface.dp),
+            .height(height = heightOfTheSurface.dp)
+            .testTag("timeOfIngestion"),
 
         color = SecondaryColor,
         shape = RoundedCornerShape(Dimensions.roundedCornersOfBigElements),
@@ -207,19 +209,22 @@ import kotlinx.coroutines.launch
                                 }
                             )
 
-                            Column(
+                            if (!enabledToUseThisFeature) {
 
-                                modifier = Modifier
-                                    .height(30.dp),
+                                Column(
 
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .height(30.dp),
 
-                                content = {
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center,
 
-                                    trackiesPremiumLogo()
-                                }
-                            )
+                                    content = {
+
+                                        trackiesPremiumLogo()
+                                    }
+                                )
+                            }
                         }
                     )
 

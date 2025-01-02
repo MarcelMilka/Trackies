@@ -32,7 +32,7 @@ import com.example.globalConstants.Dimensions
 import com.example.trackies.ui.theme.PrimaryColor
 
 @Composable
-fun verifyYourIdentityToDeleteAccount(
+fun verifyYourIdentityToDeleteAccountDialog(
     anErrorOccurred: Boolean,
     errorMessage: String,
 

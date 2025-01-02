@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.ActivityStatesOfSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHeightOptions
 import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.scheduleDays.staticValues.ScheduleDaysHintOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHeightOptions
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.staticValues.TimeOfIngestionHintOptions
 import junit.framework.TestCase.assertEquals
 import kotlin.collections.Map
 import org.junit.Before
@@ -65,9 +67,9 @@ class TestOfAddNewTrackie {
     var onUpdateTimeOfIngestionWasClicked = false
     var onDeleteTimeOfIngestionWasClicked = false
     var onAddNewTrackieWasClicked = false
-    var onDisplayTrackiesPremium = false
+    var onDisplayTrackiesPremiumDialogWasTriggered = false
 
-    var wasClicked = false
+    var onDeactivateWasTriggered = false
 
     @Before
     fun beforeTest() {
@@ -75,7 +77,7 @@ class TestOfAddNewTrackie {
         hiltRule.inject()
 
         addNewTrackieViewModel = AddNewTrackieViewModel()
-        TestHelpingObject.setLoadedSuccessfully_ThreeTrackies()
+        TestHelpingObject.setLoadedSuccessfully_licenseIsActive_threeTrackies()
 
         composeTestRule.setContent {
 
@@ -84,8 +86,8 @@ class TestOfAddNewTrackie {
             onUpdateTimeOfIngestionWasClicked = false
             onDeleteTimeOfIngestionWasClicked = false
             onAddNewTrackieWasClicked = false
-            onDisplayTrackiesPremium = false
-            wasClicked = false
+            onDisplayTrackiesPremiumDialogWasTriggered = false
+            onDeactivateWasTriggered = false
 
             addNewTrackie(
 
@@ -160,7 +162,7 @@ class TestOfAddNewTrackie {
                 },
                 onDeactivate = { segmentToDeactivate ->
 
-                    wasClicked = true
+                    onDeactivateWasTriggered = true
 
                     addNewTrackieViewModel.deactivateSegment(
                         segmentToDeactivate = segmentToDeactivate
@@ -181,7 +183,7 @@ class TestOfAddNewTrackie {
 
                 onDisplayTrackiesPremiumDialog = {
 
-                    onDisplayTrackiesPremium = true
+                    onDisplayTrackiesPremiumDialogWasTriggered = true
                 }
             )
         }
@@ -894,6 +896,29 @@ class TestOfAddNewTrackie {
     }
 
     @Test
+    fun timeOfIngestion_whenLicenseIsNotActive_displaysTrackiesPremiumLogo_onDisplayTrackiesPremiumIsCalled() = runBlocking {
+
+//      set license model to deactivated
+        TestHelpingObject.setLoadedSuccessfully_licenseIsNotActive_noTrackies()
+        composeTestRule.awaitIdle()
+
+//      segment is deactivated by default
+        composeTestRule.onNodeWithText(TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion).assertIsDisplayed()
+
+        timeOfIngestion.assertHeightIsEqualTo(TimeOfIngestionHeightOptions.displayDeactivated.dp)
+
+        assertTrue(addNewTrackieViewModel.activityStatesOfSegments.value.timeOfIngestionIsActive == false)
+
+        assertTrue(addNewTrackieViewModel.timeOfIngestionViewState.value.targetHeightOfTheSurface == TimeOfIngestionHeightOptions.displayDeactivated)
+        assertTrue(addNewTrackieViewModel.timeOfIngestionViewState.value.hint == TimeOfIngestionHintOptions.clickToInsertTimeOfIngestion)
+
+//      onDisplayTrackiesPremium is activated
+        timeOfIngestion.performClick()
+
+        assertTrue(onDisplayTrackiesPremiumDialogWasTriggered)
+    }
+
+    @Test
     fun buttonAdd_isEnabledWhenAllRequiredInformationAreFilled() = runBlocking {
 
 //      Insert name of trackie
@@ -1038,6 +1063,8 @@ class TestOfAddNewTrackie {
     private val chipSat = composeTestRule.onNodeWithText("sat")
     private val chipSun = composeTestRule.onNodeWithText("sun")
 
+    private val timeOfIngestion = composeTestRule.onNodeWithTag("timeOfIngestion")
+
     private val buttonClearAll = composeTestRule.onNodeWithText("clear all")
     private val buttonAdd = composeTestRule.onNodeWithText("add")
 }
@@ -1049,7 +1076,7 @@ private object TestHelpingObject {
     )
     val sharedViewModelViewState = _sharedViewModelViewState.asStateFlow()
 
-    fun setLoadedSuccessfully_ThreeTrackies() {
+    fun setLoadedSuccessfully_licenseIsActive_threeTrackies() {
 
         _sharedViewModelViewState.update {
 
@@ -1084,6 +1111,35 @@ private object TestHelpingObject {
                 ),
 
                 namesOfAllTrackies = listOf("A", "B", "C"),
+
+                allTrackies = null
+            )
+        }
+    }
+
+    fun setLoadedSuccessfully_licenseIsNotActive_noTrackies() {
+
+        _sharedViewModelViewState.update {
+
+            SharedViewModelViewState.LoadedSuccessfully(
+
+                license = LicenseModel(
+                    active = false,
+                    validUntil = null,
+                    totalAmountOfTrackies = 0
+                ),
+
+                trackiesForToday = listOf<TrackieModel>(),
+
+                statesOfTrackiesForToday = mapOf<String, Boolean>(
+                    "A" to false,
+                    "B" to true,
+                    "C" to false
+                ),
+
+                weeklyRegularity = mapOf<String, Map<Int, Int>>(),
+
+                namesOfAllTrackies = listOf(),
 
                 allTrackies = null
             )
