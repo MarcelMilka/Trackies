@@ -36,7 +36,7 @@ import com.example.trackies.auth.data.FirebaseAuthenticationService
 import com.example.trackies.auth.authenticationMethodProvider.AuthenticationMethodProvider
 import com.example.trackies.isSignedIn.addNewTrackie.buisness.AddNewTrackieSegments
 import com.example.trackies.isSignedIn.addNewTrackie.ui.mainScreen.addNewTrackie
-import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.scheduleTimeDialog
+import com.example.trackies.isSignedIn.addNewTrackie.ui.segments.timeOfIngestion.ui.scheduleTimeOfIngestionDialog
 import com.example.trackies.isSignedIn.addNewTrackie.vm.AddNewTrackieViewModel
 import com.example.trackies.isSignedIn.allTrackies.ui.allTrackies
 import com.example.trackies.isSignedIn.allTrackies.vm.AllTrackiesViewModel
@@ -697,24 +697,17 @@ class MainActivity : ComponentActivity() {
 
                         dialog(route = Destinations.ScheduleIngestionTime) {
 
-                            var addNewTrackieViewModel: AddNewTrackieViewModel =
-                                hiltViewModel(it)
-
-                            scheduleTimeDialog(
+                            scheduleTimeOfIngestionDialog(
 
                                 onConfirm = {
 
                                     navigationController.navigateUp()
-
-                                    addNewTrackieViewModel.updateTimeOfIngestion(
-                                        ingestionTimeEntity = it
-                                    )
                                 },
 
                                 onDecline = {
+
                                     navigationController.navigateUp()
                                 }
-
                             )
                         }
 
